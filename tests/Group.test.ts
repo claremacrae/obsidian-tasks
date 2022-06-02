@@ -213,6 +213,45 @@ describe('Group names', () => {
         },
 
         // -----------------------------------------------------------
+        // group by context
+        {
+            groupBy: 'context',
+            taskLine: '- [ ] a',
+            expectedGroupName: 'No context',
+        },
+        {
+            groupBy: 'context',
+            taskLine: '- [ ] a #context/home',
+            expectedGroupName: 'home',
+        },
+
+        // -----------------------------------------------------------
+        // group by done
+        {
+            groupBy: 'done',
+            taskLine: '- [ ] a ✅ 1970-01-01',
+            expectedGroupName: '1970-01-01 Thursday',
+        },
+        {
+            groupBy: 'done',
+            taskLine: '- [ ] a',
+            expectedGroupName: 'No done date',
+        },
+
+        // -----------------------------------------------------------
+        // group by due
+        {
+            groupBy: 'due',
+            taskLine: '- [ ] a 📅 1970-01-01',
+            expectedGroupName: '1970-01-01 Thursday',
+        },
+        {
+            groupBy: 'due',
+            taskLine: '- [ ] a',
+            expectedGroupName: 'No due date',
+        },
+
+        // -----------------------------------------------------------
         // group by filename
         {
             groupBy: 'filename',
@@ -235,6 +274,41 @@ describe('Group names', () => {
             taskLine: '- [ ] a',
             expectedGroupName: '/',
             path: 'a.md',
+        },
+
+        // -----------------------------------------------------------
+        // group by happens - see also referenceDateField
+        {
+            groupBy: 'happens',
+            taskLine: '- [ ] a',
+            expectedGroupName: 'No happens date',
+        },
+        {
+            groupBy: 'happens',
+            taskLine: '- [ ] a 📅 1970-01-01',
+            expectedGroupName: '1970-01-01 Thursday',
+        },
+        {
+            groupBy: 'happens',
+            taskLine: '- [ ] a ⏳ 1970-01-02',
+            expectedGroupName: '1970-01-02 Friday',
+        },
+        {
+            groupBy: 'happens',
+            taskLine: '- [ ] a 🛫 1970-01-03',
+            expectedGroupName: '1970-01-03 Saturday',
+        },
+        {
+            // Check that due is prioritised over scheduled and start
+            groupBy: 'happens',
+            taskLine: '- [ ] a 🛫 1970-01-03 ⏳ 1970-01-02 📅 1970-01-01',
+            expectedGroupName: '1970-01-01 Thursday',
+        },
+        {
+            // Check that scheduled is prioritised over start
+            groupBy: 'happens',
+            taskLine: '- [ ] a 🛫 1970-01-03 ⏳ 1970-01-02',
+            expectedGroupName: '1970-01-02 Friday',
         },
 
         // -----------------------------------------------------------
@@ -268,6 +342,90 @@ describe('Group names', () => {
         },
 
         // -----------------------------------------------------------
+        // group by priority
+        {
+            groupBy: 'priority',
+            taskLine: '- [ ] a ⏫',
+            expectedGroupName: 'Priority 1',
+        },
+        {
+            groupBy: 'priority',
+            taskLine: '- [ ] a 🔼',
+            expectedGroupName: 'Priority 2',
+        },
+        {
+            groupBy: 'priority',
+            taskLine: '- [ ] a',
+            expectedGroupName: 'Priority 3',
+        },
+        {
+            groupBy: 'priority',
+            taskLine: '- [ ] a 🔽',
+            expectedGroupName: 'Priority 4',
+        },
+
+        // -----------------------------------------------------------
+        // group by referenceDateField - see also happens
+        {
+            groupBy: 'referenceDateField',
+            taskLine: '- [ ] a',
+            expectedGroupName: 'None',
+        },
+        {
+            groupBy: 'referenceDateField',
+            taskLine: '- [ ] a 📅 1970-01-01',
+            expectedGroupName: 'Due',
+        },
+        {
+            groupBy: 'referenceDateField',
+            taskLine: '- [ ] a ⏳ 1970-01-02',
+            expectedGroupName: 'Scheduled',
+        },
+        {
+            groupBy: 'referenceDateField',
+            taskLine: '- [ ] a 🛫 1970-01-03',
+            expectedGroupName: 'Start',
+        },
+        {
+            // Check that due is prioritised over scheduled and start
+            groupBy: 'referenceDateField',
+            taskLine: '- [ ] a 🛫 1970-01-03 ⏳ 1970-01-02 📅 1970-01-01',
+            expectedGroupName: 'Due',
+        },
+        {
+            // Check that scheduled is prioritised over start
+            groupBy: 'referenceDateField',
+            taskLine: '- [ ] a 🛫 1970-01-03 ⏳ 1970-01-02',
+            expectedGroupName: 'Scheduled',
+        },
+
+        // -----------------------------------------------------------
+        // group by scheduled
+        {
+            groupBy: 'scheduled',
+            taskLine: '- [ ] a ⏳ 1970-01-01',
+            expectedGroupName: '1970-01-01 Thursday',
+        },
+        {
+            groupBy: 'scheduled',
+            taskLine: '- [ ] a',
+            expectedGroupName: 'No scheduled date',
+        },
+
+        // -----------------------------------------------------------
+        // group by start
+        {
+            groupBy: 'start',
+            taskLine: '- [ ] a 🛫 1970-01-01',
+            expectedGroupName: '1970-01-01 Thursday',
+        },
+        {
+            groupBy: 'start',
+            taskLine: '- [ ] a',
+            expectedGroupName: 'No start date',
+        },
+
+        // -----------------------------------------------------------
         // group by status
         {
             groupBy: 'status',
@@ -278,6 +436,15 @@ describe('Group names', () => {
             groupBy: 'status',
             taskLine: '- [x] a',
             expectedGroupName: 'Done',
+        },
+
+        // -----------------------------------------------------------
+        // group by urgency
+        {
+            groupBy: 'urgency',
+            taskLine: '- [ ] a',
+            expectedGroupName: 'Urgency 1.95',
+            path: 'd/e/f.md',
         },
 
         // -----------------------------------------------------------

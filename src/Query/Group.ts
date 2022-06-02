@@ -1,3 +1,4 @@
+import type { Moment } from 'moment';
 import type { Grouping, GroupingProperty } from '../Query';
 import type { Task } from '../Task';
 import { TaskGroups } from './TaskGroups';
@@ -11,6 +12,8 @@ type Grouper = (task: Task) => string;
  * Implementation of the 'group by' instruction.
  */
 export class Group {
+    private static readonly groupDateFormat = 'YYYY-MM-DD dddd';
+
     /**
      * Group a list of tasks, according to one or more task properties
      * @param grouping 0 or more Grouping values, one per 'group by' line
@@ -63,12 +66,90 @@ export class Group {
 
     private static groupers: Record<GroupingProperty, Grouper> = {
         backlink: Group.groupByBacklink,
+        context: Group.groupByContext,
+        done: Group.groupByDoneDate,
+        due: Group.groupByDueDate,
         filename: Group.groupByFileName,
         folder: Group.groupByFolder,
+        happens: Group.groupByHappensDate,
         heading: Group.groupByHeading,
         path: Group.groupByPath,
+        priority: Group.groupByPriority,
+        referenceDateField: Group.groupByHappensField,
+        scheduled: Group.groupByScheduledDate,
+        start: Group.groupByStartDate,
         status: Group.groupByStatus,
+        urgency: Group.groupByUrgency,
     };
+
+    private static groupByUrgency(task: Task): string {
+        const value = task.urgency.toFixed(2);
+        return `Urgency ${value}`;
+    }
+
+    private static groupByPriority(task: Task): string {
+        return `Priority ${task.priority}`;
+    }
+
+    private static groupByStartDate(task: Task): string {
+        return Group.groupByDate(task.startDate, 'start');
+    }
+
+    private static groupByScheduledDate(task: Task): string {
+        return Group.groupByDate(task.scheduledDate, 'scheduled');
+    }
+
+    private static groupByDueDate(task: Task): string {
+        return Group.groupByDate(task.dueDate, 'due');
+    }
+
+    private static groupByDoneDate(task: Task): string {
+        return Group.groupByDate(task.doneDate, 'done');
+    }
+
+    private static groupByHappensDate(task: Task): string {
+        const referenceDate = Group.getReferenceDate(task);
+        const referenceName = Group.getReferenceDateField(task);
+        if (referenceDate) {
+            return Group.groupByDate(referenceDate, referenceName);
+        }
+        return 'No happens date';
+    }
+
+    private static groupByHappensField(task: Task): string {
+        return Group.getReferenceDateField(task);
+    }
+
+    private static getReferenceDateField(task: Task) {
+        let referenceName = 'None';
+        if (task.dueDate != null) {
+            referenceName = 'Due';
+        } else if (task.scheduledDate != null) {
+            referenceName = 'Scheduled';
+        } else if (task.startDate != null) {
+            referenceName = 'Start';
+        }
+        return referenceName;
+    }
+
+    private static getReferenceDate(task: Task) {
+        let referenceDate: Moment | null = null;
+        if (task.dueDate != null) {
+            referenceDate = task.dueDate;
+        } else if (task.scheduledDate != null) {
+            referenceDate = task.scheduledDate;
+        } else if (task.startDate != null) {
+            referenceDate = task.startDate;
+        }
+        return referenceDate;
+    }
+
+    private static groupByDate(date: moment.Moment | null, field: string) {
+        if (date == null) {
+            return 'No ' + field + ' date';
+        }
+        return date.format(Group.groupDateFormat);
+    }
 
     private static groupByPath(task: Task): string {
         // Does this need to be made stricter?
@@ -120,5 +201,15 @@ export class Group {
             return '(No heading)';
         }
         return task.precedingHeader;
+    }
+
+    private static groupByContext(task: Task): string {
+        const description = task.description;
+        const contextRegexp = /.* #context\/([^ ]+)/;
+        const contextMatch = description.match(contextRegexp);
+        if (contextMatch !== null) {
+            return contextMatch[1];
+        }
+        return 'No context';
     }
 }
