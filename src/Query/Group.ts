@@ -145,7 +145,7 @@ export class Group {
     }
 
     private static groupByDate(date: moment.Moment | null, field: string) {
-        if (date == null) {
+        if (date === null) {
             return 'No ' + field + ' date';
         }
         return date.format(Group.groupDateFormat);
