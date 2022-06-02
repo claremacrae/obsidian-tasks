@@ -361,7 +361,7 @@ export class Task {
         const li: HTMLLIElement = parentUlElement.createEl('li');
         li.addClasses(['task-list-item', 'plugin-tasks-list-item']);
 
-        let taskAsString = this.toString(layoutOptions);
+        let taskAsString = this.toString(layoutOptions) + this.debugInfo();
         const { globalFilter, removeGlobalFilter } = getSettings();
         if (removeGlobalFilter) {
             taskAsString = taskAsString.replace(globalFilter, '').trim();
@@ -516,6 +516,20 @@ export class Task {
         return `${this.indentation}- [${
             this.originalStatusCharacter
         }] ${this.toString()}`;
+    }
+
+    /**
+     * Temporary hack to visualise task properties, whilst investigating
+     * https://github.com/obsidian-tasks-group/obsidian-tasks/issues/688
+     * @private
+     */
+    private debugInfo() {
+        const values: string[] = [];
+        values.push(`${this.sectionStart}/${this.sectionIndex}`);
+        values.push(this.path);
+        values.push(`${this.precedingHeader}`);
+        const debugText = values.join(' | ');
+        return ` [${debugText}]`;
     }
 
     /**
