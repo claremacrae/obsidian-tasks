@@ -417,9 +417,14 @@ export class Task {
             // checkbox (un)checked. Obsidian would write after us and overwrite our change.
             event.stopPropagation();
 
+            console.log('Case 2 or 4. In Task.toLi() click handler');
+
             // Should be re-rendered as enabled after update in file.
             checkbox.disabled = true;
             const toggledTasks = this.toggle();
+            console.log(
+                `${this.description} ${this.sectionStart}/${this.sectionIndex}  ${this.path}  ${this.precedingHeader} `,
+            );
             replaceTaskWithTasks({
                 originalTask: this,
                 newTasks: toggledTasks,

@@ -31,6 +31,9 @@ class LivePreviewExtension implements PluginValue {
         ) {
             return false;
         }
+        console.log(
+            '3. In LivePreviewExtension.handleClickEvent() click handler',
+        );
 
         const { state } = this.view;
         const position = this.view.posAtDOM(target as Node);
