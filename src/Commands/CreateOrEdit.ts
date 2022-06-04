@@ -48,8 +48,8 @@ const taskFromLine = ({ line, path }: { line: string; path: string }): Task => {
     const task = Task.fromLine({
         line,
         path,
-        sectionStart: 0, // We don't need this to toggle it here in the editor.
-        sectionIndex: 0, // We don't need this to toggle it here in the editor.
+        sectionStart: -1, // We don't need this to toggle it here in the editor.
+        sectionIndex: -1, // We don't need this to toggle it here in the editor.
         precedingHeader: null, // We don't need this to toggle it here in the editor.
     });
 
@@ -77,8 +77,8 @@ const taskFromLine = ({ line, path }: { line: string; path: string }): Task => {
             doneDate: null,
             recurrence: null,
             // We don't need the following fields to edit here in the editor.
-            sectionStart: 0,
-            sectionIndex: 0,
+            sectionStart: -2,
+            sectionIndex: -2,
             precedingHeader: null,
             blockLink: '',
             tags: [],
@@ -111,8 +111,8 @@ const taskFromLine = ({ line, path }: { line: string; path: string }): Task => {
         doneDate: null,
         recurrence: null,
         // We don't need the following fields to edit here in the editor.
-        sectionStart: 0,
-        sectionIndex: 0,
+        sectionStart: -3,
+        sectionIndex: -3,
         precedingHeader: null,
         tags: [],
     });
