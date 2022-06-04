@@ -38,6 +38,7 @@ class LivePreviewExtension implements PluginValue {
         const { state } = this.view;
         const position = this.view.posAtDOM(target as Node);
         const line = state.doc.lineAt(position);
+        console.log('Calling fromLine() from LivePreviewExtension.ts');
         const task = Task.fromLine({
             line: line.text,
             // None of this data is relevant here.

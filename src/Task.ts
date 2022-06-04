@@ -154,6 +154,9 @@ export class Task {
 
         this.recurrence = recurrence;
         this.blockLink = blockLink;
+        console.log(
+            `Task Constructor: ${this.description} ${this.sectionStart}/${this.sectionIndex}`,
+        );
     }
 
     /**
@@ -181,6 +184,9 @@ export class Task {
         sectionIndex: number;
         precedingHeader: string | null;
     }): Task | null {
+        console.log(
+            `fromLine constructing from ${line}  ${sectionStart}/${sectionIndex}`,
+        );
         // Check the line to see if it is a markdown task.
         const regexMatch = line.match(Task.taskRegex);
         if (regexMatch === null) {

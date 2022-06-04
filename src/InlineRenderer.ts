@@ -72,9 +72,11 @@ export class InlineRenderer {
             if (line === undefined) {
                 // If we end up outside the range of the file,
                 // we cannot process this task.
+                console.log('In InlineRenderer - line is undefined');
                 continue;
             }
 
+            console.log('Calling fromLine() from InlineRenderer.ts');
             const task = Task.fromLine({
                 line,
                 path,

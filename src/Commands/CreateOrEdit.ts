@@ -44,6 +44,7 @@ export const createOrEdit = (
 };
 
 const taskFromLine = ({ line, path }: { line: string; path: string }): Task => {
+    console.log('Calling fromLine() from CreateOrEdit.ts');
     const task = Task.fromLine({
         line,
         path,
