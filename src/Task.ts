@@ -431,10 +431,18 @@ export class Task {
             console.log(
                 `${this.description} ${this.sectionStart}/${this.sectionIndex}  ${this.path}  ${this.precedingHeader} `,
             );
-            replaceTaskWithTasks({
-                originalTask: this,
-                newTasks: toggledTasks,
-            });
+            if (this.sectionStart >= 0 && this.sectionIndex >= 0) {
+                replaceTaskWithTasks({
+                    originalTask: this,
+                    newTasks: toggledTasks,
+                });
+            } else {
+                console.error(
+                    `Cannot update ${this.toFileLineString()} as location is invalid: ${
+                        this.sectionStart
+                    }/${this.sectionIndex}`,
+                );
+            }
         });
 
         li.prepend(checkbox);
