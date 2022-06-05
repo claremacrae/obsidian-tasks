@@ -17,6 +17,8 @@ export class InlineRenderer {
         context: MarkdownPostProcessorContext,
     ): Promise<void> {
         const { globalFilter } = getSettings();
+
+        // Get all the rendered tasks, stored in renderedElements
         const renderedElements = element
             .findAll('.task-list-item')
             .filter((taskItem) => {
@@ -48,6 +50,9 @@ export class InlineRenderer {
             });
         if (renderedElements.length === 0) {
             // No tasks means nothing to do.
+            console.log(
+                'InlineRenderer._markdownPostProcessor() no tasks - nothing to do',
+            );
             return;
         }
 
@@ -56,6 +61,9 @@ export class InlineRenderer {
 
         if (section === null) {
             // We cannot process the render without the section info.
+            console.log(
+                'InlineRenderer._markdownPostProcessor() no section info - nothing to do',
+            );
             return;
         }
 
