@@ -4,6 +4,7 @@
     import { Recurrence } from '../Recurrence';
     import { getSettings } from '../Settings';
     import { Priority, Status, Task } from '../Task';
+    import DateAbbreviations from '../DateAbbreviations';
 
     export let task: Task;
     export let onSubmit: (updatedTasks: Task[]) => void | Promise<void>;
@@ -35,59 +36,54 @@
     let parsedRecurrence: string = '';
     let parsedDone: string = '';
 
-    $: {
-        if (!editableTask.startDate) {
-            parsedStartDate = '<i>no start date</>';
-        } else {
-            const parsed = chrono.parseDate(
-                editableTask.startDate,
-                new Date(),
-                {
-                    forwardDate: true,
-                },
-            );
-            if (parsed !== null) {
-                parsedStartDate = window.moment(parsed).format('YYYY-MM-DD');
-            } else {
-                parsedStartDate = '<i>invalid start date</i>';
-            }
+    // 'weekend' abbreviation ommitted due to lack of space.
+    let datePlaceholder = "Try 'Monday' or 'tomorrow', or [td|tm|yd|tw|nw|we] then space.";
+
+    function doAutocomplete(date: string): string {
+        for (let [key, val] of Object.entries(DateAbbreviations)) {
+            date = date.replace(RegExp(`\\b${key}\\s`), val);
         }
+        return date;
+    }
+
+    function parseDate(
+        type: 'start' | 'scheduled' | 'due' | 'done',
+        date: string,
+        forwardDate: Date | undefined = undefined,
+    ): string {
+        if (!date) {
+            return `<i>no ${type} date</i>`;
+        }
+        const parsed = chrono.parseDate(date, forwardDate, {
+            forwardDate: forwardDate != undefined,
+        });
+        if (parsed !== null) {
+            return window.moment(parsed).format('YYYY-MM-DD');
+        }
+        return `<i>invalid ${type} date</i>`;
     }
 
     $: {
-        if (!editableTask.scheduledDate) {
-            parsedScheduledDate = '<i>no scheduled date</>';
-        } else {
-            const parsed = chrono.parseDate(
-                editableTask.scheduledDate,
-                new Date(),
-                {
-                    forwardDate: true,
-                },
-            );
-            if (parsed !== null) {
-                parsedScheduledDate = window
-                    .moment(parsed)
-                    .format('YYYY-MM-DD');
-            } else {
-                parsedScheduledDate = '<i>invalid scheduled date</i>';
-            }
-        }
+        editableTask.startDate = doAutocomplete(editableTask.startDate);
+        parsedStartDate = parseDate(
+            'start',
+            editableTask.startDate,
+            new Date(),
+        );
     }
 
     $: {
-        if (!editableTask.dueDate) {
-            parsedDueDate = '<i>no due date</>';
-        } else {
-            const parsed = chrono.parseDate(editableTask.dueDate, new Date(), {
-                forwardDate: true,
-            });
-            if (parsed !== null) {
-                parsedDueDate = window.moment(parsed).format('YYYY-MM-DD');
-            } else {
-                parsedDueDate = '<i>invalid due date</i>';
-            }
-        }
+        editableTask.scheduledDate = doAutocomplete(editableTask.scheduledDate);
+        parsedScheduledDate = parseDate(
+            'scheduled',
+            editableTask.scheduledDate,
+            new Date(),
+        );
+    }
+
+    $: {
+        editableTask.dueDate = doAutocomplete(editableTask.dueDate);
+        parsedDueDate = parseDate('due', editableTask.dueDate, new Date());
     }
 
     $: {
@@ -106,16 +102,7 @@
     }
 
     $: {
-        if (!editableTask.doneDate) {
-            parsedDone = '<i>no done date</i>';
-        } else {
-            const parsed = chrono.parseDate(editableTask.doneDate);
-            if (parsed !== null) {
-                parsedDone = window.moment(parsed).format('YYYY-MM-DD');
-            } else {
-                parsedDone = '<i>invalid done date</i>';
-            }
-        }
+        parsedDone = parseDate('done', editableTask.doneDate);
     }
 
     onMount(() => {
@@ -281,7 +268,7 @@
                     bind:value={editableTask.dueDate}
                     id="due"
                     type="text"
-                    placeholder="Try 'Monday' or 'tomorrow'."
+                    placeholder={datePlaceholder}
                 />
                 <code>📅 {@html parsedDueDate}</code>
             </div>
@@ -291,7 +278,7 @@
                     bind:value={editableTask.scheduledDate}
                     id="scheduled"
                     type="text"
-                    placeholder="Try 'Monday' or 'tomorrow'."
+                    placeholder={datePlaceholder}
                 />
                 <code>⏳ {@html parsedScheduledDate}</code>
             </div>
@@ -301,7 +288,7 @@
                     bind:value={editableTask.startDate}
                     id="start"
                     type="text"
-                    placeholder="Try 'Monday' or 'tomorrow'."
+                    placeholder={datePlaceholder}
                 />
                 <code>🛫 {@html parsedStartDate}</code>
             </div>

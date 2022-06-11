@@ -22,6 +22,8 @@ parent: Queries
 
 ## Basics
 
+> Introduced in Tasks 1.6.0.
+
 By default, Tasks displays tasks in a single list.
 
 To divide the matching tasks up with headings, you can add `group by` lines to the query.
@@ -47,6 +49,16 @@ Task properties:
 1. `status` (Done or Todo, which is capitalized for visibility in the headings)
     * Note that the Done group is displayed before the Todo group,
       which differs from the Sorting ordering of this property.
+1. `start`
+   * The start date of the task, including the week-day, or `No start date`.
+1. `scheduled`
+    * The scheduled date of the task, including the week-day, or `No scheduled date`.
+1. `due`
+    * The due date of the task, including the week-day, or `No due date`.
+1. `done`
+    * The done date of the task, including the week-day, or `No done date`.
+
+> `start`, `scheduled`, `due` and `done` grouping options were introduced in Tasks 1.7.0.
 
 ### Multiple groups
 
