@@ -40,6 +40,8 @@ File locations:
 1. `filename` (the filename of the file that contains the task, without the `.md` extension)
     * Note that tasks from different notes with the same file name will be grouped together in the same group.
 
+> `root` grouping option was introduced in Tasks 1.9.0.
+
 File contents:
 
 1. `backlink` (the text that would be shown in the task's backlink, combining the task's file name and heading, but with no link added)
@@ -58,8 +60,14 @@ Task properties:
     * The due date of the task, including the week-day, or `No due date`.
 1. `done`
     * The done date of the task, including the week-day, or `No done date`.
+1. `recurring`
+    * Whether the task is recurring: either `Recurring` or `Not Recurring`.
+1. `recurrence`
+    * The recurrence rule of the task, for example `every week on Sunday`, or `None` for non-recurring tasks.
 
 > `start`, `scheduled`, `due` and `done` grouping options were introduced in Tasks 1.7.0.
+>
+> `recurring` and `recurrence` grouping options were introduced in Tasks 1.9.0.
 
 ### Multiple groups
 
