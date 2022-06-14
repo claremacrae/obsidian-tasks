@@ -342,6 +342,37 @@ describe('Group names', () => {
         },
 
         // -----------------------------------------------------------
+        // group by recurrence
+        {
+            groupBy: 'recurrence',
+            taskLine: '- [ ] a',
+            expectedGroupName: 'None',
+        },
+        {
+            groupBy: 'recurrence',
+            taskLine: '- [ ] a 🔁 every Sunday',
+            expectedGroupName: 'every week on Sunday',
+        },
+        {
+            groupBy: 'recurrence',
+            taskLine: '- [ ] a 🔁 every 6 months on the 2nd Wednesday',
+            expectedGroupName: 'every 6 months on the 2nd Wednesday',
+        },
+
+        // -----------------------------------------------------------
+        // group by recurring
+        {
+            groupBy: 'recurring',
+            taskLine: '- [ ] a',
+            expectedGroupName: 'Not Recurring',
+        },
+        {
+            groupBy: 'recurring',
+            taskLine: '- [ ] a 🔁 every Sunday',
+            expectedGroupName: 'Recurring',
+        },
+
+        // -----------------------------------------------------------
         // group by priority
         {
             groupBy: 'priority',

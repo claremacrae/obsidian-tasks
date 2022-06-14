@@ -75,6 +75,8 @@ export class Group {
         heading: Group.groupByHeading,
         path: Group.groupByPath,
         priority: Group.groupByPriority,
+        recurrence: Group.groupByRecurrence,
+        recurring: Group.groupByRecurring,
         referenceDateField: Group.groupByHappensField,
         root: Group.groupByRoot,
         scheduled: Group.groupByScheduledDate,
@@ -90,6 +92,22 @@ export class Group {
 
     private static groupByPriority(task: Task): string {
         return `Priority ${task.priority}`;
+    }
+
+    private static groupByRecurrence(task: Task): string {
+        if (task.recurrence !== null) {
+            return task.recurrence!.toText();
+        } else {
+            return 'None';
+        }
+    }
+
+    private static groupByRecurring(task: Task): string {
+        if (task.recurrence !== null) {
+            return 'Recurring';
+        } else {
+            return 'Not Recurring';
+        }
     }
 
     private static groupByStartDate(task: Task): string {
