@@ -400,6 +400,28 @@ describe('Group names', () => {
         },
 
         // -----------------------------------------------------------
+        // group by root
+        {
+            groupBy: 'root',
+            taskLine: '- [ ] a',
+            expectedGroupName: 'a/',
+            path: 'a/b/c.md',
+        },
+        {
+            groupBy: 'root',
+            taskLine: '- [ ] a',
+            expectedGroupName: 'a/',
+            path: 'a\\b\\c.md',
+        },
+        {
+            // file in root of vault:
+            groupBy: 'root',
+            taskLine: '- [ ] a',
+            expectedGroupName: '/',
+            path: 'a.md',
+        },
+
+        // -----------------------------------------------------------
         // group by scheduled
         {
             groupBy: 'scheduled',

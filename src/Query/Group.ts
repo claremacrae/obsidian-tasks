@@ -76,6 +76,7 @@ export class Group {
         path: Group.groupByPath,
         priority: Group.groupByPriority,
         referenceDateField: Group.groupByHappensField,
+        root: Group.groupByRoot,
         scheduled: Group.groupByScheduledDate,
         start: Group.groupByStartDate,
         status: Group.groupByStatus,
@@ -179,6 +180,15 @@ export class Group {
             return 'Unknown Location';
         }
         return filename;
+    }
+
+    private static groupByRoot(task: Task): string {
+        const path = task.path.replace('\\', '/');
+        const separatorIndex = path.indexOf('/');
+        if (separatorIndex == -1) {
+            return '/';
+        }
+        return path.substring(0, separatorIndex + 1);
     }
 
     private static groupByBacklink(task: Task): string {
