@@ -154,7 +154,7 @@ export class Task {
 
         this.recurrence = recurrence;
         this.blockLink = blockLink;
-        console.log(
+        console.debug(
             `Task Constructor: ${this.description} ${this.sectionStart}/${this.sectionIndex}`,
         );
     }
@@ -184,7 +184,7 @@ export class Task {
         sectionIndex: number;
         precedingHeader: string | null;
     }): Task | null {
-        console.log(
+        console.debug(
             `fromLine constructing from ${line}  ${sectionStart}/${sectionIndex}`,
         );
         // Check the line to see if it is a markdown task.
@@ -423,12 +423,12 @@ export class Task {
             // checkbox (un)checked. Obsidian would write after us and overwrite our change.
             event.stopPropagation();
 
-            console.log('Case 2 or 4. In Task.toLi() click handler');
+            console.debug('Case 2 or 4. In Task.toLi() click handler');
 
             // Should be re-rendered as enabled after update in file.
             checkbox.disabled = true;
             const toggledTasks = this.toggle();
-            console.log(
+            console.debug(
                 `${this.description} ${this.sectionStart}/${this.sectionIndex}  ${this.path}  ${this.precedingHeader} `,
             );
             if (this.sectionStart >= 0 && this.sectionIndex >= 0) {

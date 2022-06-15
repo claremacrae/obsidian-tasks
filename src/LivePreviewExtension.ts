@@ -11,7 +11,7 @@ function getToggledTaskAsText(
     task: Task,
     lineBreak: string,
 ) {
-    console.log(`Toggling ${initialLine}`);
+    console.debug(`Toggling ${initialLine}`);
     const toggled = task.toggle();
     return toggled.map((task) => task.toFileLineString()).join(lineBreak);
 }
@@ -41,14 +41,14 @@ class LivePreviewExtension implements PluginValue {
         ) {
             return false;
         }
-        console.log(
+        console.debug(
             '3. In LivePreviewExtension.handleClickEvent() click handler',
         );
 
         const { state } = this.view;
         const position = this.view.posAtDOM(target as Node);
         const line = state.doc.lineAt(position);
-        console.log('Calling fromLine() from LivePreviewExtension.ts');
+        console.debug('Calling fromLine() from LivePreviewExtension.ts');
         const initialLine = line.text;
         const task = Task.fromLine({
             line: initialLine,

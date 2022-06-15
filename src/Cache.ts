@@ -249,7 +249,7 @@ export class Cache {
                 }
 
                 const line = fileLines[listItem.position.start.line];
-                console.log('Calling fromLine() from Cache.ts');
+                console.debug('Calling fromLine() from Cache.ts');
                 const task = Task.fromLine({
                     line,
                     path: file.path,

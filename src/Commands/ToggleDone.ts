@@ -21,7 +21,7 @@ export const toggleDone = (checking: boolean, editor: Editor, view: View) => {
         return;
     }
 
-    console.log('Case 1. In ToggleDone toggleDone()');
+    console.debug('Case 1. In ToggleDone toggleDone()');
 
     // We are certain we are in the editor due to the check above.
     const path = view.file?.path;
