@@ -6,6 +6,19 @@ export const newLivePreviewExtension = () => {
     return ViewPlugin.fromClass(LivePreviewExtension);
 };
 
+function getToggledTaskAsText(
+    initialLine: string,
+    task: Task,
+    lineBreak: string,
+) {
+    console.log(`Toggling ${initialLine}`);
+    const toggled = task.toggle();
+    const toggledString = toggled
+        .map((task) => task.toFileLineString())
+        .join(lineBreak);
+    return toggledString;
+}
+
 class LivePreviewExtension implements PluginValue {
     private readonly view: EditorView;
 
@@ -39,8 +52,9 @@ class LivePreviewExtension implements PluginValue {
         const position = this.view.posAtDOM(target as Node);
         const line = state.doc.lineAt(position);
         console.log('Calling fromLine() from LivePreviewExtension.ts');
+        const initialLine = line.text;
         const task = Task.fromLine({
-            line: line.text,
+            line: initialLine,
             // None of this data is relevant here.
             // The task is created, toggled, and written back to the CM6 document,
             // replacing the old task in-place.
@@ -59,10 +73,12 @@ class LivePreviewExtension implements PluginValue {
         event.preventDefault();
 
         // Clicked on a task's checkbox. Toggle the task and set it.
-        const toggled = task.toggle();
-        const toggledString = toggled
-            .map((task) => task.toFileLineString())
-            .join(state.lineBreak);
+        const lineBreak = state.lineBreak;
+        const toggledString = getToggledTaskAsText(
+            initialLine,
+            task,
+            lineBreak,
+        );
 
         // Creates a CodeMirror transaction in order to update the document.
         const transaction = state.update({
