@@ -16,6 +16,13 @@ export class InlineRenderer {
         element: HTMLElement,
         context: MarkdownPostProcessorContext,
     ): Promise<void> {
+        console.debug(
+            '  ',
+            context.sourcePath,
+            'In InlineRenderer - entered',
+            element.dir,
+        );
+
         const { globalFilter } = getSettings();
 
         // Get all the rendered tasks, stored in renderedElements
@@ -25,6 +32,7 @@ export class InlineRenderer {
                 const linesText = taskItem.textContent?.split('\n');
                 if (linesText === undefined) {
                     console.debug(
+                        '    ',
                         context.sourcePath,
                         'In InlineRenderer - linesText is undefined',
                     );
@@ -55,6 +63,7 @@ export class InlineRenderer {
         if (renderedElements.length === 0) {
             // No tasks means nothing to do.
             console.debug(
+                '    ',
                 context.sourcePath,
                 'InlineRenderer._markdownPostProcessor() no tasks - nothing to do',
             );
@@ -62,6 +71,7 @@ export class InlineRenderer {
         }
 
         console.debug(
+            '    ',
             context.sourcePath,
             `InlineRenderer._markdownPostProcessor() found ${renderedElements.length} tasks`,
         );
@@ -72,6 +82,7 @@ export class InlineRenderer {
         if (section === null) {
             // We cannot process the render without the section info.
             console.debug(
+                '    ',
                 context.sourcePath,
                 'InlineRenderer._markdownPostProcessor() no section info - nothing to do',
             );
@@ -92,13 +103,14 @@ export class InlineRenderer {
                 // If we end up outside the range of the file,
                 // we cannot process this task.
                 console.debug(
+                    '    ',
                     context.sourcePath,
                     'In InlineRenderer - line is undefined',
                 );
                 continue;
             }
 
-            console.debug('Calling fromLine() from InlineRenderer.ts');
+            console.debug('    ', 'Calling fromLine() from InlineRenderer.ts');
             const task = Task.fromLine({
                 line,
                 path,
@@ -126,6 +138,7 @@ export class InlineRenderer {
                 // If there is a mis-match in the numbers, we still process
                 // what we can.
                 console.debug(
+                    '    ',
                     context.sourcePath,
                     'InlineRenderer._markdownPostProcessor() task === undefined || renderedElement === undefined',
                 );
