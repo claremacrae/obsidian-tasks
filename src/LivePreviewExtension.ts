@@ -13,10 +13,7 @@ function getToggledTaskAsText(
 ) {
     console.log(`Toggling ${initialLine}`);
     const toggled = task.toggle();
-    const toggledString = toggled
-        .map((task) => task.toFileLineString())
-        .join(lineBreak);
-    return toggledString;
+    return toggled.map((task) => task.toFileLineString()).join(lineBreak);
 }
 
 class LivePreviewExtension implements PluginValue {
