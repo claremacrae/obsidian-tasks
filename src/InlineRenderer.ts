@@ -24,6 +24,10 @@ export class InlineRenderer {
             .filter((taskItem) => {
                 const linesText = taskItem.textContent?.split('\n');
                 if (linesText === undefined) {
+                    console.log(
+                        context.sourcePath,
+                        'In InlineRenderer - linesText is undefined',
+                    );
                     return false;
                 }
 
@@ -51,10 +55,16 @@ export class InlineRenderer {
         if (renderedElements.length === 0) {
             // No tasks means nothing to do.
             console.log(
+                context.sourcePath,
                 'InlineRenderer._markdownPostProcessor() no tasks - nothing to do',
             );
             return;
         }
+
+        console.log(
+            context.sourcePath,
+            `InlineRenderer._markdownPostProcessor() found ${renderedElements.length} tasks`,
+        );
 
         const path = context.sourcePath;
         const section = context.getSectionInfo(element);
@@ -62,6 +72,7 @@ export class InlineRenderer {
         if (section === null) {
             // We cannot process the render without the section info.
             console.log(
+                context.sourcePath,
                 'InlineRenderer._markdownPostProcessor() no section info - nothing to do',
             );
             return;
@@ -80,7 +91,10 @@ export class InlineRenderer {
             if (line === undefined) {
                 // If we end up outside the range of the file,
                 // we cannot process this task.
-                console.log('In InlineRenderer - line is undefined');
+                console.log(
+                    context.sourcePath,
+                    'In InlineRenderer - line is undefined',
+                );
                 continue;
             }
 
@@ -111,6 +125,10 @@ export class InlineRenderer {
                 // Assuming match of tasks in file and render preview.
                 // If there is a mis-match in the numbers, we still process
                 // what we can.
+                console.log(
+                    context.sourcePath,
+                    'InlineRenderer._markdownPostProcessor() task === undefined || renderedElement === undefined',
+                );
                 continue;
             }
 
