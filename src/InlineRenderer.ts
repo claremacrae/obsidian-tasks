@@ -64,7 +64,6 @@ export class InlineRenderer {
             // No tasks means nothing to do.
             console.debug(
                 '    ',
-                context.sourcePath,
                 'InlineRenderer._markdownPostProcessor() no tasks - nothing to do',
             );
             return;
@@ -72,7 +71,6 @@ export class InlineRenderer {
 
         console.debug(
             '    ',
-            context.sourcePath,
             `InlineRenderer._markdownPostProcessor() found ${renderedElements.length} tasks`,
         );
 
@@ -83,7 +81,6 @@ export class InlineRenderer {
             // We cannot process the render without the section info.
             console.debug(
                 '    ',
-                context.sourcePath,
                 'InlineRenderer._markdownPostProcessor() no section info - nothing to do',
             );
             return;
@@ -102,11 +99,7 @@ export class InlineRenderer {
             if (line === undefined) {
                 // If we end up outside the range of the file,
                 // we cannot process this task.
-                console.debug(
-                    '    ',
-                    context.sourcePath,
-                    'In InlineRenderer - line is undefined',
-                );
+                console.debug('    ', 'In InlineRenderer - line is undefined');
                 continue;
             }
 
@@ -139,7 +132,6 @@ export class InlineRenderer {
                 // what we can.
                 console.debug(
                     '    ',
-                    context.sourcePath,
                     'InlineRenderer._markdownPostProcessor() task === undefined || renderedElement === undefined',
                 );
                 continue;
