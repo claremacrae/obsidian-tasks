@@ -40,7 +40,7 @@ File locations:
 1. `filename` (the filename of the file that contains the task, without the `.md` extension)
     * Note that tasks from different notes with the same file name will be grouped together in the same group.
 
-> `root` grouping option was introduced in Tasks 1.9.0.
+> `root` grouping option was introduced in Tasks X.Y.Z.
 
 File contents:
 
@@ -67,7 +67,7 @@ Task properties:
 
 > `start`, `scheduled`, `due` and `done` grouping options were introduced in Tasks 1.7.0.
 >
-> `recurring` and `recurrence` grouping options were introduced in Tasks 1.9.0.
+> `recurring` and `recurrence` grouping options were introduced in Tasks X.Y.Z.
 
 ### Multiple groups
 
