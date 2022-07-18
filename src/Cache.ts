@@ -1,11 +1,6 @@
-import {
-    EventRef,
-    MetadataCache,
-    SectionCache,
-    TAbstractFile,
-    TFile,
-    Vault,
-} from 'obsidian';
+import { MetadataCache, TAbstractFile, TFile, Vault } from 'obsidian';
+import type { CachedMetadata, ListItemCache } from 'obsidian';
+import type { EventRef, SectionCache } from 'obsidian';
 import { Mutex } from 'async-mutex';
 
 import { Task } from './Task';
@@ -213,14 +208,53 @@ export class Cache {
             listItems = [];
         }
 
+        const oldTasks = this.tasks.filter((task: Task) => {
+            return task.path === file.path;
+        });
+
         const fileContent = await this.vault.cachedRead(file);
-        const fileLines = fileContent.split('\n');
+        const newTasks = Cache.getTasksFromFileContent(
+            fileContent,
+            listItems,
+            fileCache,
+            file,
+        );
+
+        // If there are no changes in any of the tasks, there's
+        // nothing to do, so just return.
+        if (Task.tasksListsIdentical(oldTasks, newTasks)) {
+            if (this.getState() == State.Warm) {
+                console.debug(`Tasks unchanged in ${file.path}`);
+            }
+            return;
+        }
+
+        if (this.getState() == State.Warm) {
+            console.debug(
+                `At least one task, its line number or its heading has changed in ${file.path}: triggering a refresh of all active Tasks blocks in Live Preview and Reading mode views.`,
+            );
+        }
 
         // Remove all tasks from this file from the cache before
         // adding the ones that are currently in the file.
         this.tasks = this.tasks.filter((task: Task) => {
             return task.path !== file.path;
         });
+
+        this.tasks.push(...newTasks);
+
+        // All updated, inform our subscribers.
+        this.notifySubscribers();
+    }
+
+    private static getTasksFromFileContent(
+        fileContent: string,
+        listItems: ListItemCache[],
+        fileCache: CachedMetadata,
+        file: TFile,
+    ): Task[] {
+        const tasks: Task[] = [];
+        const fileLines = fileContent.split('\n');
 
         // We want to store section information with every task so
         // that we can use that when we post process the markdown
@@ -236,7 +270,7 @@ export class Cache {
                 ) {
                     // We went past the current section (or this is the first task).
                     // Find the section that is relevant for this task and the following of the same section.
-                    currentSection = this.getSection({
+                    currentSection = Cache.getSection({
                         lineNumberTask: listItem.position.start.line,
                         sections: fileCache.sections,
                     });
@@ -254,7 +288,7 @@ export class Cache {
                     path: file.path,
                     sectionStart: currentSection.position.start.line,
                     sectionIndex,
-                    precedingHeader: this.getPrecedingHeader({
+                    precedingHeader: Cache.getPrecedingHeader({
                         lineNumberTask: listItem.position.start.line,
                         sections: fileCache.sections,
                         fileLines,
@@ -263,16 +297,15 @@ export class Cache {
 
                 if (task !== null) {
                     sectionIndex++;
-                    this.tasks.push(task);
+                    tasks.push(task);
                 }
             }
         }
 
-        // All updated, inform our subscribers.
-        this.notifySubscribers();
+        return tasks;
     }
 
-    private getSection({
+    private static getSection({
         lineNumberTask,
         sections,
     }: {
@@ -296,7 +329,7 @@ export class Cache {
         return null;
     }
 
-    private getPrecedingHeader({
+    private static getPrecedingHeader({
         lineNumberTask,
         sections,
         fileLines,

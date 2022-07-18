@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Examples
-nav_order: 7
+nav_order: 8
 parent: Queries
 has_toc: false
 ---
@@ -23,6 +23,16 @@ All open tasks that are due within the next two weeks, but are not overdue (due 
     not done
     due after yesterday
     due before in two weeks
+    ```
+
+---
+
+All open tasks that are due within the next two weeks, and either have the #inbox tag, or are in an Inbox note:
+
+    ```tasks
+    not done
+    (due after yesterday) AND (due before in two weeks)
+    (tags include #inbox) OR (path includes Inbox)
     ```
 
 ---
