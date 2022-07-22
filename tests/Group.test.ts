@@ -342,6 +342,29 @@ describe('Group names', () => {
         },
 
         // -----------------------------------------------------------
+        // group by priority
+        {
+            groupBy: 'priority',
+            taskLine: '- [ ] a ⏫',
+            expectedGroupName: 'Priority 1',
+        },
+        {
+            groupBy: 'priority',
+            taskLine: '- [ ] a 🔼',
+            expectedGroupName: 'Priority 2',
+        },
+        {
+            groupBy: 'priority',
+            taskLine: '- [ ] a',
+            expectedGroupName: 'Priority 3',
+        },
+        {
+            groupBy: 'priority',
+            taskLine: '- [ ] a 🔽',
+            expectedGroupName: 'Priority 4',
+        },
+
+        // -----------------------------------------------------------
         // group by recurrence
         {
             groupBy: 'recurrence',
@@ -370,29 +393,6 @@ describe('Group names', () => {
             groupBy: 'recurring',
             taskLine: '- [ ] a 🔁 every Sunday',
             expectedGroupName: 'Recurring',
-        },
-
-        // -----------------------------------------------------------
-        // group by priority
-        {
-            groupBy: 'priority',
-            taskLine: '- [ ] a ⏫',
-            expectedGroupName: 'Priority 1',
-        },
-        {
-            groupBy: 'priority',
-            taskLine: '- [ ] a 🔼',
-            expectedGroupName: 'Priority 2',
-        },
-        {
-            groupBy: 'priority',
-            taskLine: '- [ ] a',
-            expectedGroupName: 'Priority 3',
-        },
-        {
-            groupBy: 'priority',
-            taskLine: '- [ ] a 🔽',
-            expectedGroupName: 'Priority 4',
         },
 
         // -----------------------------------------------------------
