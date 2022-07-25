@@ -1,12 +1,13 @@
-import type { Moment } from 'moment';
 import type { Grouping, GroupingProperty } from '../Query';
 import type { Task } from '../Task';
+import { Priority } from '../Task';
 import { TaskGroups } from './TaskGroups';
+import { HappensDateField } from './Filter/HappensDateField';
 
 /**
  * A naming function, that takes a Task object and returns the corresponding group property name
  */
-type Grouper = (task: Task) => string;
+type Grouper = (task: Task) => string[];
 
 /**
  * Implementation of the 'group by' instruction.
@@ -24,49 +25,20 @@ export class Group {
     }
 
     /**
-     * Return the Grouper functions matching the 'group by' lines
-     * @param grouping 0 or more Grouping values, one per 'group by' line
-     */
-    public static getGroupersForAllQueryGroupings(grouping: Grouping[]) {
-        const groupers: Grouper[] = [];
-        for (const { property } of grouping) {
-            const comparator = Group.groupers[property];
-            groupers.push(comparator);
-        }
-        return groupers;
-    }
-
-    /**
-     * Return the group names for a single task
-     * @param groupers The Grouper functions indicating the requested types of group
-     * @param task
-     */
-    public static getGroupNamesForTask(groupers: Grouper[], task: Task) {
-        const groupNames = [];
-        for (const grouper of groupers) {
-            const groupName = grouper(task);
-            groupNames.push(groupName);
-        }
-        return groupNames;
-    }
-
-    /**
-     * Return a single property name for a single task.
-     * A convenience method for unit tests.
+     * Return the properties of a single task for the passed grouping property
      * @param property
      * @param task
      */
-    public static getGroupNameForTask(
+    public static getGroupNamesForTask(
         property: GroupingProperty,
         task: Task,
-    ): string {
+    ): string[] {
         const grouper = Group.groupers[property];
         return grouper(task);
     }
 
     private static groupers: Record<GroupingProperty, Grouper> = {
         backlink: Group.groupByBacklink,
-        context: Group.groupByContext,
         done: Group.groupByDoneDate,
         due: Group.groupByDueDate,
         filename: Group.groupByFileName,
@@ -77,106 +49,86 @@ export class Group {
         priority: Group.groupByPriority,
         recurrence: Group.groupByRecurrence,
         recurring: Group.groupByRecurring,
-        referenceDateField: Group.groupByHappensField,
         root: Group.groupByRoot,
         scheduled: Group.groupByScheduledDate,
         start: Group.groupByStartDate,
         status: Group.groupByStatus,
-        urgency: Group.groupByUrgency,
+        tags: Group.groupByTags,
     };
 
-    private static groupByUrgency(task: Task): string {
-        const value = task.urgency.toFixed(2);
-        return `Urgency ${value}`;
+    private static groupByPriority(task: Task): string[] {
+        let priorityName = 'ERROR';
+        switch (task.priority) {
+            case Priority.High:
+                priorityName = 'High';
+                break;
+            case Priority.Medium:
+                priorityName = 'Medium';
+                break;
+            case Priority.None:
+                priorityName = 'None';
+                break;
+            case Priority.Low:
+                priorityName = 'Low';
+                break;
+        }
+        return [`Priority ${task.priority}: ${priorityName}`];
     }
 
-    private static groupByPriority(task: Task): string {
-        return `Priority ${task.priority}`;
-    }
-
-    private static groupByRecurrence(task: Task): string {
+    private static groupByRecurrence(task: Task): string[] {
         if (task.recurrence !== null) {
-            return task.recurrence!.toText();
+            return [task.recurrence!.toText()];
         } else {
-            return 'None';
+            return ['None'];
         }
     }
 
-    private static groupByRecurring(task: Task): string {
+    private static groupByRecurring(task: Task): string[] {
         if (task.recurrence !== null) {
-            return 'Recurring';
+            return ['Recurring'];
         } else {
-            return 'Not Recurring';
+            return ['Not Recurring'];
         }
     }
 
-    private static groupByStartDate(task: Task): string {
-        return Group.groupByDate(task.startDate, 'start');
+    private static groupByStartDate(task: Task): string[] {
+        return [Group.stringFromDate(task.startDate, 'start')];
     }
 
-    private static groupByScheduledDate(task: Task): string {
-        return Group.groupByDate(task.scheduledDate, 'scheduled');
+    private static groupByScheduledDate(task: Task): string[] {
+        return [Group.stringFromDate(task.scheduledDate, 'scheduled')];
     }
 
-    private static groupByDueDate(task: Task): string {
-        return Group.groupByDate(task.dueDate, 'due');
+    private static groupByDueDate(task: Task): string[] {
+        return [Group.stringFromDate(task.dueDate, 'due')];
     }
 
-    private static groupByDoneDate(task: Task): string {
-        return Group.groupByDate(task.doneDate, 'done');
+    private static groupByDoneDate(task: Task): string[] {
+        return [Group.stringFromDate(task.doneDate, 'done')];
     }
 
-    private static groupByHappensDate(task: Task): string {
-        const referenceDate = Group.getReferenceDate(task);
-        const referenceName = Group.getReferenceDateField(task);
-        if (referenceDate) {
-            return Group.groupByDate(referenceDate, referenceName);
-        }
-        return 'No happens date';
+    private static groupByHappensDate(task: Task): string[] {
+        const earliestDateIfAny = new HappensDateField().earliestDate(task);
+        return [Group.stringFromDate(earliestDateIfAny, 'happens')];
     }
 
-    private static groupByHappensField(task: Task): string {
-        return Group.getReferenceDateField(task);
-    }
-
-    private static getReferenceDateField(task: Task) {
-        let referenceName = 'None';
-        if (task.dueDate != null) {
-            referenceName = 'Due';
-        } else if (task.scheduledDate != null) {
-            referenceName = 'Scheduled';
-        } else if (task.startDate != null) {
-            referenceName = 'Start';
-        }
-        return referenceName;
-    }
-
-    private static getReferenceDate(task: Task) {
-        let referenceDate: Moment | null = null;
-        if (task.dueDate != null) {
-            referenceDate = task.dueDate;
-        } else if (task.scheduledDate != null) {
-            referenceDate = task.scheduledDate;
-        } else if (task.startDate != null) {
-            referenceDate = task.startDate;
-        }
-        return referenceDate;
-    }
-
-    private static groupByDate(date: moment.Moment | null, field: string) {
+    private static stringFromDate(
+        date: moment.Moment | null,
+        field: string,
+    ): string {
         if (date === null) {
             return 'No ' + field + ' date';
         }
         return date.format(Group.groupDateFormat);
     }
 
-    private static groupByPath(task: Task): string {
+    private static groupByPath(task: Task): string[] {
         // Does this need to be made stricter?
         // Is there a better way of getting the file name?
-        return task.path.replace('.md', '');
+        return [task.path.replace('.md', '')];
     }
 
-    private static groupByFolder(task: Task): string {
+    private static groupByFolder(task: Task): string[] {
         const path = task.path;
         const fileNameWithExtension = task.filename + '.md';
         const folder = path.substring(
@@ -184,60 +136,57 @@ export class Group {
             path.lastIndexOf(fileNameWithExtension),
         );
         if (folder === '') {
-            return '/';
+            return ['/'];
         }
-        return folder;
+        return [folder];
     }
 
-    private static groupByFileName(task: Task): string {
+    private static groupByFileName(task: Task): string[] {
         // Note current limitation: Tasks from different notes with the
         // same name will be grouped together, even though they are in
         // different files and their links will look different.
         const filename = task.filename;
         if (filename === null) {
-            return 'Unknown Location';
+            return ['Unknown Location'];
         }
-        return filename;
+        return [filename];
     }
 
-    private static groupByRoot(task: Task): string {
-        const path = task.path.replace('\\', '/');
+    private static groupByRoot(task: Task): string[] {
+        const path = task.path.replace(/\\/g, '/');
         const separatorIndex = path.indexOf('/');
         if (separatorIndex == -1) {
-            return '/';
+            return ['/'];
         }
-        return path.substring(0, separatorIndex + 1);
+        return [path.substring(0, separatorIndex + 1)];
     }
 
-    private static groupByBacklink(task: Task): string {
+    private static groupByBacklink(task: Task): string[] {
         const linkText = task.getLinkText({ isFilenameUnique: true });
         if (linkText === null) {
-            return 'Unknown Location';
+            return ['Unknown Location'];
         }
-        return linkText;
+        return [linkText];
     }
 
-    private static groupByStatus(task: Task): string {
-        return task.status;
+    private static groupByStatus(task: Task): string[] {
+        return [task.status];
     }
 
-    private static groupByHeading(task: Task): string {
+    private static groupByHeading(task: Task): string[] {
         if (
             task.precedingHeader === null ||
             task.precedingHeader.length === 0
         ) {
-            return '(No heading)';
+            return ['(No heading)'];
         }
-        return task.precedingHeader;
+        return [task.precedingHeader];
     }
 
-    private static groupByContext(task: Task): string {
-        const description = task.description;
-        const contextRegexp = /.* #context\/([^ ]+)/;
-        const contextMatch = description.match(contextRegexp);
-        if (contextMatch !== null) {
-            return contextMatch[1];
+    private static groupByTags(task: Task): string[] {
+        if (task.tags.length == 0) {
+            return ['(No tags)'];
         }
-        return 'No context';
+        return task.tags;
     }
 }
