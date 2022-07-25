@@ -169,7 +169,7 @@ describe('Query parsing', () => {
             'group by path',
             'group by priority',
             'group by recurrence',
-            'group by recurrence',
+            'group by referenceDateField',
             'group by root',
             'group by scheduled',
             'group by start',
