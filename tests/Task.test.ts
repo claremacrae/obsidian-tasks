@@ -4,6 +4,7 @@
 import moment from 'moment';
 import { Priority, Status, Task } from '../src/Task';
 import { getSettings, updateSettings } from '../src/config/Settings';
+import { LayoutOptions } from '../src/LayoutOptions';
 import { fromLine } from './TestHelpers';
 import { TaskBuilder } from './TestingTools/TaskBuilder';
 import { RecurrenceBuilder } from './TestingTools/RecurrenceBuilder';
@@ -431,6 +432,23 @@ describe('to string', () => {
         const expectedLine =
             '- [x] this is a done task #tagone #journal/daily 📅 2021-09-12 ✅ 2021-06-20';
         expect(task.toFileLineString()).toStrictEqual(expectedLine);
+    });
+
+    it('removes the tags if hidden by layout', () => {
+        // Arrange
+        const line =
+            '- [x] this is a done task #tagone #CAPITALTAG #tag-with-numbers_hyphen_underscore 📅 2021-09-12 ✅ 2021-06-20 #journal/daily';
+        const layout = new LayoutOptions();
+        layout.hideTags = true;
+
+        // Act
+        const task: Task = fromLine({
+            line,
+        }) as Task;
+
+        // Assert
+        const expectedLine = 'this is a done task 📅 2021-09-12 ✅ 2021-06-20';
+        expect(task.toString(layout)).toStrictEqual(expectedLine);
     });
 });
 

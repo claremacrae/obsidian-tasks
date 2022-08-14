@@ -199,6 +199,7 @@ describe('Query parsing', () => {
             'hide recurrence rule',
             'hide scheduled date',
             'hide start date',
+            'hide tags',
             'hide task count',
             'limit 42',
             'limit to 42 tasks',
