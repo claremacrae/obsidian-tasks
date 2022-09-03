@@ -3,7 +3,7 @@
  */
 import moment from 'moment';
 import { Priority, Status, Task } from '../src/Task';
-import { getSettings, updateSettings } from '../src/config/Settings';
+import { resetSettings, updateSettings } from '../src/config/Settings';
 import { LayoutOptions } from '../src/LayoutOptions';
 import { fromLine } from './TestHelpers';
 import { TaskBuilder } from './TestingTools/TaskBuilder';
@@ -38,7 +38,6 @@ describe('parsing', () => {
 
     it('returns null when task does not have global filter', () => {
         // Arrange
-        const originalSettings = getSettings();
         updateSettings({ globalFilter: '#task' });
         const line = '- [x] this is a done task 🗓 2021-09-12 ✅ 2021-06-20';
 
@@ -51,7 +50,7 @@ describe('parsing', () => {
         expect(task).toBeNull();
 
         // Cleanup
-        updateSettings(originalSettings);
+        resetSettings();
     });
 
     it('allows signifier emojis as part of the description', () => {
@@ -370,7 +369,6 @@ describe('parsing tags', () => {
             globalFilter,
         }) => {
             // Arrange
-            const originalSettings = getSettings();
             if (globalFilter != '') {
                 updateSettings({ globalFilter: globalFilter });
             }
@@ -385,7 +383,7 @@ describe('parsing tags', () => {
 
             // Cleanup
             if (globalFilter != '') {
-                updateSettings(originalSettings);
+                resetSettings();
             }
         },
     );
@@ -1080,7 +1078,6 @@ describe('check removal of the global filter', () => {
         'should parse "$markdownTask" and extract "$expectedDescription"',
         ({ globalFilter, markdownTask, expectedDescription }) => {
             // Arrange
-            const originalSettings = getSettings();
             if (globalFilter != '') {
                 updateSettings({ globalFilter: globalFilter });
             }
@@ -1096,7 +1093,7 @@ describe('check removal of the global filter', () => {
 
             // Cleanup
             if (globalFilter != '') {
-                updateSettings(originalSettings);
+                resetSettings();
             }
         },
     );
@@ -1196,7 +1193,6 @@ describe('check removal of the global filter exhaustively', () => {
         'should parse global filter "$globalFilter" edge cases correctly',
         ({ globalFilter }) => {
             // Arrange
-            const originalSettings = getSettings();
             if (globalFilter != '') {
                 updateSettings({ globalFilter: globalFilter });
             }
@@ -1221,7 +1217,7 @@ describe('check removal of the global filter exhaustively', () => {
 
             // Cleanup
             if (globalFilter != '') {
-                updateSettings(originalSettings);
+                resetSettings();
             }
         },
     );
