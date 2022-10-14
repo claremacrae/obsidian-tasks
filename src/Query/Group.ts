@@ -49,6 +49,7 @@ export class Group {
         priority: Group.groupByPriority,
         recurrence: Group.groupByRecurrence,
         recurring: Group.groupByRecurring,
+        referenceDateField: Group.getReferenceDateField,
         root: Group.groupByRoot,
         scheduled: Group.groupByScheduledDate,
         start: Group.groupByStartDate,
@@ -122,6 +123,18 @@ export class Group {
             return 'No ' + field + ' date';
         }
         return date.format(Group.groupDateFormat);
+    }
+
+    private static getReferenceDateField(task: Task): string[] {
+        let referenceName = 'None';
+        if (task.dueDate != null) {
+            referenceName = 'Due';
+        } else if (task.scheduledDate != null) {
+            referenceName = 'Scheduled';
+        } else if (task.startDate != null) {
+            referenceName = 'Start';
+        }
+        return [referenceName];
     }
 
     private static groupByPath(task: Task): string[] {
