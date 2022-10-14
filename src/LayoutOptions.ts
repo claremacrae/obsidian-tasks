@@ -7,6 +7,7 @@ export class LayoutOptions {
     hideDoneDate: boolean = false;
     hideDueDate: boolean = false;
     hideRecurrenceRule: boolean = false;
+    hideTags: boolean = false;
     hideEditButton: boolean = false;
     hideUrgency: boolean = true;
     shortMode: boolean = false;

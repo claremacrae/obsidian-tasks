@@ -520,6 +520,16 @@ export class Task {
         layoutOptions = layoutOptions ?? new LayoutOptions();
         let taskString = this.description;
 
+        if (layoutOptions.hideTags) {
+            // This is a very naive implementation.
+            // It will break some URLs
+            taskString = taskString.replace(/ #[-_A-Z0-9/]+/gi, '');
+
+            // This is a workaround specific to my vault, until 'group by'
+            // can choose to only use specified tags:
+            taskString = taskString.replace(/ task_tags\/[-_A-Z0-9]+/gi, '');
+        }
+
         if (!layoutOptions.hidePriority) {
             let priority: string = '';
 
