@@ -1,5 +1,41 @@
 # Contribution Guidelines Obsidian Tasks
 
+<!-- toc -->
+## Contents
+
+- [Thank you](#thank-you)
+- [Updating documentation](#updating-documentation)
+  - [Documentation and branches](#documentation-and-branches)
+  - [Linking to other pages in the docs](#linking-to-other-pages-in-the-docs)
+  - [Screenshots in documentation](#screenshots-in-documentation)
+  - [Version numbers in documentation](#version-numbers-in-documentation)
+  - [How the documentation is generated](#how-the-documentation-is-generated)
+- [Updating code](#updating-code)
+- [Local setup and workflow for changes to code and tests](#local-setup-and-workflow-for-changes-to-code-and-tests)
+  - [Setting up build environment](#setting-up-build-environment)
+  - [Local development](#local-development)
+- [Maintaining the tests](#maintaining-the-tests)
+  - [Writing Tests for New or Refactored Code](#writing-tests-for-new-or-refactored-code)
+    - [Think of it as testing user-visible features](#think-of-it-as-testing-user-visible-features)
+    - [Location of code](#location-of-code)
+    - [Then start writing tests](#then-start-writing-tests)
+  - [Snapshot Tests](#snapshot-tests)
+  - [Jest and the WebStorm IDE](#jest-and-the-webstorm-ide)
+  - [Test Coverage](#test-coverage)
+- [Dependency Upgrades and Repository Maintenance](#dependency-upgrades-and-repository-maintenance)
+  - [Overview of dependencies and `package.json`](#overview-of-dependencies-and-packagejson)
+  - [Thought-Process for Deciding Whether a Dependency Needs Manual Testing](#thought-process-for-deciding-whether-a-dependency-needs-manual-testing)
+  - [Dependency Groups](#dependency-groups)
+  - [Notes and Special Cases](#notes-and-special-cases)
+- [FAQs](#faqs)
+  - [How does Tasks handle status changes?](#how-does-tasks-handle-status-changes)
+  - [How do I test a GitHub build of the Tasks plugin?](#how-do-i-test-a-github-build-of-the-tasks-plugin)
+  - [How do I smoke-test the Tasks plugin?](#how-do-i-smoke-test-the-tasks-plugin)
+  - [How do I make a release?](#how-do-i-make-a-release)
+  - [How do I update the Tables of Contents in CONTRIBUTING and similar?](#how-do-i-update-the-tables-of-contents-in-contributing-and-similar)<!-- endToc -->
+
+## Thank you
+
 Thank you for wanting to contribute to Obsidian Tasks!
 Every contribution is much appreciated!
 
@@ -17,6 +53,55 @@ When you create a PR, it should merge into the `gh-pages` branch as well.
 If you document an unreleased feature, you should update the documentation on `main` instead. Ideally together with the related code changes.
 If this is confusing, don't worry.
 We will help you make this right once you opened the PR.
+
+### Linking to other pages in the docs
+
+Linking to other pages in the documentation is non-obvious and a bit tedious.
+
+Here are some examples to copy-and-paste:
+
+To pages:
+
+```text
+[‘Create or edit Task’ Modal]({{ site.baseurl }}{% link getting-started/create-or-edit-task.md %})
+[Dates]({{ site.baseurl }}{% link getting-started/dates.md %})
+[Filters]({{ site.baseurl }}{% link queries/filters.md %})
+[Global Filter]({{ site.baseurl }}{% link getting-started/global-filter.md %})
+[Priorities]({{ site.baseurl }}{% link getting-started/priority.md %})
+[Recurring Tasks]({{ site.baseurl }}{% link getting-started/recurring-tasks.md %})
+```
+
+To sections:
+
+```text
+[due]({{ site.baseurl }}{% link getting-started/dates.md %}#-due)
+[scheduled]({{ site.baseurl }}{% link getting-started/dates.md %}#-scheduled)
+[start]({{ site.baseurl }}{% link getting-started/dates.md %}#-start)
+```
+
+### Screenshots in documentation
+
+For readability and accessibility, images should be created:
+
+- Set the Obsidian window size to be around 1500 pixels wide about between 700 and 1100 pixels high.
+- Using the Default Obsidian theme.
+- In the Light colour scheme.
+- With a large font size.
+- With as little blank or dead space as possible around the area of focus.
+
+Saving images:
+
+- Save them in .PNG format.
+- Save them in [resources/screenshots/](https://github.com/obsidian-tasks-group/obsidian-tasks/blob/main/resources/screenshots/).
+
+When embedding an image inside a documentation page, please link to the file on the `gh-pages` branch, so that the documentation and README refer to the most recent release, and include a brief summary underneath.
+
+For example, to embed the `acme.png` file in the documentation:
+
+```text
+![ACME Tasks](https://github.com/obsidian-tasks-group/obsidian-tasks/raw/gh-pages/resources/screenshots/acme.png)
+The `ACME` note has some tasks.
+```
 
 ### Version numbers in documentation
 
@@ -50,7 +135,7 @@ This is _not_ mandatory, but it helps improve the process and reduce unnecessary
 Once you want to propose your changes, create a PR and we'll have a look when we have time.
 Discussion will take place inside the PR.
 
-If you can, please add/update tests and documentation where appropriate.
+If you can, please add/update [tests](#maintaining-the-tests) and [documentation](#updating-documentation) where appropriate.
 
 ## Local setup and workflow for changes to code and tests
 
@@ -211,7 +296,7 @@ Look at the `package.json` entry for a package and search for which files import
   - `svelte-check` (but not other svelte things, which are used in the build system)
   - anything with `prettier`
   - `lefthook`
-  - anything with `jest` in it (but see [the note below on Dependency Groups](dependency-groups) for details).
+  - anything with `jest` in it (but see [the note below on Dependency Groups](#dependency-groups) for details).
 - For anything else, where and how is it being used? If it's only in tests, or only used by developers, no need to smoke test.
 
 ### Dependency Groups
@@ -299,3 +384,19 @@ Follow the steps in `resources/sample_vaults/Tasks-Demo/Manual Testing/Smoke Tes
     - r/ObsidianMD on Reddit
     - Obsidian Forum Share & Showcase section
     - etc.
+
+### How do I update the Tables of Contents in CONTRIBUTING and similar?
+
+These are markdown files written for contributors, and intended to be viewed on GitHub.
+To make it easy to see their structure, they have a machine-generated Table of Contents ("ToC").
+
+The ToCs will eventually be automated automatically via GitHub Actions, but for now, the following needs to be done in order to update them:
+
+1. Install [MarkdownSnippets](https://github.com/SimonCropp/MarkdownSnippets), also known as `mdsnippets`
+2. Run:
+
+```bash
+mdsnippets && yarn run lint:markdown && git add --renormalize .
+```
+
+The background to this is in [PR #1248](https://github.com/obsidian-tasks-group/obsidian-tasks/pull/1248).
