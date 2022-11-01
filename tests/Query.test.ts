@@ -269,6 +269,7 @@ describe('Query', () => {
                     blockLink: '',
                     tags: [],
                     originalMarkdown: '',
+                    scheduledDateIsInferred: false,
                 }),
                 new Task({
                     status: Status.TODO,
@@ -288,6 +289,7 @@ describe('Query', () => {
                     blockLink: '',
                     tags: [],
                     originalMarkdown: '',
+                    scheduledDateIsInferred: false,
                 }),
             ];
             const input = 'path includes ab/c d';
