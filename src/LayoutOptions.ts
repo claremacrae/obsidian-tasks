@@ -11,4 +11,5 @@ export class LayoutOptions {
     hideEditButton: boolean = false;
     hideUrgency: boolean = true;
     shortMode: boolean = false;
+    explainQuery: boolean = false;
 }

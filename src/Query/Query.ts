@@ -1,6 +1,7 @@
 import { LayoutOptions } from '../LayoutOptions';
 import type { Task } from '../Task';
 import type { IQuery } from '../IQuery';
+import { getSettings } from '../Config/Settings';
 import { Sort } from './Sort';
 import type { TaskGroups } from './TaskGroups';
 import { parseFilter } from './FilterParser';
@@ -65,6 +66,7 @@ export class Query implements IQuery {
     private readonly hideOptionsRegexp =
         /^(hide|show) (task count|backlink|priority|start date|scheduled date|done date|due date|recurrence rule|tags|edit button|urgency)/;
     private readonly shortModeRegexp = /^short/;
+    private readonly explainQueryRegexp = /^explain/;
 
     private readonly limitRegexp = /^limit (to )?(\d+)( tasks?)?/;
 
@@ -81,6 +83,9 @@ export class Query implements IQuery {
                         break;
                     case this.shortModeRegexp.test(line):
                         this._layoutOptions.shortMode = true;
+                        break;
+                    case this.explainQueryRegexp.test(line):
+                        this._layoutOptions.explainQuery = true;
                         break;
                     case this.limitRegexp.test(line):
                         this.parseLimit({ line });
@@ -103,6 +108,39 @@ export class Query implements IQuery {
                         this._error = `do not understand query: ${line}`;
                 }
             });
+    }
+
+    public explainQuery(): string {
+        return 'Explanation of this Tasks code block query:\n\n' + this.explainQueryWithoutIntroduction();
+    }
+
+    public explainQueryWithoutIntroduction(): string {
+        let result = '';
+
+        const { globalFilter } = getSettings();
+        if (globalFilter.length !== 0) {
+            result += `Only tasks containing the global filter '${globalFilter}'.\n\n`;
+        }
+
+        const numberOfFilters = this.filters.length;
+        if (numberOfFilters === 0) {
+            result += 'No filters supplied. All tasks will match the query.';
+        } else {
+            for (let i = 0; i < numberOfFilters; i++) {
+                if (i > 0) result += '\n';
+                result += this.filters[i].explainFilterIndented('');
+            }
+        }
+
+        if (this._limit !== undefined) {
+            result += `\n\nAt most ${this._limit} task`;
+            if (this._limit !== 1) {
+                result += 's';
+            }
+            result += '.\n';
+        }
+
+        return result;
     }
 
     public get limit(): number | undefined {
