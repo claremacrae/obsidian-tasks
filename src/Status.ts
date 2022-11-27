@@ -11,12 +11,13 @@ export enum Status {
 
 export function characterToEnum(statusString: string) {
     let status: Status;
-    switch (statusString) {
-        case ' ':
-            status = Status.TODO;
-            break;
-        default:
-            status = Status.DONE;
+    // / = Half Done
+    // d = Doing
+    // ! = Important
+    if (' /d!'.includes(statusString)) {
+        status = Status.TODO;
+    } else {
+        status = Status.DONE;
     }
     return status;
 }

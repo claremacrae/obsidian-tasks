@@ -262,6 +262,7 @@ export class Task {
         const indentation = regexMatch[1];
 
         // Get the status of the task, only todo and done supported.
+        // As an experiment, some status from SlRvb's Alternate Checkboxes are treated as todo.
         // But custom ones are retained and displayed as-is.
         const statusString = regexMatch[2];
         const status = characterToEnum(statusString);
