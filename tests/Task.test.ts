@@ -3,7 +3,8 @@
  */
 import moment from 'moment';
 import type { Moment } from 'moment';
-import { Priority, Status, Task } from '../src/Task';
+import { Status } from '../src/Status';
+import { Priority, Task } from '../src/Task';
 import { resetSettings, updateSettings } from '../src/Config/Settings';
 import { LayoutOptions } from '../src/LayoutOptions';
 import { fromLine } from './TestHelpers';

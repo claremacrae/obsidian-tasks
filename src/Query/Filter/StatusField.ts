@@ -1,4 +1,5 @@
-import { Status, Task } from '../../Task';
+import { Status } from '../../Status';
+import type { Task } from '../../Task';
 import { FilterInstructionsBasedField } from './FilterInstructionsBasedField';
 
 export class StatusField extends FilterInstructionsBasedField {

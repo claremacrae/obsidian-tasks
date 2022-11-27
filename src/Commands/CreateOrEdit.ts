@@ -1,6 +1,7 @@
 import { App, Editor, MarkdownView, View } from 'obsidian';
+import { Status } from '../Status';
 import { TaskModal } from '../TaskModal';
-import { Priority, Status, Task, TaskRegularExpressions } from '../Task';
+import { Priority, Task, TaskRegularExpressions } from '../Task';
 import { DateFallback } from '../DateFallback';
 
 export const createOrEdit = (checking: boolean, editor: Editor, view: View, app: App) => {
