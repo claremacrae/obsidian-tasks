@@ -4,7 +4,7 @@ import { replaceTaskWithTasks } from './File';
 import { LayoutOptions } from './LayoutOptions';
 import { Recurrence } from './Recurrence';
 import { getSettings } from './Config/Settings';
-import { Status } from './Status';
+import { Status, characterToEnum } from './Status';
 import { Urgency } from './Urgency';
 import { Sort } from './Query/Sort';
 import { DateFallback } from './DateFallback';
@@ -264,14 +264,7 @@ export class Task {
         // Get the status of the task, only todo and done supported.
         // But custom ones are retained and displayed as-is.
         const statusString = regexMatch[2];
-        let status: Status;
-        switch (statusString) {
-            case ' ':
-                status = Status.TODO;
-                break;
-            default:
-                status = Status.DONE;
-        }
+        const status = characterToEnum(statusString);
 
         // Match for block link and remove if found. Always expected to be
         // at the end of the line.
