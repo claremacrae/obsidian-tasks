@@ -478,7 +478,7 @@ export class Task {
         const checkbox = li.createEl('input');
         checkbox.addClass('task-list-item-checkbox');
         checkbox.type = 'checkbox';
-        if (this.status !== Status.TODO) {
+        if (this.originalStatusCharacter !== ' ') {
             checkbox.checked = true;
             li.addClass('is-checked');
         }
