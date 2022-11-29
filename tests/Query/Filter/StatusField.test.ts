@@ -1,12 +1,22 @@
-import { StatusField } from '../../../src/Query/Filter/StatusField';
 import type { FilterOrErrorMessage } from '../../../src/Query/Filter/Filter';
+import { StatusField } from '../../../src/Query/Filter/StatusField';
 import { Status } from '../../../src/Status';
-import { TaskBuilder } from '../../TestingTools/TaskBuilder';
 import { testFilter } from '../../TestingTools/FilterTestHelpers';
+import { TaskBuilder } from '../../TestingTools/TaskBuilder';
 
 function testStatusFilter(filter: FilterOrErrorMessage, status: Status, expected: boolean) {
     const builder = new TaskBuilder();
     testFilter(filter, builder.status(status), expected);
+}
+
+function testStatusCharacterFilter(
+    matchingStatusCharacter: string,
+    nonMatchingStatusCharacter: string,
+    instruction: string,
+) {
+    const filter = new StatusField().createFilterOrErrorMessage(instruction);
+    testFilter(filter, new TaskBuilder().originalStatusCharacter(matchingStatusCharacter), true);
+    testFilter(filter, new TaskBuilder().originalStatusCharacter(nonMatchingStatusCharacter), false);
 }
 
 describe('status', () => {
@@ -26,5 +36,13 @@ describe('status', () => {
         // Assert
         testStatusFilter(filter, Status.TODO, true);
         testStatusFilter(filter, Status.DONE, false);
+    });
+
+    it('status - named states', () => {
+        testStatusCharacterFilter(' ', '^', 'status is unchecked');
+        testStatusCharacterFilter('!', '^', 'status is important');
+        testStatusCharacterFilter('/', '^', 'status is half-done');
+        testStatusCharacterFilter('d', '^', 'status is doing');
+        testStatusCharacterFilter('-', '^', 'status is cancelled');
     });
 });
