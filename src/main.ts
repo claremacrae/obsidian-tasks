@@ -1,6 +1,6 @@
 import { Plugin } from 'obsidian';
 
-import { Cache } from './Cache';
+import { Cache, State } from './Cache';
 import { Commands } from './Commands';
 import { TasksEvents } from './TasksEvents';
 import { initializeFile } from './File';
@@ -10,6 +10,8 @@ import { QueryRenderer } from './QueryRenderer';
 import { getSettings, updateSettings } from './Config/Settings';
 import { SettingsTab } from './Config/SettingsTab';
 import { EditorSuggestor } from './Suggestor/EditorSuggestorPopup';
+import { Query } from './Query/Query';
+import type { TaskGroups } from './Query/TaskGroups';
 
 export default class TasksPlugin extends Plugin {
     private cache: Cache | undefined;
@@ -53,5 +55,13 @@ export default class TasksPlugin extends Plugin {
 
     async saveSettings() {
         await this.saveData(getSettings());
+    }
+
+    public search(source: string): TaskGroups | undefined {
+        const query = new Query({ source });
+        if (this.cache?.getState() !== State.Warm) {
+            return undefined;
+        }
+        return query.applyQueryToTasks(this.cache?.getTasks());
     }
 }
