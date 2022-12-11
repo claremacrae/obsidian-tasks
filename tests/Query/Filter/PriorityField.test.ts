@@ -3,9 +3,10 @@ import { TaskBuilder } from '../../TestingTools/TaskBuilder';
 import { testFilter } from '../../TestingTools/FilterTestHelpers';
 import { PriorityField } from '../../../src/Query/Filter/PriorityField';
 
-import { toHaveExplanation } from '../../CustomMatchers/CustomMatchersForFilters';
+import { toBeValid, toHaveExplanation } from '../../CustomMatchers/CustomMatchersForFilters';
 
 expect.extend({
+    toBeValid,
     toHaveExplanation,
 });
 
@@ -67,10 +68,42 @@ describe('priority below', () => {
     });
 });
 
+describe('priority is not', () => {
+    it.each([
+        ['low', Priority.Low, false],
+        ['low', Priority.None, true],
+        ['none', Priority.None, false],
+        ['none', Priority.Medium, true],
+        ['medium', Priority.None, true],
+        ['medium', Priority.Medium, false],
+        ['high', Priority.Medium, true],
+        ['high', Priority.High, false],
+    ])('priority is not %s (with %s)', (filter: string, input: Priority, expected: boolean) => {
+        // TODO Use name of input priority instead of
+        testTaskFilterForTaskWithPriority(`priority is not ${filter}`, input, expected);
+    });
+});
+
+describe('priority parses various whitespace combinations', () => {
+    // Not tested here: Query strips off trailing whitespace, so spaces at start
+    // and end of the instruction do not need testing
+    it.each(['priority  is low', 'priority is  low', 'priority is  above low', 'priority\tis\tabove\tlow'])(
+        'white space variation: "%s"',
+        (filter: string) => {
+            const filterOrError = new PriorityField().createFilterOrErrorMessage(filter);
+            expect(filterOrError).toBeValid();
+        },
+    );
+});
+
 describe('priority error cases', () => {
-    it('priority is something', () => {
+    it.each([
+        'priority is no-such-priority',
+        'priority is abovemedium',
+        'priority is above medium-with-nonsense-at-end',
+    ])('filter: "%s"', (input: string) => {
         const field = new PriorityField();
-        const filter = field.createFilterOrErrorMessage('priority is no-such-priority');
+        const filter = field.createFilterOrErrorMessage(input);
         expect(filter.filterFunction).toBeUndefined();
         expect(filter.error).toBe('do not understand query filter (priority)');
     });

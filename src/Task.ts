@@ -52,8 +52,8 @@ export class TaskRegularExpressions {
     // Matches indentation before a list marker (including > for potentially nested blockquotes or Obsidian callouts)
     public static readonly indentationRegex = /^([\s\t>]*)/;
 
-    // Matches (but does not save) - or * list markers.
-    public static readonly listMarkerRegex = /[-*]/;
+    // Matches - or * list markers, or numbered list markers (eg 1.)
+    public static readonly listMarkerRegex = /([-*]|[0-9]+\.)/;
 
     // Matches a checkbox and saves the status character inside
     public static readonly checkboxRegex = /\[(.)\]/u;
@@ -63,6 +63,7 @@ export class TaskRegularExpressions {
 
     // Main regex for parsing a line. It matches the following:
     // - Indentation
+    // - List marker
     // - Status character
     // - Rest of task after checkbox markdown
     public static readonly taskRegex = new RegExp(
@@ -87,7 +88,7 @@ export class TaskRegularExpressions {
 
     // Used with "Toggle Done" command to detect a list item that can get a checkbox added to it.
     public static readonly listItemRegex = new RegExp(
-        TaskRegularExpressions.indentationRegex.source + '(' + TaskRegularExpressions.listMarkerRegex.source + ')',
+        TaskRegularExpressions.indentationRegex.source + TaskRegularExpressions.listMarkerRegex.source,
     );
 
     // Match on block link at end.
@@ -126,6 +127,7 @@ export class Task {
     public readonly description: string;
     public readonly path: string;
     public readonly indentation: string;
+    public readonly listMarker: string;
     /** Line number where the section starts that contains this task. */
     public readonly sectionStart: number;
     /** The index of the nth task in its section. */
@@ -165,6 +167,7 @@ export class Task {
         description,
         path,
         indentation,
+        listMarker,
         sectionStart,
         sectionIndex,
         originalStatusCharacter,
@@ -184,6 +187,7 @@ export class Task {
         description: string;
         path: string;
         indentation: string;
+        listMarker: string;
         sectionStart: number;
         sectionIndex: number;
         originalStatusCharacter: string;
@@ -203,6 +207,7 @@ export class Task {
         this.description = description;
         this.path = path;
         this.indentation = indentation;
+        this.listMarker = listMarker;
         this.sectionStart = sectionStart;
         this.sectionIndex = sectionIndex;
         this.originalStatusCharacter = originalStatusCharacter;
@@ -258,8 +263,8 @@ export class Task {
             return null;
         }
 
-        // match[3] includes the whole body of the task after the brackets.
-        const body = regexMatch[3].trim();
+        // match[4] includes the whole body of the task after the brackets.
+        const body = regexMatch[4].trim();
 
         // return if task does not have the global filter. Do this before processing
         // rest of match to improve performance.
@@ -270,10 +275,11 @@ export class Task {
 
         let description = body;
         const indentation = regexMatch[1];
+        const listMarker = regexMatch[2];
 
         // Get the status of the task, only todo and done supported.
         // But custom ones are retained and displayed as-is.
-        const statusString = regexMatch[2];
+        const statusString = regexMatch[3];
         let status: Status;
         switch (statusString) {
             case ' ':
@@ -421,6 +427,7 @@ export class Task {
             description,
             path,
             indentation,
+            listMarker,
             sectionStart,
             sectionIndex,
             originalStatusCharacter: statusString,
@@ -610,7 +617,7 @@ export class Task {
      * @memberof Task
      */
     public toFileLineString(): string {
-        return `${this.indentation}- [${this.originalStatusCharacter}] ${this.toString()}`;
+        return `${this.indentation}${this.listMarker} [${this.originalStatusCharacter}] ${this.toString()}`;
     }
 
     /**
@@ -763,6 +770,7 @@ export class Task {
             'description',
             'path',
             'indentation',
+            'listMarker',
             'sectionStart',
             'sectionIndex',
             'originalStatusCharacter',

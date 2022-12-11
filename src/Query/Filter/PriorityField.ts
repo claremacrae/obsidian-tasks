@@ -4,13 +4,17 @@ import { Field } from './Field';
 import { Filter, FilterOrErrorMessage } from './Filter';
 
 export class PriorityField extends Field {
-    private static readonly priorityRegexp = /^priority (is )?(above|below)? ?(low|none|medium|high)/;
+    // The trick in the following to manage whitespace with optional values
+    // is to capture them in Nested Capture Groups, like this:
+    //  (leading-white-space-in-outer-capture-group(values-to-use-are-in-inner-capture-group))
+    // The capture groups are numbered in the order of their opening brackets, from left to right.
+    private static readonly priorityRegexp = /^priority(\s+is)?(\s+(above|below|not))?(\s+(low|none|medium|high))$/;
 
     createFilterOrErrorMessage(line: string): FilterOrErrorMessage {
         const result = new FilterOrErrorMessage(line);
         const priorityMatch = Field.getMatch(this.filterRegExp(), line);
         if (priorityMatch !== null) {
-            const filterPriorityString = priorityMatch[3];
+            const filterPriorityString = priorityMatch[5];
             let filterPriority: Priority | null = null;
 
             switch (filterPriorityString) {
@@ -35,13 +39,19 @@ export class PriorityField extends Field {
 
             let explanation = line;
             let filter;
-            if (priorityMatch[2] === 'above') {
-                filter = (task: Task) => (task.priority ? task.priority.localeCompare(filterPriority!) < 0 : false);
-            } else if (priorityMatch[2] === 'below') {
-                filter = (task: Task) => (task.priority ? task.priority.localeCompare(filterPriority!) > 0 : false);
-            } else {
-                filter = (task: Task) => (task.priority ? task.priority === filterPriority : false);
-                explanation = `${this.fieldName()} is ${filterPriorityString}`;
+            switch (priorityMatch[3]) {
+                case 'above':
+                    filter = (task: Task) => task.priority.localeCompare(filterPriority!) < 0;
+                    break;
+                case 'below':
+                    filter = (task: Task) => task.priority.localeCompare(filterPriority!) > 0;
+                    break;
+                case 'not':
+                    filter = (task: Task) => task.priority !== filterPriority;
+                    break;
+                default:
+                    filter = (task: Task) => task.priority === filterPriority;
+                    explanation = `${this.fieldName()} is ${filterPriorityString}`;
             }
 
             result.filter = new Filter(line, filter, new Explanation(explanation));
