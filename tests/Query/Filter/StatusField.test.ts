@@ -1,8 +1,8 @@
-import type { FilterOrErrorMessage } from '../../../src/Query/Filter/Filter';
 import { StatusField } from '../../../src/Query/Filter/StatusField';
-import { Status } from '../../../src/Status';
-import { testFilter } from '../../TestingTools/FilterTestHelpers';
+import type { FilterOrErrorMessage } from '../../../src/Query/Filter/Filter';
 import { TaskBuilder } from '../../TestingTools/TaskBuilder';
+import { testFilter } from '../../TestingTools/FilterTestHelpers';
+import { Status } from '../../../src/Status';
 
 function testStatusFilter(filter: FilterOrErrorMessage, status: Status, expected: boolean) {
     const builder = new TaskBuilder();
