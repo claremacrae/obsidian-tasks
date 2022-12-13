@@ -9,16 +9,6 @@ function testStatusFilter(filter: FilterOrErrorMessage, status: Status, expected
     testFilter(filter, builder.status(status), expected);
 }
 
-function testStatusCharacterFilter(
-    matchingStatusCharacter: string,
-    nonMatchingStatusCharacter: string,
-    instruction: string,
-) {
-    const filter = new StatusField().createFilterOrErrorMessage(instruction);
-    testFilter(filter, new TaskBuilder().originalStatusCharacter(matchingStatusCharacter), true);
-    testFilter(filter, new TaskBuilder().originalStatusCharacter(nonMatchingStatusCharacter), false);
-}
-
 describe('status', () => {
     it('done', () => {
         // Arrange
@@ -36,13 +26,5 @@ describe('status', () => {
         // Assert
         testStatusFilter(filter, Status.TODO, true);
         testStatusFilter(filter, Status.DONE, false);
-    });
-
-    it('status - named states', () => {
-        testStatusCharacterFilter(' ', '^', 'status is unchecked');
-        testStatusCharacterFilter('!', '^', 'status is important');
-        testStatusCharacterFilter('/', '^', 'status is half-done');
-        testStatusCharacterFilter('d', '^', 'status is doing');
-        testStatusCharacterFilter('-', '^', 'status is cancelled');
     });
 });
