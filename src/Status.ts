@@ -27,7 +27,7 @@ export class TaskState {
     }
 
     public absenceCommand(): string {
-        return `NOT (${this.presenceCommand()})`;
+        return `state is not ${this.commandName}`;
     }
 }
 
@@ -41,7 +41,7 @@ export class TaskStates {
         new TaskState(' ', Status.TODO, 'Unchecked'),
 
         // Done - alphabetical by displayName
-        new TaskState('-', Status.DONE, 'Cancelled'),
+        new TaskState('-', Status.DONE, 'Cancelled'), // Dropped
         new TaskState('X', Status.DONE, 'Checked'),
         new TaskState('x', Status.DONE, 'Regular'),
 

@@ -21,7 +21,7 @@ describe('TaskState', () => {
         expect(state.displayName).toEqual('Important');
         expect(state.commandName).toEqual('important');
         expect(state.presenceCommand()).toEqual('state is important');
-        expect(state.absenceCommand()).toEqual('NOT (state is important)');
+        expect(state.absenceCommand()).toEqual('state is not important');
     });
 
     it('should not have any spaces in command name', () => {
