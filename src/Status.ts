@@ -14,7 +14,8 @@ export function characterToEnum(statusString: string) {
     // / = Half Done
     // d = Doing
     // ! = Important
-    if (' /d!'.includes(statusString)) {
+    // > = Forward
+    if (' /d!>'.includes(statusString)) {
         status = Status.TODO;
     } else {
         status = Status.DONE;

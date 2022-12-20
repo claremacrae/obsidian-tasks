@@ -17,6 +17,7 @@ describe('state', () => {
         testStatusCharacterFilter(' ', '^', 'state is unchecked');
         testStatusCharacterFilter('!', '^', 'state is important');
         testStatusCharacterFilter('/', '^', 'state is half-done');
+        testStatusCharacterFilter('>', '^', 'state is forwarded');
         testStatusCharacterFilter('d', '^', 'state is doing');
         testStatusCharacterFilter('-', '^', 'state is cancelled');
     });
