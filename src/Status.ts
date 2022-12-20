@@ -34,6 +34,8 @@ export class TaskStates {
 
         // Done - alphabetical by displayName
         new TaskState('-', Status.DONE, 'Cancelled'),
+        new TaskState('X', Status.DONE, 'Checked'),
+        new TaskState('x', Status.DONE, 'Regular'),
 
         // Any other status character is treated as Status.DONE
     ];

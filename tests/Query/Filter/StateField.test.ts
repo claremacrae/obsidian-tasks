@@ -20,5 +20,7 @@ describe('state', () => {
         testStatusCharacterFilter('>', '^', 'state is forwarded');
         testStatusCharacterFilter('d', '^', 'state is doing');
         testStatusCharacterFilter('-', '^', 'state is cancelled');
+        testStatusCharacterFilter('x', '^', 'state is regular');
+        testStatusCharacterFilter('X', '^', 'state is checked');
     });
 });
