@@ -1,4 +1,4 @@
-import { Status, characterToEnum } from '../src/Status';
+import { Status, TaskState, TaskStates, characterToEnum } from '../src/Status';
 
 describe('Status', () => {
     it('should convert character to status enum', () => {
@@ -10,6 +10,18 @@ describe('Status', () => {
 
         expect(characterToEnum('x')).toEqual(Status.DONE);
         expect(characterToEnum('X')).toEqual(Status.DONE);
+        expect(characterToEnum('-')).toEqual(Status.DONE); // - = Cancelled
         expect(characterToEnum('?')).toEqual(Status.DONE); // ? = Question
+    });
+
+    it('should describe a state/status', () => {
+        const state = new TaskState('!', Status.TODO, 'Important');
+        expect(state.displayName).toEqual('Important');
+        expect(state.commandName).toEqual('important');
+    });
+
+    it('should describe all available states', () => {
+        const states = TaskStates.states;
+        expect(states.length).toBeGreaterThan(5);
     });
 });

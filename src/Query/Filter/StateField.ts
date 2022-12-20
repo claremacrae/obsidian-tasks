@@ -1,3 +1,4 @@
+import { TaskStates } from '../../Status';
 import type { Task } from '../../Task';
 import { FilterInstructionsBasedField } from './FilterInstructionsBasedField';
 
@@ -5,12 +6,12 @@ export class StateField extends FilterInstructionsBasedField {
     constructor() {
         super();
 
-        this._filters.add('state is unchecked', (task: Task) => task.originalStatusCharacter === ' ');
-        this._filters.add('state is important', (task: Task) => task.originalStatusCharacter === '!');
-        this._filters.add('state is half-done', (task: Task) => task.originalStatusCharacter === '/');
-        this._filters.add('state is cancelled', (task: Task) => task.originalStatusCharacter === '-');
-        this._filters.add('state is forwarded', (task: Task) => task.originalStatusCharacter === '>');
-        this._filters.add('state is doing', (task: Task) => task.originalStatusCharacter === 'd');
+        for (const state of TaskStates.states) {
+            this._filters.add(
+                `state is ${state.commandName}`,
+                (task: Task) => task.originalStatusCharacter === state.statusCharacter,
+            );
+        }
     }
 
     public fieldName(): string {
