@@ -8,7 +8,7 @@ export class StateField extends FilterInstructionsBasedField {
 
         for (const state of TaskStates.states) {
             this._filters.add(
-                `state is ${state.commandName}`,
+                state.presenceCommand(),
                 (task: Task) => task.originalStatusCharacter === state.statusCharacter,
             );
         }

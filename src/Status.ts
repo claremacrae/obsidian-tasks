@@ -15,11 +15,19 @@ export class TaskState {
     public readonly displayName: string; // "Important" - from SlrVb's Alternative Checkboxes
     public readonly commandName: string;
 
-    constructor(statusCharacter: string, status: Status, displayName: string) {
+    public constructor(statusCharacter: string, status: Status, displayName: string) {
         this.statusCharacter = statusCharacter;
         this.status = status;
         this.displayName = displayName;
         this.commandName = this.displayName.toLowerCase().replace(/ /g, '-');
+    }
+
+    public presenceCommand(): string {
+        return `state is ${this.commandName}`;
+    }
+
+    public absenceCommand(): string {
+        return `NOT (${this.presenceCommand()})`;
     }
 }
 
