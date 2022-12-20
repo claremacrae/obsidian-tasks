@@ -19,7 +19,7 @@ export class TaskState {
         this.statusCharacter = statusCharacter;
         this.status = status;
         this.displayName = displayName;
-        this.commandName = this.displayName.toLowerCase().replace(' ', '-');
+        this.commandName = this.displayName.toLowerCase().replace(/ /g, '-');
     }
 }
 
