@@ -19,7 +19,7 @@ The tasks below should look like one of the images in the [Alternate Checkboxes 
 
 ## One of each task status
 
-- [ ] #task `` Unchecked
+- [ ] #task `space` Unchecked
 - [x] #task `x` Regular
 - [X] #task `X` Checked
 - [-] #task `-` Dropped
