@@ -19,6 +19,11 @@ The tasks below should look like one of the images in the [Alternate Checkboxes 
 
 ## One of each task status
 
+- These are grouped by whether Tasks sees them as Done or Todo.
+- Their appearance can be modified by going to the options for the Style Settings plugin.
+
+Available task states, as of version `7cb837d73d3f39e056d0be8c98539577529c0f90` of SlRvb's Checkboxes snippet:
+
 - [ ] #task `space` Unchecked
 - [x] #task `x` Regular
 - [X] #task `X` Checked
@@ -63,4 +68,6 @@ The tasks below should look like one of the images in the [Alternate Checkboxes 
 path includes SlrVb's Alternative Checkboxes
 group by filename
 short mode
+group by status
+sort by description
 ```
