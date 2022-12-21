@@ -1,5 +1,10 @@
 # Experimental - Run Tasks commands in Javascript
 
+## Actions
+
+- [ ] Add notes to [[Experimental - Run Tasks commands in Javascript]] file, explaining it.
+- [ ] And a statement that it is purely experimental.
+
 ## Tasks Query block
 
 ```dataviewjs
