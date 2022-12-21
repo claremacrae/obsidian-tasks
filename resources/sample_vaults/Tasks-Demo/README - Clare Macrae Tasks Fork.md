@@ -20,9 +20,9 @@ So you **should not rely on new features here in your own vault**.
 
 ### Run Tasks commands in Javascript
 
-See [[Custom Javascript]].
+See [[Experimental - Run Tasks commands in Javascript]].
 
-- [ ] Add notes to [[Custom Javascript]] file, explaining it.
+- [ ] Add notes to [[Experimental - Run Tasks commands in Javascript]] file, explaining it.
 - [ ] And a statement that it is purely experimental.
 
     let status: Status;
