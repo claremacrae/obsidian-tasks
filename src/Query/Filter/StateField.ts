@@ -11,6 +11,11 @@ export class StateField extends FilterInstructionsBasedField {
                 state.presenceCommand(),
                 (task: Task) => task.originalStatusCharacter === state.statusCharacter,
             );
+
+            this._filters.add(
+                state.absenceCommand(),
+                (task: Task) => task.originalStatusCharacter !== state.statusCharacter,
+            );
         }
     }
 
