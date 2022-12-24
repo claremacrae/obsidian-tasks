@@ -74,6 +74,8 @@ describe('Query parsing', () => {
         'tags do not include sometag',
         'tags include #sometag',
         'tags include sometag',
+        'state is half-done',
+        'state is not half-done',
     ];
 
     /**
