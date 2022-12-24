@@ -9,6 +9,7 @@ import { ScheduledDateField } from './Filter/ScheduledDateField';
 import { StartDateField } from './Filter/StartDateField';
 import { HappensDateField } from './Filter/HappensDateField';
 import { RecurringField } from './Filter/RecurringField';
+import { StateField } from './Filter/StateField';
 import { StatusField } from './Filter/StatusField';
 import { TagsField } from './Filter/TagsField';
 import { BooleanField } from './Filter/BooleanField';
@@ -32,6 +33,7 @@ const fieldCreators = [
     () => new ExcludeSubItemsField(),
     () => new BooleanField(),
     () => new FilenameField(),
+    () => new StateField(),
 ];
 
 export function parseFilter(filterString: string): FilterOrErrorMessage | null {
