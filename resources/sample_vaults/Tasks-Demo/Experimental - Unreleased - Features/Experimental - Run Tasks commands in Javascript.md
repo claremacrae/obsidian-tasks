@@ -2,8 +2,12 @@
 
 ## Actions
 
-- [ ] Add notes to [[Experimental - Run Tasks commands in Javascript]] file, explaining it.
-- [ ] And a statement that it is purely experimental.
+- [ ] #task Add notes to [[Experimental - Run Tasks commands in Javascript]] file, explaining it.
+- [ ] #task And a statement that it is purely experimental.
+
+## Examples when useful
+
+- If you want to count a few thousand tasks without waiting for Tasks to freeze Obsidian whilst it renders them!
 
 ## Tasks Query block
 
