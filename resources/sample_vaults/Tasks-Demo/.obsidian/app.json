@@ -7,5 +7,6 @@
   "attachmentFolderPath": "./",
   "spellcheck": true,
   "showInlineTitle": false,
-  "alwaysUpdateLinks": true
+  "alwaysUpdateLinks": true,
+  "showLineNumber": true
 }
