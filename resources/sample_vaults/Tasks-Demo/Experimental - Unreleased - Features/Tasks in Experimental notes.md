@@ -1,5 +1,7 @@
 # Tasks in Experimental notes
 
+Things I would like to do in the notes in this folder.
+
 ```dataviewjs
 function callout(text, type, title) {
     const allText = `> [!${type}] ${title}\n` + text;
@@ -13,9 +15,7 @@ path includes ${dv.current().file.folder}
 sort by due date
 sort by description
 
-group by folder
-group by filename
-group by heading
+group by backlink
 # hide task count
 
 short mode

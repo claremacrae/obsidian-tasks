@@ -22,6 +22,8 @@ const groups = tasksPlugin.search(query)
 
 dv.paragraph(`number of matches: ${groups.totalTasksCount()}`)
 
+// Note: this gives a text-only, non-interactive representation of the found tasks.
+// There is no way to complete them or edit them via this output.
 let output = '';
 for (const taskGroup of groups.groups) {
     for (const task of taskGroup.tasks) {

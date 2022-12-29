@@ -1,6 +1,8 @@
 # Experimental - Group by referenceDateField
 
-pByRegexp =
+- [ ] #task Remove referenceDateField - no user call for it, no point maintaining the code
+
+groupByRegexp =
         /^group by (backlink|done|due|filename|folder|happens|heading|path|priority|recurrence|recurring|referenceDateField
 
     private static getReferenceDateField(task: Task): string[] {
