@@ -19,6 +19,5 @@ So you **should not rely on new features here in your own vault**.
 ## Experimental Features - for Feedback
 
 - [[Experimental - Custom Task States]]
-- [[Experimental - Group by referenceDateField]]
 - [[Experimental - Run Tasks commands in Javascript]]
 - [[Experimental - Show and Hide Tags]]

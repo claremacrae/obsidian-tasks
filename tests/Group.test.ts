@@ -481,41 +481,6 @@ describe('Group names', () => {
         },
 
         // -----------------------------------------------------------
-        // group by referenceDateField - see also happens
-        {
-            groupBy: 'referenceDateField',
-            taskLine: '- [ ] a',
-            expectedGroupNames: ['None'],
-        },
-        {
-            groupBy: 'referenceDateField',
-            taskLine: '- [ ] a 📅 1970-01-01',
-            expectedGroupNames: ['Due'],
-        },
-        {
-            groupBy: 'referenceDateField',
-            taskLine: '- [ ] a ⏳ 1970-01-02',
-            expectedGroupNames: ['Scheduled'],
-        },
-        {
-            groupBy: 'referenceDateField',
-            taskLine: '- [ ] a 🛫 1970-01-03',
-            expectedGroupNames: ['Start'],
-        },
-        {
-            // Check that due is prioritised over scheduled and start
-            groupBy: 'referenceDateField',
-            taskLine: '- [ ] a 🛫 1970-01-03 ⏳ 1970-01-02 📅 1970-01-01',
-            expectedGroupNames: ['Due'],
-        },
-        {
-            // Check that scheduled is prioritised over start
-            groupBy: 'referenceDateField',
-            taskLine: '- [ ] a 🛫 1970-01-03 ⏳ 1970-01-02',
-            expectedGroupNames: ['Scheduled'],
-        },
-
-        // -----------------------------------------------------------
         // group by root
         {
             groupBy: 'root',

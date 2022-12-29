@@ -175,7 +175,6 @@ describe('Query parsing', () => {
             'group by priority',
             'group by recurrence',
             'group by recurring',
-            'group by referenceDateField',
             'group by root',
             'group by scheduled',
             'group by start',
