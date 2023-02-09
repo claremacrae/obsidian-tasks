@@ -11,6 +11,7 @@
         startDateSymbol,
         scheduledDateSymbol,
         dueDateSymbol,
+        doneDateSymbol,
     } from '../Task';
     import { doAutocomplete } from '../DateAbbreviations';
 
@@ -178,7 +179,8 @@
     }
 
     $: {
-        parsedDone = parseTypedDateForDisplay('done', editableTask.doneDate);
+        editableTask.doneDate = doAutocomplete(editableTask.doneDate);
+        parsedDone = parseTypedDateForDisplayUsingFutureDate('done', editableTask.doneDate);
     }
 
     onMount(() => {
@@ -248,6 +250,8 @@
 
         const dueDate = parseTypedDateForSaving(editableTask.dueDate);
 
+        const doneDate = parseTypedDateForSaving(editableTask.doneDate);
+
         let recurrence: Recurrence | null = null;
         if (editableTask.recurrenceRule) {
             recurrence = Recurrence.fromText({
@@ -273,6 +277,7 @@
                 parsedPriority = Priority.None;
         }
 
+        // WebStorm says this is an Argument-type-mismatch error, but it works fine.
         const updatedTask = new Task({
             ...task,
             description,
@@ -282,11 +287,7 @@
             startDate,
             scheduledDate,
             dueDate,
-            doneDate: window
-                .moment(editableTask.doneDate, 'YYYY-MM-DD')
-                .isValid()
-                ? window.moment(editableTask.doneDate, 'YYYY-MM-DD')
-                : null,
+            doneDate,
         });
 
         onSubmit([updatedTask]);
@@ -440,14 +441,21 @@
                     disabled
                 />
             </div>
+        </div>
 
-            <!-- --------------------------------------------------------------------------- -->
-            <!--  Done on  -->
-            <!-- --------------------------------------------------------------------------- -->
-            <div>
-                <span>Done on:</span>
-                <code>{@html parsedDone}</code>
-            </div>
+        <!-- --------------------------------------------------------------------------- -->
+        <!--  Done on  -->
+        <!-- --------------------------------------------------------------------------- -->
+        <div class="tasks-modal-section tasks-modal-dates">
+            <label for="done">Done</label>
+            <!-- svelte-ignore a11y-accesskey -->
+            <input
+                bind:value={editableTask.doneDate}
+                id="done"
+                type="text"
+                placeholder={datePlaceholder}
+            />
+            <code>{doneDateSymbol} {@html parsedDone}</code>
         </div>
         <div class="tasks-modal-section tasks-modal-buttons">
             <button type="submit" class="mod-cta">Apply</button>
