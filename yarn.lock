@@ -3581,10 +3581,10 @@ object.values@^1.1.5:
     define-properties "^1.1.3"
     es-abstract "^1.19.1"
 
-obsidian@0.14.6:
-  version "0.14.6"
-  resolved "https://registry.yarnpkg.com/obsidian/-/obsidian-0.14.6.tgz#010e16da3a1a7725f5e91beb9f14ec8abd00c15d"
-  integrity sha512-oXPJ8Zt10WhN19bk5l4mZuXRZbbdT1QoMgxGGJ0bB7UcJa0bozDzugS5L/QiV9gDoujpUPxDWNVahEel6r0Fpw==
+obsidian@0.14.8:
+  version "0.14.8"
+  resolved "https://registry.yarnpkg.com/obsidian/-/obsidian-0.14.8.tgz#f7c77a63bbc8082584615a83e328905c82e4926b"
+  integrity sha512-CQz+B2HSbhGVEBwZBL3rPl29ruOBmEhCbBmW7PIILnnRh6fFFvYy3kZLHVTUidzvRGZnEW/mQ7n9LXeJCp2a/Q==
   dependencies:
     "@codemirror/state" "^0.19.6"
     "@codemirror/view" "^0.19.31"
