@@ -147,8 +147,12 @@ const tryRepetitive = async ({
                     listItem = listItemCache;
                 } else {
                     console.error(
-                        `Tasks: Unable to find task in file ${originalTask.path}.\n` +
-                            `Expected task: ${originalTask.toFileLineString()}. Found task line: ${line}.`,
+                        `Tasks: Unable to find task in file:
+${originalTask.path}
+Expected task:
+${originalTask.toFileLineString()}.
+Found task line:
+${line}.`,
                     );
                     return;
                 }
