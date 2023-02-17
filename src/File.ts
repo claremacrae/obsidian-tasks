@@ -150,7 +150,7 @@ const tryRepetitive = async ({
                         `Tasks: Unable to find task in file:
 ${originalTask.path}
 Expected task:
-${originalTask.toFileLineString()}
+${originalTask.originalMarkdown}
 Found task line:
 ${line}`,
                     );
