@@ -1,4 +1,4 @@
-import { MetadataCache, TFile, Vault } from 'obsidian';
+import { MetadataCache, Notice, TFile, Vault } from 'obsidian';
 import type { ListItemCache } from 'obsidian';
 
 import { getSettings } from './Config/Settings';
@@ -146,14 +146,14 @@ const tryRepetitive = async ({
                 if (taskFromLine?.identicalTo(originalTask) === true) {
                     listItem = listItemCache;
                 } else {
-                    console.error(
-                        `Tasks: Unable to find task in file:
+                    const message = `Tasks: Unable to find task in file:
 ${originalTask.path}
 Expected task:
 ${originalTask.originalMarkdown}
 Found task line:
-${line}`,
-                    );
+${line}`;
+                    console.error(message);
+                    new Notice(message);
                     return;
                 }
                 break;
