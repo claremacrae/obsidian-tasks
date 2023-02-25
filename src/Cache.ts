@@ -239,6 +239,7 @@ export class Cache {
         fileCache: CachedMetadata,
         file: TFile,
     ): Task[] {
+        console.debug(`Cache.getTasksFromFileContent(${file.path})`);
         const tasks: Task[] = [];
         const fileLines = fileContent.split('\n');
         const linesInFile = fileLines.length;
@@ -344,6 +345,18 @@ session.
         }
     }
 
+    /**
+     * Return the {@link SectionCache} containing the line.
+     *
+     * Caution: May be of type 'heading', 'paragraph', 'list', 'blockquote', 'code'
+     *
+     * I think Tasks is only interested in 'heading' sections, but a 'list' or 'blockquote' may be returned.
+     * Could it be that some other location of code mis-interprets this number as a heading number?
+     * Or am I misinterpreting the code?
+     * @param lineNumberTask
+     * @param sections
+     * @private
+     */
     private static getSection(lineNumberTask: number, sections: SectionCache[] | undefined): SectionCache | null {
         if (sections === undefined) {
             return null;
@@ -351,6 +364,9 @@ session.
 
         for (const section of sections) {
             if (section.position.start.line <= lineNumberTask && section.position.end.line >= lineNumberTask) {
+                console.debug(
+                    `Found task on line ${lineNumberTask} in section of type ${section.type} starting at line ${section.position.start.line}`,
+                );
                 return section;
             }
         }
@@ -358,6 +374,13 @@ session.
         return null;
     }
 
+    /**
+     * Return the name of the heading before the given line, if any
+     * Rename to getPrecedingHeaderName???
+     * @param lineNumberTask
+     * @param headings
+     * @private
+     */
     private static getPrecedingHeader(lineNumberTask: number, headings: HeadingCache[] | undefined): string | null {
         if (headings === undefined) {
             return null;
@@ -367,6 +390,9 @@ session.
 
         for (const heading of headings) {
             if (heading.position.start.line > lineNumberTask) {
+                console.debug(
+                    `Found task on line ${lineNumberTask} in heading of starting at line ${heading.position.start.line} called ${heading.heading}`,
+                );
                 return precedingHeader;
             }
             precedingHeader = heading.heading;
