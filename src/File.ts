@@ -40,7 +40,7 @@ export const replaceTaskWithTasks = async ({
     newTasks: Task | Task[];
 }): Promise<void> => {
     if (vault === undefined || metadataCache === undefined) {
-        console.error('Tasks: cannot use File before initializing it.');
+        errorAndNotice('Tasks: cannot use File before initializing it.');
         return;
     }
 
@@ -56,6 +56,16 @@ export const replaceTaskWithTasks = async ({
         previousTries: 0,
     });
 };
+
+function errorAndNotice(message: string) {
+    console.error(message);
+    new Notice(message, 10000);
+}
+
+function warnAndNotice(message: string) {
+    console.warn(message);
+    new Notice(message, 10000);
+}
 
 /**
  * This is a workaround to re-try when the returned file cache is `undefined`.
@@ -77,7 +87,7 @@ const tryRepetitive = async ({
 }): Promise<void> => {
     const retry = () => {
         if (previousTries > 10) {
-            console.error('Tasks: Too many retries. File update not possible ...');
+            errorAndNotice('Tasks: Too many retries. File update not possible ...');
             return;
         }
 
@@ -95,24 +105,24 @@ const tryRepetitive = async ({
 
     const file = vault.getAbstractFileByPath(originalTask.path);
     if (!(file instanceof TFile)) {
-        console.warn(`Tasks: No file found for task ${originalTask.description}. Retrying ...`);
+        warnAndNotice(`Tasks: No file found for task ${originalTask.description}. Retrying ...`);
         return retry();
     }
 
     if (file.extension !== 'md') {
-        console.error('Tasks: Only supporting files with the .md file extension.');
+        errorAndNotice('Tasks: Only supporting files with the .md file extension.');
         return;
     }
 
     const fileCache = metadataCache.getFileCache(file);
     if (fileCache == undefined || fileCache === null) {
-        console.warn(`Tasks: No file cache found for file ${file.path}. Retrying ...`);
+        warnAndNotice(`Tasks: No file cache found for file ${file.path}. Retrying ...`);
         return retry();
     }
 
     const listItemsCache = fileCache.listItems;
     if (listItemsCache === undefined || listItemsCache.length === 0) {
-        console.warn(`Tasks: No list items found in file cache of ${file.path}. Retrying ...`);
+        warnAndNotice(`Tasks: No list items found in file cache of ${file.path}. Retrying ...`);
         return retry();
     }
 
@@ -158,8 +168,7 @@ Other info:
     originalTask.sectionStart: ${originalTask.sectionStart}
     originalTask.sectionIndex: ${originalTask.sectionIndex}
 `;
-                    console.error(message);
-                    new Notice(message, 10000);
+                    errorAndNotice(message);
                     //return retry();
                     return;
                 }
@@ -170,7 +179,7 @@ Other info:
         }
     }
     if (listItem === undefined) {
-        console.error('Tasks: could not find task to toggle in the file.');
+        errorAndNotice('Tasks: could not find task to toggle in the file.');
         return;
     }
 
