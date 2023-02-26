@@ -123,8 +123,7 @@ const tryRepetitive = async ({
     let listItem: ListItemCache | undefined;
     let sectionIndex = 0;
     for (const listItemCache of listItemsCache) {
-        const lineIndex = listItemCache.position.start.line;
-        if (lineIndex < originalTask.sectionStart) {
+        if (listItemCache.position.start.line < originalTask.sectionStart) {
             continue;
         }
 
@@ -132,7 +131,7 @@ const tryRepetitive = async ({
             continue;
         }
 
-        const line = fileLines[lineIndex];
+        const line = fileLines[listItemCache.position.start.line];
         if (line.includes(globalFilter)) {
             if (sectionIndex === originalTask.sectionIndex) {
                 const dateFromFileName = new Lazy(() => DateFallback.fromPath(originalTask.path));
@@ -152,15 +151,9 @@ ${originalTask.path}
 Expected task:
 ${originalTask.originalMarkdown}
 Found task line:
-${line}
-Other info:
-    previousTries: ${previousTries}
-    originalTask.sectionStart: ${originalTask.sectionStart}
-    originalTask.sectionIndex: ${originalTask.sectionIndex}
-`;
+${line}`;
                     console.error(message);
-                    new Notice(message, 10000);
-                    //return retry();
+                    new Notice(message);
                     return;
                 }
                 break;
