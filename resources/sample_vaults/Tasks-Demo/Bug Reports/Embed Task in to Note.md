@@ -4,11 +4,15 @@ See [When a block-referenced task is made complete, it is completed after rewrit
 
 ## Category 1
 
-- [ ] #task task1
+- [ ] #task task1a
+- [ ] #task task1b
+- [ ] #task task1c
 
 ## Category 2
 
-- [ ] #task task2 ^ca47c7
+- [ ] #task task2a
+- [ ] #task task2b ^ca47c7
+- [ ] #task task2c
 
 ## Scenario 3: Embedding individual tasks
 

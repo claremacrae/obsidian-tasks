@@ -10,6 +10,8 @@
 
 ### The embedded file  
 
+These tasks are embedded from file [[Embed File in to Note - File to Embed]].
+
 ![[Embed File in to Note - File to Embed]]
 
 - [ ] #task Figure out whether this is a Tasks bug or an Obsidian bug

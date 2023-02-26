@@ -2,8 +2,12 @@
 
 ## Category 3
 
-- [ ] #task task3
+- [ ] #task task3a
+- [ ] #task task3b
+- [ ] #task task3c
 
 ## Category 4
 
-- [ ] #task task4 ^fromseparatefile
+- [ ] #task task4a
+- [ ] #task task4b - has section and task number 0 when shown embedded in another file ^fromseparatefile
+- [ ] #task task4c
