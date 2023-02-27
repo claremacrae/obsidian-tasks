@@ -5,7 +5,7 @@ import type { PickledDataForTesting } from '../src/File';
 function testFindLineNumberOfTaskToToggle(
     jsonFileName: string,
     taskLineToToggle: string,
-    expectedLineNumber: number,
+    expectedLineNumber: number | undefined,
     actualIncorrectLineFound?: string,
 ) {
     // Arrange
@@ -17,11 +17,15 @@ function testFindLineNumberOfTaskToToggle(
     const result = findLineNumberOfTaskToToggle(everything);
 
     // Assert
-    expect(result).not.toBeUndefined();
-    expect(result).toEqual(expectedLineNumber);
+    if (expectedLineNumber !== undefined) {
+        expect(result).not.toBeUndefined();
+        expect(result).toEqual(expectedLineNumber);
 
-    const expectedLine = actualIncorrectLineFound ? actualIncorrectLineFound : everything.taskData.originalMarkdown;
-    expect(everything.fileData.fileLines[result!]).toEqual(expectedLine);
+        const expectedLine = actualIncorrectLineFound ? actualIncorrectLineFound : everything.taskData.originalMarkdown;
+        expect(everything.fileData.fileLines[result!]).toEqual(expectedLine);
+    } else {
+        expect(result).toBeUndefined();
+    }
 }
 
 describe('File findLineNumberOfTaskToToggle()', () => {
@@ -73,20 +77,26 @@ describe('File findLineNumberOfTaskToToggle()', () => {
         const actualIncorrectLineFound = '- [ ] #task Heading 1/Task 1';
         testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber, actualIncorrectLineFound);
     });
+
+    // --------------------------------------------------------------------------------
+    // when line does not exist - as the task had been toggled already,
+    // and the task in reading view had not yet been updated with the new markdown line.
+    it.failing('should not overwrite wrong line when line does not exist', () => {
+        const jsonFileName = 'line_does_not_exist.json';
+        const taskLineToToggle = '- [ ] #task y';
+        const expectedLineNumber = undefined;
+        testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber);
+    });
+
+    it('should not overwrite wrong line when line does not exist - CURRENT BEHAVIOUR - WRONG RESULTS', () => {
+        const jsonFileName = 'line_does_not_exist.json';
+        const taskLineToToggle = '- [ ] #task y';
+        const expectedLineNumber = 1;
+        const actualIncorrectLineFound = '- [x] #task y ✅ 2023-02-27';
+        testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber, actualIncorrectLineFound);
+    });
     // --------------------------------------------------------------------------------
 });
-
-/*
-Inconsistent lines: SAVE THE OUTPUT
-expected:
-- [ ] #task y
-found:
-- [x] #task y ✅ 2023-02-27
-result: 1
-data:
-{"taskData":{"originalMarkdown":"- [ ] #task y","path":"2.task.md","precedingHeader":null,"sectionStart":0,"sectionIndex":1},"fileData":{"fileLines":["- [ ] #task x","- [x] #task y ✅ 2023-02-27",""]},"cacheData":{"listItemsCache":[{"position":{"start":{"line":0,"col":0,"offset":0},"end":{"line":0,"col":13,"offset":13}},"task":" "},{"position":{"start":{"line":1,"col":0,"offset":14},"end":{"line":1,"col":26,"offset":40}},"task":"x"}]}}
-
- */
 
 // Indented a line:
 /*

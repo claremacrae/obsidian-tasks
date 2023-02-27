@@ -1,0 +1,50 @@
+{
+  "taskData": {
+    "originalMarkdown": "- [ ] #task y",
+    "path": "2.task.md",
+    "precedingHeader": null,
+    "sectionStart": 0,
+    "sectionIndex": 1
+  },
+  "fileData": {
+    "fileLines": [
+      "- [ ] #task x",
+      "- [x] #task y ✅ 2023-02-27",
+      ""
+    ]
+  },
+  "cacheData": {
+    "listItemsCache": [
+      {
+        "position": {
+          "start": {
+            "line": 0,
+            "col": 0,
+            "offset": 0
+          },
+          "end": {
+            "line": 0,
+            "col": 13,
+            "offset": 13
+          }
+        },
+        "task": " "
+      },
+      {
+        "position": {
+          "start": {
+            "line": 1,
+            "col": 0,
+            "offset": 14
+          },
+          "end": {
+            "line": 1,
+            "col": 26,
+            "offset": 40
+          }
+        },
+        "task": "x"
+      }
+    ]
+  }
+}
