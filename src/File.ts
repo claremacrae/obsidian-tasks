@@ -7,6 +7,11 @@ import type { Task } from './Task';
 let metadataCache: MetadataCache | undefined;
 let vault: Vault | undefined;
 
+type CachedTaskInfo = string | undefined;
+type CachedLinePosition = Pos;
+type DataFromListItemCache = [CachedLinePosition, CachedTaskInfo];
+type AllDataFromListItemCache = DataFromListItemCache[];
+
 export const initializeFile = ({
     metadataCache: newMetadataCache,
     vault: newVault,
@@ -111,11 +116,6 @@ const tryRepetitive = async ({
 
     const fileContent = await vault.read(file);
     const fileLines = fileContent.split('\n');
-
-    type CachedTaskInfo = string | undefined;
-    type CachedLinePosition = Pos;
-    type DataFromListItemCache = [CachedLinePosition, CachedTaskInfo];
-    type AllDataFromListItemCache = DataFromListItemCache[];
 
     const allDataFromListItemCache: AllDataFromListItemCache = [];
     for (const listItemCache of listItemsCache) {
