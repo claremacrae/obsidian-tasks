@@ -11,12 +11,7 @@ type CachedTaskInfo = string | undefined;
 type CachedLinePosition = Pos;
 type DataFromListItemCache = { task: string | undefined; position: Pos };
 type AllDataFromListItemCache = DataFromListItemCache[];
-
-function pickleDataForTesting(
-    originalTask: Task,
-    fileLines: string[],
-    listItemsCache: ListItemCache[],
-): {
+type PickledDataForTesting = {
     cacheData: { listItemsCache: DataFromListItemCache[] };
     fileData: { fileLines: string[] };
     taskData: {
@@ -26,7 +21,13 @@ function pickleDataForTesting(
         originalMarkdown: string;
         precedingHeader: string | null;
     };
-} {
+};
+
+function pickleDataForTesting(
+    originalTask: Task,
+    fileLines: string[],
+    listItemsCache: ListItemCache[],
+): PickledDataForTesting {
     const allDataFromListItemCache: AllDataFromListItemCache = [];
     for (const listItemCache of listItemsCache) {
         const pos: CachedLinePosition = listItemCache.position;
