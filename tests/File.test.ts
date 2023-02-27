@@ -95,17 +95,23 @@ describe('File findLineNumberOfTaskToToggle()', () => {
         const actualIncorrectLineFound = '- [x] #task y ✅ 2023-02-27';
         testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber, actualIncorrectLineFound);
     });
+
+    // --------------------------------------------------------------------------------
+    // when line does not exist - as the task had been toggled already,
+    // and the task in reading view had not yet been updated with the new markdown line.
+    it.failing('should not overwrite unindented line', () => {
+        const jsonFileName = 'line_was_indented_and_cache_not_yet_updated.json';
+        const taskLineToToggle = '    - [ ] #task task2c';
+        const expectedLineNumber = undefined;
+        testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber);
+    });
+
+    it('should not overwrite unindented line - CURRENT BEHAVIOUR - WRONG RESULTS', () => {
+        const jsonFileName = 'line_was_indented_and_cache_not_yet_updated.json';
+        const taskLineToToggle = '    - [ ] #task task2c';
+        const expectedLineNumber = 12;
+        const actualIncorrectLineFound = '- [ ] #task task2c';
+        testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber, actualIncorrectLineFound);
+    });
     // --------------------------------------------------------------------------------
 });
-
-// Indented a line:
-/*
-Inconsistent lines: SAVE THE OUTPUT
-expected:
-    - [ ] #task task2c
-found:
-- [ ] #task task2c
-result: 12
-data:
-{"taskData":{"originalMarkdown":"    - [ ] #task task2c","path":"Manual Testing/Task Toggling Scenarios/Embed Task in to Note.md","precedingHeader":null,"sectionStart":10,"sectionIndex":2},"fileData":{"fileLines":["# Embed Task in to Note","","## Category 1","","- [x] #task task2b ✅ 2023-02-27 ^ca47c7","- [ ] #task task1b","- [ ] #task task1c","","## Category 2","","- [ ] #task task2a","- [ ] #task task2b ^ca47c7","- [ ] #task task2c","","","## The embedded tasks","","- ref task2 ![[#^ca47c7]]",""]},"cacheData":{"listItemsCache":[{"position":{"start":{"line":4,"col":0,"offset":40},"end":{"line":4,"col":39,"offset":79}},"task":"x"},{"position":{"start":{"line":5,"col":0,"offset":80},"end":{"line":5,"col":18,"offset":98}},"task":" "},{"position":{"start":{"line":6,"col":0,"offset":99},"end":{"line":6,"col":18,"offset":117}},"task":" "},{"position":{"start":{"line":10,"col":0,"offset":134},"end":{"line":10,"col":18,"offset":152}},"task":" "},{"position":{"start":{"line":11,"col":0,"offset":153},"end":{"line":11,"col":26,"offset":179}},"task":" "},{"position":{"start":{"line":12,"col":0,"offset":180},"end":{"line":12,"col":18,"offset":198}},"task":" "},{"position":{"start":{"line":17,"col":0,"offset":224},"end":{"line":17,"col":25,"offset":249}}}]}}
- */
