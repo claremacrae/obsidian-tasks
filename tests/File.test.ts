@@ -39,17 +39,16 @@ describe('File findLineNumberOfTaskToToggle()', () => {
     // --------------------------------------------------------------------------------
     // Issue 688
     describe('should find line for block referenced task - issue 688', () => {
+        const jsonFileName = '688_toggle_block_referenced_line_overwrites_wrong_line.json';
+        const taskLineToToggle = '- [ ] #task task2b ^ca47c7';
+
         it.failing('should show the intended behaviour', () => {
-            const jsonFileName = '688_toggle_block_referenced_line_overwrites_wrong_line.json';
-            const taskLineToToggle = '- [ ] #task task2b ^ca47c7';
             // An incorrect line is currently found, so this test fails, due to bug 688
             const expectedLineNumber = 10;
             testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber);
         });
 
         it('current behaviour - wrong results', () => {
-            const jsonFileName = '688_toggle_block_referenced_line_overwrites_wrong_line.json';
-            const taskLineToToggle = '- [ ] #task task2b ^ca47c7';
             // An incorrect line is currently found, so this test fails, due to bug 688
             const expectedLineNumber = 4;
             const actualIncorrectLineFound = '- [ ] #task task1a';
@@ -65,16 +64,15 @@ describe('File findLineNumberOfTaskToToggle()', () => {
     // --------------------------------------------------------------------------------
     // when cache is out of date
     describe('should not overwrite wrong line when cache is out of date', () => {
+        const jsonFileName = 'cache_is_out_of_date.json';
+        const taskLineToToggle = '- [ ] #task Heading 2/Task 1';
+
         it.failing('should show the intended behaviour', () => {
-            const jsonFileName = 'cache_is_out_of_date.json';
-            const taskLineToToggle = '- [ ] #task Heading 2/Task 1';
             const expectedLineNumber = 15;
             testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber);
         });
 
         it('current behaviour - wrong results', () => {
-            const jsonFileName = 'cache_is_out_of_date.json';
-            const taskLineToToggle = '- [ ] #task Heading 2/Task 1';
             const expectedLineNumber = 10;
             /*
             expected:
@@ -96,16 +94,15 @@ describe('File findLineNumberOfTaskToToggle()', () => {
     // when line does not exist - as the task had been toggled already,
     // and the task in reading view had not yet been updated with the new markdown line.
     describe('should not overwrite wrong line when line does not exist', () => {
+        const jsonFileName = 'line_does_not_exist.json';
+        const taskLineToToggle = '- [ ] #task y';
+
         it.failing('should show the intended behaviour', () => {
-            const jsonFileName = 'line_does_not_exist.json';
-            const taskLineToToggle = '- [ ] #task y';
             const expectedLineNumber = undefined;
             testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber);
         });
 
         it('current behaviour - wrong results', () => {
-            const jsonFileName = 'line_does_not_exist.json';
-            const taskLineToToggle = '- [ ] #task y';
             const expectedLineNumber = 1;
             const actualIncorrectLineFound = '- [x] #task y ✅ 2023-02-27';
             testFindLineNumberOfTaskToToggle(
@@ -121,16 +118,15 @@ describe('File findLineNumberOfTaskToToggle()', () => {
     // when line does not exist - as the task had been toggled already,
     // and the task in reading view had not yet been updated with the new markdown line.
     describe('should not overwrite unindented line', () => {
+        const jsonFileName = 'line_was_indented_and_cache_not_yet_updated.json';
+        const taskLineToToggle = '    - [ ] #task task2c';
+
         it.failing('should show the intended behaviour', () => {
-            const jsonFileName = 'line_was_indented_and_cache_not_yet_updated.json';
-            const taskLineToToggle = '    - [ ] #task task2c';
             const expectedLineNumber = undefined;
             testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber);
         });
 
         it('current behaviour - wrong results', () => {
-            const jsonFileName = 'line_was_indented_and_cache_not_yet_updated.json';
-            const taskLineToToggle = '    - [ ] #task task2c';
             const expectedLineNumber = 12;
             const actualIncorrectLineFound = '- [ ] #task task2c';
             testFindLineNumberOfTaskToToggle(
