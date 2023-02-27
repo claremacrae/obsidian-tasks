@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import { findLineNumberOfTaskToToggle } from '../src/File';
+import type { PickledDataForTesting } from '../src/File';
 
 describe('File findLineNumberOfTaskToToggle()', () => {
     it('should find single task to test, when data is self consistent', () => {
@@ -8,7 +9,7 @@ describe('File findLineNumberOfTaskToToggle()', () => {
             'tests/__test_data__/PickledDataForTogglingTasks/single_task_valid_data.json',
             'utf-8',
         );
-        const everything = JSON.parse(data);
+        const everything: PickledDataForTesting = JSON.parse(data);
 
         // Act
         const result = findLineNumberOfTaskToToggle(everything);
@@ -16,6 +17,7 @@ describe('File findLineNumberOfTaskToToggle()', () => {
         // Assert
         expect(result).not.toBeNull();
         expect(result).toEqual(2);
+        expect(everything.fileData.fileLines[result!]).toEqual(everything.taskData.originalMarkdown);
     });
 });
 

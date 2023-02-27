@@ -11,7 +11,7 @@ type CachedTaskInfo = string | undefined;
 type CachedLinePosition = Pos;
 type DataFromListItemCache = { task: string | undefined; position: Pos };
 type AllDataFromListItemCache = DataFromListItemCache[];
-type PickledDataForTesting = {
+export type PickledDataForTesting = {
     cacheData: { listItemsCache: DataFromListItemCache[] };
     fileData: { fileLines: string[] };
     taskData: {
