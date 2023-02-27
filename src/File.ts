@@ -136,7 +136,6 @@ const tryRepetitive = async ({
             fileLines: fileLines,
         },
         cacheData: {
-            path: file.path,
             listItemsCache: allDataFromListItemCache,
         },
     };
