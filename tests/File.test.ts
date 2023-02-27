@@ -20,19 +20,21 @@ describe('File findLineNumberOfTaskToToggle()', () => {
         expect(everything.fileData.fileLines[result!]).toEqual(everything.taskData.originalMarkdown);
     });
 
-    it.failing('should find line for block referenced task', () => {
+    it.failing('should find line for block referenced task - issue 688', () => {
         // Arrange
         const data = readFileSync(
             'tests/__test_data__/PickledDataForTogglingTasks/688_toggle_block_referenced_line_overwrites_wrong_line.json',
             'utf-8',
         );
         const everything: PickledDataForTesting = JSON.parse(data);
+        expect(everything.taskData.originalMarkdown).toEqual('- [ ] #task task2b ^ca47c7');
 
         // Act
         const result = findLineNumberOfTaskToToggle(everything);
 
         // Assert
         expect(result).not.toBeNull();
+        // These two both fail due to bug 688
         expect(result).toEqual(10); // line 10 is the line number of tne embedded task
         expect(everything.fileData.fileLines[result!]).toEqual(everything.taskData.originalMarkdown); // Should be equal
     });
