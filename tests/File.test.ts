@@ -32,6 +32,19 @@ describe('File findLineNumberOfTaskToToggle()', () => {
         const expectedLineNumber = 10;
         testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber);
     });
+
+    it.failing('should not overwrite wrong line when cache is out of date', () => {
+        const jsonFileName = 'cache_is_out_of_date.json';
+        const taskLineToToggle = '- [ ] #task Heading 2/Task 1';
+        const expectedLineNumber = 15;
+        /*
+        expected:
+        - [ ] #task Heading 2/Task 1
+        found:
+        - [ ] #task Heading 1/Task 1
+         */
+        testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber);
+    });
 });
 
 /*
@@ -44,17 +57,6 @@ result: 1
 data:
 {"taskData":{"originalMarkdown":"- [ ] #task y","path":"2.task.md","precedingHeader":null,"sectionStart":0,"sectionIndex":1},"fileData":{"fileLines":["- [ ] #task x","- [x] #task y ✅ 2023-02-27",""]},"cacheData":{"listItemsCache":[{"position":{"start":{"line":0,"col":0,"offset":0},"end":{"line":0,"col":13,"offset":13}},"task":" "},{"position":{"start":{"line":1,"col":0,"offset":14},"end":{"line":1,"col":26,"offset":40}},"task":"x"}]}}
 
- */
-
-/*
-Inconsistent lines: SAVE THE OUTPUT
-expected:
-- [ ] #task Heading 2/Task 1
-found:
-- [ ] #task Heading 1/Task 1
-result: 10
-data:
-{"taskData":{"originalMarkdown":"- [ ] #task Heading 2/Task 1","path":"2.task.md","precedingHeader":null,"sectionStart":9,"sectionIndex":0},"fileData":{"fileLines":["# 2 Headings","","","","","","","","## Heading 1","","- [ ] #task Heading 1/Task 1","- [ ] #task Heading 1/Task 2","","## Heading 2","","- [ ] #task Heading 2/Task 1","- [ ] #task Heading 2/Task 2",""]},"cacheData":{"listItemsCache":[{"position":{"start":{"line":10,"col":0,"offset":34},"end":{"line":10,"col":28,"offset":62}},"task":" "},{"position":{"start":{"line":11,"col":0,"offset":63},"end":{"line":11,"col":28,"offset":91}},"task":" "},{"position":{"start":{"line":15,"col":0,"offset":107},"end":{"line":15,"col":28,"offset":135}},"task":" "},{"position":{"start":{"line":16,"col":0,"offset":136},"end":{"line":16,"col":28,"offset":164}},"task":" "}]}}
  */
 
 // Indented a line:
