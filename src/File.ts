@@ -9,7 +9,7 @@ let vault: Vault | undefined;
 
 type CachedTaskInfo = string | undefined;
 type CachedLinePosition = Pos;
-type DataFromListItemCache = [CachedLinePosition, CachedTaskInfo];
+type DataFromListItemCache = { task: string | undefined; position: Pos };
 type AllDataFromListItemCache = DataFromListItemCache[];
 
 export const initializeFile = ({
@@ -121,7 +121,10 @@ const tryRepetitive = async ({
     for (const listItemCache of listItemsCache) {
         const pos: CachedLinePosition = listItemCache.position;
         const task: CachedTaskInfo = listItemCache.task;
-        const dataFromListItemCache: DataFromListItemCache = [pos, task];
+        const dataFromListItemCache: DataFromListItemCache = {
+            position: pos,
+            task: task,
+        };
         allDataFromListItemCache.push(dataFromListItemCache);
     }
     const everything = {
