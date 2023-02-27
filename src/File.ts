@@ -196,6 +196,17 @@ const tryRepetitive = async ({
         return;
     }
 
+    if (fileLines[taskLineNumber] !== originalTask.originalMarkdown) {
+        console.error(`Inconsistent lines: SAVE THE OUTPUT
+expected:
+${originalTask.originalMarkdown}
+found:
+${fileLines[taskLineNumber]}
+result: ${taskLineNumber}
+data:
+${JSON.stringify(everything)}
+`);
+    }
     const updatedFileLines = [
         ...fileLines.slice(0, taskLineNumber),
         ...newTasks.map((task: Task) => task.toFileLineString()),
