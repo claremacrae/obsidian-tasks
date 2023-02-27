@@ -55,7 +55,7 @@ function pickleDataForTesting(
     };
 }
 
-function findLineNumberOfTaskToToggle(everything: PickledDataForTesting, fileLines: string[]) {
+function findLineNumberOfTaskToToggle(everything: PickledDataForTesting) {
     const { globalFilter } = getSettings();
     let taskLineNumber: number | undefined;
     let sectionIndex = 0;
@@ -68,7 +68,7 @@ function findLineNumberOfTaskToToggle(everything: PickledDataForTesting, fileLin
             continue;
         }
 
-        const line = fileLines[listItemCache.position.start.line];
+        const line = everything.fileData.fileLines[listItemCache.position.start.line];
 
         if (line.includes(globalFilter)) {
             if (sectionIndex === everything.taskData.sectionIndex) {
@@ -189,7 +189,7 @@ const tryRepetitive = async ({
     const everything = pickleDataForTesting(originalTask, fileLines, listItemsCache);
     console.log(JSON.stringify(everything));
 
-    const taskLineNumber = findLineNumberOfTaskToToggle(everything, fileLines);
+    const taskLineNumber = findLineNumberOfTaskToToggle(everything);
 
     if (taskLineNumber === undefined) {
         console.error('Tasks: could not find task to toggle in the file.');
