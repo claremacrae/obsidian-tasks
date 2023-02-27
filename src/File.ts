@@ -55,7 +55,7 @@ function pickleDataForTesting(
     };
 }
 
-function findLineNumberOfTaskToToggle(everything: PickledDataForTesting) {
+export function findLineNumberOfTaskToToggle(everything: PickledDataForTesting) {
     const { globalFilter } = getSettings();
     let taskLineNumber: number | undefined;
     let sectionIndex = 0;
