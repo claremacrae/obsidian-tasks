@@ -2,7 +2,12 @@ import { readFileSync } from 'fs';
 import { findLineNumberOfTaskToToggle } from '../src/File';
 import type { PickledDataForTesting } from '../src/File';
 
-function testFindLineNumberOfTaskToToggle(jsonFileName: string, taskLineToToggle: string, expectedLineNumber: number) {
+function testFindLineNumberOfTaskToToggle(
+    jsonFileName: string,
+    taskLineToToggle: string,
+    expectedLineNumber: number,
+    actualIncorrectLineFound?: string,
+) {
     // Arrange
     const data = readFileSync('tests/__test_data__/PickledDataForTogglingTasks/' + jsonFileName, 'utf-8');
     const everything: PickledDataForTesting = JSON.parse(data);
@@ -14,7 +19,9 @@ function testFindLineNumberOfTaskToToggle(jsonFileName: string, taskLineToToggle
     // Assert
     expect(result).not.toBeUndefined();
     expect(result).toEqual(expectedLineNumber);
-    expect(everything.fileData.fileLines[result!]).toEqual(everything.taskData.originalMarkdown);
+
+    const expectedLine = actualIncorrectLineFound ? actualIncorrectLineFound : everything.taskData.originalMarkdown;
+    expect(everything.fileData.fileLines[result!]).toEqual(expectedLine);
 }
 
 describe('File findLineNumberOfTaskToToggle()', () => {
@@ -25,6 +32,8 @@ describe('File findLineNumberOfTaskToToggle()', () => {
         testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber);
     });
 
+    // --------------------------------------------------------------------------------
+    // Issue 688
     it.failing('should find line for block referenced task - issue 688', () => {
         const jsonFileName = '688_toggle_block_referenced_line_overwrites_wrong_line.json';
         const taskLineToToggle = '- [ ] #task task2b ^ca47c7';
@@ -33,18 +42,38 @@ describe('File findLineNumberOfTaskToToggle()', () => {
         testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber);
     });
 
+    it('should find line for block referenced task - issue 688 - CURRENT BEHAVIOUR - WRONG RESULTS', () => {
+        const jsonFileName = '688_toggle_block_referenced_line_overwrites_wrong_line.json';
+        const taskLineToToggle = '- [ ] #task task2b ^ca47c7';
+        // An incorrect line is currently found, so this test fails, due to bug 688
+        const expectedLineNumber = 4;
+        const actualIncorrectLineFound = '- [ ] #task task1a';
+        testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber, actualIncorrectLineFound);
+    });
+
+    // --------------------------------------------------------------------------------
+    // when cache is out of date
     it.failing('should not overwrite wrong line when cache is out of date', () => {
         const jsonFileName = 'cache_is_out_of_date.json';
         const taskLineToToggle = '- [ ] #task Heading 2/Task 1';
         const expectedLineNumber = 15;
+        testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber);
+    });
+
+    it('should not overwrite wrong line when cache is out of date - CURRENT BEHAVIOUR - WRONG RESULTS', () => {
+        const jsonFileName = 'cache_is_out_of_date.json';
+        const taskLineToToggle = '- [ ] #task Heading 2/Task 1';
+        const expectedLineNumber = 10;
         /*
         expected:
         - [ ] #task Heading 2/Task 1
         found:
         - [ ] #task Heading 1/Task 1
          */
-        testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber);
+        const actualIncorrectLineFound = '- [ ] #task Heading 1/Task 1';
+        testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber, actualIncorrectLineFound);
     });
+    // --------------------------------------------------------------------------------
 });
 
 /*
