@@ -165,8 +165,8 @@ const tryRepetitive = async ({
     const { globalFilter } = getSettings();
     let taskLineNumber: number | undefined;
     let sectionIndex = 0;
-    for (const listItemCache of listItemsCache) {
-        if (listItemCache.position.start.line < originalTask.sectionStart) {
+    for (const listItemCache of everything.cacheData.listItemsCache) {
+        if (listItemCache.position.start.line < everything.taskData.sectionStart) {
             continue;
         }
 
@@ -177,7 +177,7 @@ const tryRepetitive = async ({
         const line = fileLines[listItemCache.position.start.line];
 
         if (line.includes(globalFilter)) {
-            if (sectionIndex === originalTask.sectionIndex) {
+            if (sectionIndex === everything.taskData.sectionIndex) {
                 taskLineNumber = listItemCache.position.start.line;
                 break;
             }
