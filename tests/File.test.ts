@@ -10,12 +10,13 @@ describe('File findLineNumberOfTaskToToggle()', () => {
             'utf-8',
         );
         const everything: PickledDataForTesting = JSON.parse(data);
+        expect(everything.taskData.originalMarkdown).toEqual('- [ ] #task Task 1');
 
         // Act
         const result = findLineNumberOfTaskToToggle(everything);
 
         // Assert
-        expect(result).not.toBeNull();
+        expect(result).not.toBeUndefined();
         expect(result).toEqual(2);
         expect(everything.fileData.fileLines[result!]).toEqual(everything.taskData.originalMarkdown);
     });
@@ -33,7 +34,7 @@ describe('File findLineNumberOfTaskToToggle()', () => {
         const result = findLineNumberOfTaskToToggle(everything);
 
         // Assert
-        expect(result).not.toBeNull();
+        expect(result).not.toBeUndefined();
         // These two both fail due to bug 688
         expect(result).toEqual(10); // line 10 is the line number of tne embedded task
         expect(everything.fileData.fileLines[result!]).toEqual(everything.taskData.originalMarkdown); // Should be equal
