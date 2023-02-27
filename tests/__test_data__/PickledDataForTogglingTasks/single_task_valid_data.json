@@ -1,0 +1,36 @@
+{
+  "taskData": {
+    "originalMarkdown": "- [ ] #task Task 1",
+    "path": "1 task.md",
+    "precedingHeader": null,
+    "sectionStart": 2,
+    "sectionIndex": 0
+  },
+  "fileData": {
+    "fileLines": [
+      "# 1 task",
+      "",
+      "- [ ] #task Task 1",
+      ""
+    ]
+  },
+  "cacheData": {
+    "listItemsCache": [
+      {
+        "position": {
+          "start": {
+            "line": 2,
+            "col": 0,
+            "offset": 10
+          },
+          "end": {
+            "line": 2,
+            "col": 18,
+            "offset": 28
+          }
+        },
+        "task": " "
+      }
+    ]
+  }
+}
