@@ -1,5 +1,5 @@
+import type { ListItemCache, Pos } from 'obsidian';
 import { MetadataCache, TFile, Vault } from 'obsidian';
-import type { ListItemCache } from 'obsidian';
 
 import { getSettings } from './Config/Settings';
 import type { Task } from './Task';
@@ -111,6 +111,36 @@ const tryRepetitive = async ({
 
     const fileContent = await vault.read(file);
     const fileLines = fileContent.split('\n');
+
+    type CachedTaskInfo = string | undefined;
+    type CachedLinePosition = Pos;
+    type DataFromListItemCache = [CachedLinePosition, CachedTaskInfo];
+    type AllDataFromListItemCache = DataFromListItemCache[];
+
+    const allDataFromListItemCache: AllDataFromListItemCache = [];
+    for (const listItemCache of listItemsCache) {
+        const pos: CachedLinePosition = listItemCache.position;
+        const task: CachedTaskInfo = listItemCache.task;
+        const dataFromListItemCache: DataFromListItemCache = [pos, task];
+        allDataFromListItemCache.push(dataFromListItemCache);
+    }
+    const everything = {
+        taskData: {
+            originalMarkdown: originalTask.originalMarkdown,
+            path: originalTask.path,
+            precedingHeader: originalTask.precedingHeader,
+            sectionStart: originalTask.sectionStart,
+            sectionIndex: originalTask.sectionIndex,
+        },
+        fileData: {
+            fileLines: fileLines,
+        },
+        cacheData: {
+            path: file.path,
+            listItemsCache: allDataFromListItemCache,
+        },
+    };
+    console.log(JSON.stringify(everything));
 
     const { globalFilter } = getSettings();
     let listItem: ListItemCache | undefined;
