@@ -163,7 +163,7 @@ const tryRepetitive = async ({
     console.log(JSON.stringify(everything));
 
     const { globalFilter } = getSettings();
-    let listItem: ListItemCache | undefined;
+    let taskLineNumber: number | undefined;
     let sectionIndex = 0;
     for (const listItemCache of listItemsCache) {
         if (listItemCache.position.start.line < originalTask.sectionStart) {
@@ -178,22 +178,22 @@ const tryRepetitive = async ({
 
         if (line.includes(globalFilter)) {
             if (sectionIndex === originalTask.sectionIndex) {
-                listItem = listItemCache;
+                taskLineNumber = listItemCache.position.start.line;
                 break;
             }
 
             sectionIndex++;
         }
     }
-    if (listItem === undefined) {
+    if (taskLineNumber === undefined) {
         console.error('Tasks: could not find task to toggle in the file.');
         return;
     }
 
     const updatedFileLines = [
-        ...fileLines.slice(0, listItem.position.start.line),
+        ...fileLines.slice(0, taskLineNumber),
         ...newTasks.map((task: Task) => task.toFileLineString()),
-        ...fileLines.slice(listItem.position.start.line + 1), // Only supports single-line tasks.
+        ...fileLines.slice(taskLineNumber + 1), // Only supports single-line tasks.
     ];
 
     await vault.modify(file, updatedFileLines.join('\n'));
