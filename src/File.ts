@@ -55,6 +55,33 @@ function pickleDataForTesting(
     };
 }
 
+function findLineNumberOfTaskToToggle(everything: PickledDataForTesting, fileLines: string[]) {
+    const { globalFilter } = getSettings();
+    let taskLineNumber: number | undefined;
+    let sectionIndex = 0;
+    for (const listItemCache of everything.cacheData.listItemsCache) {
+        if (listItemCache.position.start.line < everything.taskData.sectionStart) {
+            continue;
+        }
+
+        if (listItemCache.task === undefined) {
+            continue;
+        }
+
+        const line = fileLines[listItemCache.position.start.line];
+
+        if (line.includes(globalFilter)) {
+            if (sectionIndex === everything.taskData.sectionIndex) {
+                taskLineNumber = listItemCache.position.start.line;
+                break;
+            }
+
+            sectionIndex++;
+        }
+    }
+    return taskLineNumber;
+}
+
 export const initializeFile = ({
     metadataCache: newMetadataCache,
     vault: newVault,
@@ -162,29 +189,8 @@ const tryRepetitive = async ({
     const everything = pickleDataForTesting(originalTask, fileLines, listItemsCache);
     console.log(JSON.stringify(everything));
 
-    const { globalFilter } = getSettings();
-    let taskLineNumber: number | undefined;
-    let sectionIndex = 0;
-    for (const listItemCache of everything.cacheData.listItemsCache) {
-        if (listItemCache.position.start.line < everything.taskData.sectionStart) {
-            continue;
-        }
+    const taskLineNumber = findLineNumberOfTaskToToggle(everything, fileLines);
 
-        if (listItemCache.task === undefined) {
-            continue;
-        }
-
-        const line = fileLines[listItemCache.position.start.line];
-
-        if (line.includes(globalFilter)) {
-            if (sectionIndex === everything.taskData.sectionIndex) {
-                taskLineNumber = listItemCache.position.start.line;
-                break;
-            }
-
-            sectionIndex++;
-        }
-    }
     if (taskLineNumber === undefined) {
         console.error('Tasks: could not find task to toggle in the file.');
         return;
