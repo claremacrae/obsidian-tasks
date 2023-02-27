@@ -2,24 +2,27 @@ import { readFileSync } from 'fs';
 import { findLineNumberOfTaskToToggle } from '../src/File';
 import type { PickledDataForTesting } from '../src/File';
 
+function testFindLineNumberOfTaskToToggle(jsonFileName: string, taskLineToToggle: string, expectedLineNumber: number) {
+    // Arrange
+    const data = readFileSync('tests/__test_data__/PickledDataForTogglingTasks/' + jsonFileName, 'utf-8');
+    const everything: PickledDataForTesting = JSON.parse(data);
+    expect(everything.taskData.originalMarkdown).toEqual(taskLineToToggle);
+
+    // Act
+    const result = findLineNumberOfTaskToToggle(everything);
+
+    // Assert
+    expect(result).not.toBeUndefined();
+    expect(result).toEqual(expectedLineNumber);
+    expect(everything.fileData.fileLines[result!]).toEqual(everything.taskData.originalMarkdown);
+}
+
 describe('File findLineNumberOfTaskToToggle()', () => {
     it('should find single task to test, when data is self consistent', () => {
-        // Arrange
         const jsonFileName = 'single_task_valid_data.json';
         const taskLineToToggle = '- [ ] #task Task 1';
         const expectedLineNumber = 2;
-
-        const data = readFileSync('tests/__test_data__/PickledDataForTogglingTasks/' + jsonFileName, 'utf-8');
-        const everything: PickledDataForTesting = JSON.parse(data);
-        expect(everything.taskData.originalMarkdown).toEqual(taskLineToToggle);
-
-        // Act
-        const result = findLineNumberOfTaskToToggle(everything);
-
-        // Assert
-        expect(result).not.toBeUndefined();
-        expect(result).toEqual(expectedLineNumber);
-        expect(everything.fileData.fileLines[result!]).toEqual(everything.taskData.originalMarkdown);
+        testFindLineNumberOfTaskToToggle(jsonFileName, taskLineToToggle, expectedLineNumber);
     });
 
     it.failing('should find line for block referenced task - issue 688', () => {
