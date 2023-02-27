@@ -12,6 +12,48 @@ type CachedLinePosition = Pos;
 type DataFromListItemCache = { task: string | undefined; position: Pos };
 type AllDataFromListItemCache = DataFromListItemCache[];
 
+function pickleDataForTesting(
+    originalTask: Task,
+    fileLines: string[],
+    listItemsCache: ListItemCache[],
+): {
+    cacheData: { listItemsCache: DataFromListItemCache[] };
+    fileData: { fileLines: string[] };
+    taskData: {
+        sectionIndex: number;
+        path: string;
+        sectionStart: number;
+        originalMarkdown: string;
+        precedingHeader: string | null;
+    };
+} {
+    const allDataFromListItemCache: AllDataFromListItemCache = [];
+    for (const listItemCache of listItemsCache) {
+        const pos: CachedLinePosition = listItemCache.position;
+        const task: CachedTaskInfo = listItemCache.task;
+        const dataFromListItemCache: DataFromListItemCache = {
+            position: pos,
+            task: task,
+        };
+        allDataFromListItemCache.push(dataFromListItemCache);
+    }
+    return {
+        taskData: {
+            originalMarkdown: originalTask.originalMarkdown,
+            path: originalTask.path,
+            precedingHeader: originalTask.precedingHeader,
+            sectionStart: originalTask.sectionStart,
+            sectionIndex: originalTask.sectionIndex,
+        },
+        fileData: {
+            fileLines: fileLines,
+        },
+        cacheData: {
+            listItemsCache: allDataFromListItemCache,
+        },
+    };
+}
+
 export const initializeFile = ({
     metadataCache: newMetadataCache,
     vault: newVault,
@@ -116,32 +158,7 @@ const tryRepetitive = async ({
 
     const fileContent = await vault.read(file);
     const fileLines = fileContent.split('\n');
-
-    const allDataFromListItemCache: AllDataFromListItemCache = [];
-    for (const listItemCache of listItemsCache) {
-        const pos: CachedLinePosition = listItemCache.position;
-        const task: CachedTaskInfo = listItemCache.task;
-        const dataFromListItemCache: DataFromListItemCache = {
-            position: pos,
-            task: task,
-        };
-        allDataFromListItemCache.push(dataFromListItemCache);
-    }
-    const everything = {
-        taskData: {
-            originalMarkdown: originalTask.originalMarkdown,
-            path: originalTask.path,
-            precedingHeader: originalTask.precedingHeader,
-            sectionStart: originalTask.sectionStart,
-            sectionIndex: originalTask.sectionIndex,
-        },
-        fileData: {
-            fileLines: fileLines,
-        },
-        cacheData: {
-            listItemsCache: allDataFromListItemCache,
-        },
-    };
+    const everything = pickleDataForTesting(originalTask, fileLines, listItemsCache);
     console.log(JSON.stringify(everything));
 
     const { globalFilter } = getSettings();
