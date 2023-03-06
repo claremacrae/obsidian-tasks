@@ -11,16 +11,17 @@ type MockListItemCacheTask = string | undefined;
 type MockPos = Pos;
 type MockListItemCache = { task: string | undefined; position: Pos };
 type MockListItemCaches = MockListItemCache[];
+type MockTask = {
+    sectionIndex: number;
+    path: string;
+    sectionStart: number;
+    originalMarkdown: string;
+    precedingHeader: string | null;
+};
 export type MockTogglingDataForTesting = {
     cacheData: { listItemsCache: MockListItemCache[] };
     fileData: { fileLines: string[] };
-    taskData: {
-        sectionIndex: number;
-        path: string;
-        sectionStart: number;
-        originalMarkdown: string;
-        precedingHeader: string | null;
-    };
+    taskData: MockTask;
 };
 
 function getMockDataForTesting(
@@ -56,13 +57,7 @@ function getMockDataForTesting(
 }
 
 function findLineNumberOfTaskToToggle2(
-    originalTask: {
-        sectionIndex: number;
-        path: string;
-        sectionStart: number;
-        originalMarkdown: string;
-        precedingHeader: string | null;
-    },
+    originalTask: MockTask,
     fileLines: string[],
     listItemsCache: MockListItemCache[],
 ) {
