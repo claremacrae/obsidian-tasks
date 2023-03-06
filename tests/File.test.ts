@@ -9,7 +9,7 @@ function testFindLineNumberOfTaskToToggle(
     actualIncorrectLineFound?: string,
 ) {
     // Arrange
-    const data = readFileSync('tests/__test_data__/PickledDataForTogglingTasks/' + jsonFileName, 'utf-8');
+    const data = readFileSync('tests/__test_data__/MockDataForTogglingTasks/' + jsonFileName, 'utf-8');
     const everything: MockTogglingDataForTesting = JSON.parse(data);
     expect(everything.taskData.originalMarkdown).toEqual(taskLineToToggle);
 
