@@ -56,10 +56,13 @@ function getMockDataForTesting(
 }
 
 export function findLineNumberOfTaskToToggle(everything: MockTogglingDataForTesting) {
+    const fileLines = everything.fileData.fileLines;
+    const listItemsCache = everything.cacheData.listItemsCache;
+
     const { globalFilter } = getSettings();
     let taskLineNumber: number | undefined;
     let sectionIndex = 0;
-    for (const listItemCache of everything.cacheData.listItemsCache) {
+    for (const listItemCache of listItemsCache) {
         if (listItemCache.position.start.line < everything.taskData.sectionStart) {
             continue;
         }
@@ -68,7 +71,7 @@ export function findLineNumberOfTaskToToggle(everything: MockTogglingDataForTest
             continue;
         }
 
-        const line = everything.fileData.fileLines[listItemCache.position.start.line];
+        const line = fileLines[listItemCache.position.start.line];
 
         if (line.includes(globalFilter)) {
             if (sectionIndex === everything.taskData.sectionIndex) {
