@@ -10,7 +10,7 @@ let vault: Vault | undefined;
 type MockListItemCacheTask = string | undefined;
 type MockPos = Pos;
 type MockListItemCache = { task: string | undefined; position: Pos };
-type AllDataFromListItemCache = MockListItemCache[];
+type MockListItemCaches = MockListItemCache[];
 export type MockTogglingDataForTesting = {
     cacheData: { listItemsCache: MockListItemCache[] };
     fileData: { fileLines: string[] };
@@ -28,7 +28,7 @@ function getMockDataForTesting(
     fileLines: string[],
     listItemsCache: ListItemCache[],
 ): MockTogglingDataForTesting {
-    const allDataFromListItemCache: AllDataFromListItemCache = [];
+    const allDataFromListItemCache: MockListItemCaches = [];
     for (const listItemCache of listItemsCache) {
         const pos: MockPos = listItemCache.position;
         const task: MockListItemCacheTask = listItemCache.task;
