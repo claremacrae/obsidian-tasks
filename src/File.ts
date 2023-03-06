@@ -23,7 +23,7 @@ export type MockTogglingDataForTesting = {
     };
 };
 
-function pickleDataForTesting(
+function getMockDataForTesting(
     originalTask: Task,
     fileLines: string[],
     listItemsCache: ListItemCache[],
@@ -186,7 +186,7 @@ const tryRepetitive = async ({
 
     const fileContent = await vault.read(file);
     const fileLines = fileContent.split('\n');
-    const everything = pickleDataForTesting(originalTask, fileLines, listItemsCache);
+    const everything = getMockDataForTesting(originalTask, fileLines, listItemsCache);
     console.log(JSON.stringify(everything));
 
     const taskLineNumber = findLineNumberOfTaskToToggle(everything);
