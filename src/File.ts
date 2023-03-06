@@ -57,9 +57,9 @@ function getMockDataForTesting(
 }
 
 function findLineNumberOfTaskToToggle2(
-    originalTask: MockTask,
+    originalTask: Task | MockTask,
     fileLines: string[],
-    listItemsCache: MockListItemCache[],
+    listItemsCache: ListItemCache[] | MockListItemCache[],
 ) {
     const { globalFilter } = getSettings();
     let taskLineNumber: number | undefined;
@@ -202,7 +202,7 @@ const tryRepetitive = async ({
     const everything = getMockDataForTesting(originalTask, fileLines, listItemsCache);
     console.log(JSON.stringify(everything));
 
-    const taskLineNumber = findLineNumberOfTaskToToggle(everything);
+    const taskLineNumber = findLineNumberOfTaskToToggle2(originalTask, fileLines, listItemsCache);
 
     if (taskLineNumber === undefined) {
         console.error('Tasks: could not find task to toggle in the file.');
