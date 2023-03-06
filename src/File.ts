@@ -55,11 +55,17 @@ function getMockDataForTesting(
     };
 }
 
-export function findLineNumberOfTaskToToggle(everything: MockTogglingDataForTesting) {
-    const originalTask = everything.taskData;
-    const fileLines = everything.fileData.fileLines;
-    const listItemsCache = everything.cacheData.listItemsCache;
-
+function findLineNumberOfTaskToToggle2(
+    originalTask: {
+        sectionIndex: number;
+        path: string;
+        sectionStart: number;
+        originalMarkdown: string;
+        precedingHeader: string | null;
+    },
+    fileLines: string[],
+    listItemsCache: DataFromListItemCache[],
+) {
     const { globalFilter } = getSettings();
     let taskLineNumber: number | undefined;
     let sectionIndex = 0;
@@ -84,6 +90,14 @@ export function findLineNumberOfTaskToToggle(everything: MockTogglingDataForTest
         }
     }
     return taskLineNumber;
+}
+
+export function findLineNumberOfTaskToToggle(everything: MockTogglingDataForTesting) {
+    const originalTask = everything.taskData;
+    const fileLines = everything.fileData.fileLines;
+    const listItemsCache = everything.cacheData.listItemsCache;
+
+    return findLineNumberOfTaskToToggle2(originalTask, fileLines, listItemsCache);
 }
 
 export const initializeFile = ({
