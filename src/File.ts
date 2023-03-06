@@ -199,8 +199,6 @@ const tryRepetitive = async ({
 
     const fileContent = await vault.read(file);
     const fileLines = fileContent.split('\n');
-    const everything = getMockDataForTesting(originalTask, fileLines, listItemsCache);
-    console.log(JSON.stringify(everything));
 
     const taskLineNumber = findLineNumberOfTaskToToggle2(originalTask, fileLines, listItemsCache);
 
@@ -210,6 +208,7 @@ const tryRepetitive = async ({
     }
 
     if (fileLines[taskLineNumber] !== originalTask.originalMarkdown) {
+        const everything = getMockDataForTesting(originalTask, fileLines, listItemsCache);
         console.error(`Inconsistent lines: SAVE THE OUTPUT
 expected:
 ${originalTask.originalMarkdown}
