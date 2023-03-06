@@ -2,7 +2,7 @@
 
 ## Category 1
 
-- [x] #task task2b ✅ 2023-03-06 ^ca47c7
+- [ ] #task task1a
 - [ ] #task task1b
 
 ## Category 2
