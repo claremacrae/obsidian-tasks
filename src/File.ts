@@ -1,60 +1,12 @@
-import type { ListItemCache, Pos } from 'obsidian';
+import type { ListItemCache } from 'obsidian';
 import { MetadataCache, TFile, Vault } from 'obsidian';
 
 import { getSettings } from './Config/Settings';
+import { type MockListItemCache, type MockTask, getMockDataForTesting } from './lib/MockDataCreator';
 import type { Task } from './Task';
 
 let metadataCache: MetadataCache | undefined;
 let vault: Vault | undefined;
-
-type MockListItemCacheTask = string | undefined;
-type MockPos = Pos;
-type MockListItemCache = { task: string | undefined; position: Pos };
-type MockListItemCaches = MockListItemCache[];
-type MockTask = {
-    sectionIndex: number;
-    path: string;
-    sectionStart: number;
-    originalMarkdown: string;
-    precedingHeader: string | null;
-};
-export type MockTogglingDataForTesting = {
-    cacheData: { listItemsCache: MockListItemCache[] };
-    fileData: { fileLines: string[] };
-    taskData: MockTask;
-};
-
-function getMockDataForTesting(
-    originalTask: Task,
-    fileLines: string[],
-    listItemsCache: ListItemCache[],
-): MockTogglingDataForTesting {
-    const allDataFromListItemCache: MockListItemCaches = [];
-    for (const listItemCache of listItemsCache) {
-        const pos: MockPos = listItemCache.position;
-        const task: MockListItemCacheTask = listItemCache.task;
-        const dataFromListItemCache: MockListItemCache = {
-            position: pos,
-            task: task,
-        };
-        allDataFromListItemCache.push(dataFromListItemCache);
-    }
-    return {
-        taskData: {
-            originalMarkdown: originalTask.originalMarkdown,
-            path: originalTask.path,
-            precedingHeader: originalTask.precedingHeader,
-            sectionStart: originalTask.sectionStart,
-            sectionIndex: originalTask.sectionIndex,
-        },
-        fileData: {
-            fileLines: fileLines,
-        },
-        cacheData: {
-            listItemsCache: allDataFromListItemCache,
-        },
-    };
-}
 
 export function findLineNumberOfTaskToToggle(
     originalTask: Task | MockTask,

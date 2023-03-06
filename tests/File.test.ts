@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { findLineNumberOfTaskToToggle } from '../src/File';
-import type { MockTogglingDataForTesting } from '../src/File';
+import type { MockTogglingDataForTesting } from '../src/lib/MockDataCreator';
 
 function testFindLineNumberOfTaskToToggle(
     jsonFileName: string,
