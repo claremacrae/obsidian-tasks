@@ -11,7 +11,7 @@ type CachedTaskInfo = string | undefined;
 type CachedLinePosition = Pos;
 type DataFromListItemCache = { task: string | undefined; position: Pos };
 type AllDataFromListItemCache = DataFromListItemCache[];
-export type PickledDataForTesting = {
+export type MockTogglingDataForTesting = {
     cacheData: { listItemsCache: DataFromListItemCache[] };
     fileData: { fileLines: string[] };
     taskData: {
@@ -27,7 +27,7 @@ function pickleDataForTesting(
     originalTask: Task,
     fileLines: string[],
     listItemsCache: ListItemCache[],
-): PickledDataForTesting {
+): MockTogglingDataForTesting {
     const allDataFromListItemCache: AllDataFromListItemCache = [];
     for (const listItemCache of listItemsCache) {
         const pos: CachedLinePosition = listItemCache.position;
@@ -55,7 +55,7 @@ function pickleDataForTesting(
     };
 }
 
-export function findLineNumberOfTaskToToggle(everything: PickledDataForTesting) {
+export function findLineNumberOfTaskToToggle(everything: MockTogglingDataForTesting) {
     const { globalFilter } = getSettings();
     let taskLineNumber: number | undefined;
     let sectionIndex = 0;

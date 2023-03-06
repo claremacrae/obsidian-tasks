@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { findLineNumberOfTaskToToggle } from '../src/File';
-import type { PickledDataForTesting } from '../src/File';
+import type { MockTogglingDataForTesting } from '../src/File';
 
 function testFindLineNumberOfTaskToToggle(
     jsonFileName: string,
@@ -10,7 +10,7 @@ function testFindLineNumberOfTaskToToggle(
 ) {
     // Arrange
     const data = readFileSync('tests/__test_data__/PickledDataForTogglingTasks/' + jsonFileName, 'utf-8');
-    const everything: PickledDataForTesting = JSON.parse(data);
+    const everything: MockTogglingDataForTesting = JSON.parse(data);
     expect(everything.taskData.originalMarkdown).toEqual(taskLineToToggle);
 
     // Act
