@@ -3,7 +3,7 @@
 ## Instructions
 
 > [!Tip] Goal
-> **Given** a file is open in both two panes:
+> **Given** a file is open simultaneously in two panes:
 >
 > - an editing mode (Source or Live Preview)
 > - Reading mode
