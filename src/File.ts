@@ -7,12 +7,12 @@ import type { Task } from './Task';
 let metadataCache: MetadataCache | undefined;
 let vault: Vault | undefined;
 
-type CachedTaskInfo = string | undefined;
-type CachedLinePosition = Pos;
-type DataFromListItemCache = { task: string | undefined; position: Pos };
-type AllDataFromListItemCache = DataFromListItemCache[];
+type MockListItemCacheTask = string | undefined;
+type MockPos = Pos;
+type MockListItemCache = { task: string | undefined; position: Pos };
+type AllDataFromListItemCache = MockListItemCache[];
 export type MockTogglingDataForTesting = {
-    cacheData: { listItemsCache: DataFromListItemCache[] };
+    cacheData: { listItemsCache: MockListItemCache[] };
     fileData: { fileLines: string[] };
     taskData: {
         sectionIndex: number;
@@ -30,9 +30,9 @@ function getMockDataForTesting(
 ): MockTogglingDataForTesting {
     const allDataFromListItemCache: AllDataFromListItemCache = [];
     for (const listItemCache of listItemsCache) {
-        const pos: CachedLinePosition = listItemCache.position;
-        const task: CachedTaskInfo = listItemCache.task;
-        const dataFromListItemCache: DataFromListItemCache = {
+        const pos: MockPos = listItemCache.position;
+        const task: MockListItemCacheTask = listItemCache.task;
+        const dataFromListItemCache: MockListItemCache = {
             position: pos,
             task: task,
         };
@@ -64,7 +64,7 @@ function findLineNumberOfTaskToToggle2(
         precedingHeader: string | null;
     },
     fileLines: string[],
-    listItemsCache: DataFromListItemCache[],
+    listItemsCache: MockListItemCache[],
 ) {
     const { globalFilter } = getSettings();
     let taskLineNumber: number | undefined;
