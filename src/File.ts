@@ -56,7 +56,7 @@ function getMockDataForTesting(
     };
 }
 
-function findLineNumberOfTaskToToggle2(
+export function findLineNumberOfTaskToToggle(
     originalTask: Task | MockTask,
     fileLines: string[],
     listItemsCache: ListItemCache[] | MockListItemCache[],
@@ -85,14 +85,6 @@ function findLineNumberOfTaskToToggle2(
         }
     }
     return taskLineNumber;
-}
-
-export function findLineNumberOfTaskToToggle(everything: MockTogglingDataForTesting) {
-    const originalTask = everything.taskData;
-    const fileLines = everything.fileData.fileLines;
-    const listItemsCache = everything.cacheData.listItemsCache;
-
-    return findLineNumberOfTaskToToggle2(originalTask, fileLines, listItemsCache);
 }
 
 export const initializeFile = ({
@@ -200,7 +192,7 @@ const tryRepetitive = async ({
     const fileContent = await vault.read(file);
     const fileLines = fileContent.split('\n');
 
-    const taskLineNumber = findLineNumberOfTaskToToggle2(originalTask, fileLines, listItemsCache);
+    const taskLineNumber = findLineNumberOfTaskToToggle(originalTask, fileLines, listItemsCache);
 
     if (taskLineNumber === undefined) {
         console.error('Tasks: could not find task to toggle in the file.');

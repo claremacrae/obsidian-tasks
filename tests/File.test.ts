@@ -14,7 +14,11 @@ function testFindLineNumberOfTaskToToggle(
     expect(everything.taskData.originalMarkdown).toEqual(taskLineToToggle);
 
     // Act
-    const result = findLineNumberOfTaskToToggle(everything);
+    const originalTask = everything.taskData;
+    const fileLines = everything.fileData.fileLines;
+    const listItemsCache = everything.cacheData.listItemsCache;
+
+    const result = findLineNumberOfTaskToToggle(originalTask, fileLines, listItemsCache);
 
     // Assert
     if (expectedLineNumber !== undefined) {
