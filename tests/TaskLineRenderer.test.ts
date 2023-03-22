@@ -127,6 +127,14 @@ describe('task line rendering', () => {
         );
     });
 
+    it('renders without created date', async () => {
+        await testLayoutOptions(
+            '- [ ] Full task ⏫ 📅 2022-07-02 ⏳ 2022-07-03 🛫 2022-07-04 ➕ 2022-07-05 🔁 every day',
+            { hideCreatedDate: true },
+            'Full task ⏫ 🔁 every day 🛫 2022-07-04 ⏳ 2022-07-03 📅 2022-07-02',
+        );
+    });
+
     it('renders without start date', async () => {
         await testLayoutOptions(
             '- [ ] Full task ⏫ 📅 2022-07-02 ⏳ 2022-07-03 🛫 2022-07-04 🔁 every day',
@@ -189,7 +197,7 @@ describe('task line rendering', () => {
         await testLayoutOptions(
             '- [ ] Task with invalid due date 📅 2023-11-02',
             {},
-            "Task with invalid due date 📅 2023-11-02<br>🐛 <b>0</b> . 0 . 'Previous Heading' . 'a/b/c.d'<br>'<code>- [ ] Task with invalid due date 📅 2023-11-02</code>'<br>",
+            "Task with invalid due date 📅 2023-11-02<br>🐛 <b>0</b> . 0 . 0 . '<code>- [ ] Task with invalid due date 📅 2023-11-02</code>'<br>'<code>a/b/c.d</code>' > '<code>Previous Heading</code>'<br>",
         );
     });
 

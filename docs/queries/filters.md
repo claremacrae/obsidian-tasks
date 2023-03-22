@@ -19,12 +19,33 @@ parent: Queries
 
 ---
 
-## Dates
+## Searching for dates
 
-`<date>` filters can be given in natural language or in formal notation.
-The following are some examples of valid `<date>` filters as inspiration:
+Tasks allows a lot of flexibility in the dates inside query blocks.
+
+### Absolute dates
+
+`<date>` filters can be given with 'absolute' dates, whose preferred format is `YYYY-MM-DD`.
+
+Absolute dates specify a **particular date in a calendar**. They represent the same day, regardless of today's date.
+
+Examples:
 
 - `2021-05-25`
+- `25th May 2023`
+  - The [chrono](https://github.com/wanasit/chrono) library reads dates very flexibly, so you can use free text for absolute dates in your filters.
+  - The `YYYY-MM-DD` format is somewhat safer, though, as there is no chance of ambiguity in reading your text.
+
+### Relative dates
+
+`<date>` filters can be given with `relative` dates.
+
+Relative dates are **calculated from today's date**.
+
+When the day changes, relative dates like `due today` are re-evaluated so that the list stays up-to-date (so long as your computer was not hibernating at midnight - see [#1289](https://github.com/obsidian-tasks-group/obsidian-tasks/issues/1289)).
+
+Examples for inspiration:
+
 - `yesterday`
 - `today`
 - `tomorrow`
@@ -32,16 +53,82 @@ The following are some examples of valid `<date>` filters as inspiration:
 - `last friday`
 - `14 days ago`
 - `in two weeks`
+- `14 October` (the current year will be used)
+- `May` (1st May in the current year will be used)
 
 Note that if it is Wednesday and you write `tuesday`, Tasks assumes you mean "yesterday", as that is the closest Tuesday.
 Use `next tuesday` instead if you mean "next tuesday".
 
-When the day changes, relative dates like `due today` are re-evaluated so that the list stays up-to-date.
+### Searching date ranges
+
+{: .released }
+Date range searches were introduced in Tasks 1.26.0.
+
+Tasks allows date searches to specify a pair of dates, `<date range>` .
+
+These searches are inclusive: the dates at either end are found by the search.
+
+### Absolute date ranges
+
+`<date range>` may be specified as 2 valid dates in `YYYY-MM-DD` format.
+
+Dates on either end are included, that is, it is an inclusive search.
+
+- `before <date range>` will match before the earliest date of the range.
+- `after <date range>` will match after the latest date of the range.
+
+Notes:
+
+- `in` and `on` may be omitted.
+- If one of the `YYYY-MM-DD` dates is invalid, then it is ignored and the filter will behave as `<date>` not `<date range>`.
+- Date range cannot be specified by 2 relative dates eg `next monday three weeks`.
+- It is technically possible to specify absolute dates in words, such as `25th May 2023`.
+  - However, we do not recommend using words for specifying the two dates in ranges.
+  - This is because we have found that using two adjacent non-numeric dates can lead to ambiguity and unintended results when the [chrono](https://github.com/wanasit/chrono) library parses the dates in your `<date range>` filter.
+
+Example absolute date ranges:
+
+- `2022-01-01 2023-02-01`
+
+### Relative date ranges
+
+Tasks supports a very specific set of relative `<date range>` values: `last|this|next week|month|quarter|year`. The pipe (`|`) character means 'or'.
+
+Tasks will process these ranges, based on today's date, and convert them to absolute date ranges (`YYYY-MM-DD YYYY-MM-DD`) internally.
+
+Dates on either end are included, that is, it is an inclusive search.
+
+Notes:
+
+- Currently all weeks are defined as [ISO 8601](https://en.wikipedia.org/wiki/ISO_week_date) weeks **starting on Monday** and **ending on Sunday**.
+  - We will provide more flexibility in a future release.
+  - We are tracking this in [issue #1751](https://github.com/obsidian-tasks-group/obsidian-tasks/issues/1751)
+- Relative date ranges support only the exact keywords specified above.
+  - So, for example, `previous half of year` and `next semester` are not supported.
+
+Example relative date ranges:
+
+- `in this week` (from this week's Monday to Sunday inclusive)
+- `after this month`
+- `next quarter`
+- `before next year`
+
+### Troubleshooting date searches
+
+If your date searches are giving unexpected results, add an [`explain`]({{ site.baseurl }}{% link queries/explaining-queries.md %}) line to your query.
+
+This will help you identify common mistakes such as:
+
+- Accidentally using an invalid absolute date in a filter.
+- Using unsupported keywords in relative date ranges.
+
+If relative dates in queries do not update from the previous day, and your computer was sleeping at midnight, this is likely caused by a known Chrome bug and you will need to re-open the note. See [#1289](https://github.com/obsidian-tasks-group/obsidian-tasks/issues/1289).
 
 ### Finding Tasks with Invalid Dates
 
 {: .released }
-Validation of dates was introduced in Tasks 1.16.0.
+Validation of dates was introduced in Tasks 1.16.0.<br>
+`created date is invalid` was introduced in Tasks 1.26.0.
 
 It is possible to accidentally use a non-existent date on a task signifier, such as `📅 2022-02-30`. February has at most 29 days.
 
@@ -50,7 +137,7 @@ Such tasks look like they have a date, but that date will never be found. When v
 Any such mistakes can be found systematically with this search:
 
     ```tasks
-    (done date is invalid) OR (due date is invalid) OR (scheduled date is invalid) OR (start date is invalid)
+    (created date is invalid) OR (done date is invalid) OR (due date is invalid) OR (scheduled date is invalid) OR (start date is invalid)
     ```
 
 <div class="code-example" markdown="1">
@@ -121,44 +208,56 @@ For full details of combining filters with boolean operators, see [Combining Fil
 - `no done date`
 - `has done date`
 - `done (before|after|on) <date>`
+- `done (before|after|in) YYYY-MM-DD YYYY-MM-DD`
+- `done (before|after|in) (last|this|next) (week|month|quarter|year)`
 - `done date is invalid`
 
 {: .released }
 `no done date` and `has done date` were introduced in Tasks 1.7.0.<br>
-`done date is invalid` was introduced in Tasks 1.16.0.
+`done date is invalid` was introduced in Tasks 1.16.0.<br>
+`done (before|after|in) <date range>` searches were introduced in Tasks 1.26.0.
 
 ### Due Date
 
 - `no due date`
 - `has due date`
 - `due (before|after|on) <date>`
+- `due (before|after|in) YYYY-MM-DD YYYY-MM-DD`
+- `due (before|after|in) (last|this|next) (week|month|quarter|year)`
 - `due date is invalid`
 
 {: .released }
 `has due date` was introduced in Tasks 1.6.0.<br>
-`due date is invalid` was introduced in Tasks 1.16.0.
+`due date is invalid` was introduced in Tasks 1.16.0.<br>
+`due (before|after|in) <date range>` searches were introduced in Tasks 1.26.0.
 
 ### Scheduled Date
 
 - `no scheduled date`
 - `has scheduled date`
 - `scheduled (before|after|on) <date>`
+- `scheduled (before|after|in) YYYY-MM-DD YYYY-MM-DD`
+- `scheduled (before|after|in) (last|this|next) (week|month|quarter|year)`
 - `scheduled date is invalid`
 
 {: .released }
 `has scheduled date` was introduced in Tasks 1.6.0.<br>
-`scheduled date is invalid` was introduced in Tasks 1.16.0.
+`scheduled date is invalid` was introduced in Tasks 1.16.0.<br>
+`scheduled (before|after|in) <date range>` searches were introduced in Tasks 1.26.0.
 
 ### Start Date
 
 - `no start date`
 - `has start date`
 - `starts (before|after|on) <date>`
+- `starts (before|after|in) YYYY-MM-DD YYYY-MM-DD`
+- `starts (before|after|in) (last|this|next) (week|month|quarter|year)`
 - `start date is invalid`
 
 {: .released }
 `has start date` was Introduced in Tasks 1.6.0.<br>
-`start date is invalid` was introduced in Tasks 1.16.0.
+`start date is invalid` was introduced in Tasks 1.16.0.<br>
+`starts (before|after|in) <date range>` searches were introduced in Tasks 1.26.0.
 
 When filtering queries by [start date]({{ site.baseurl }}{% link getting-started/dates.md %}#-start),
 the result will include tasks without a start date.
@@ -170,9 +269,31 @@ Such filter could be:
     starts before tomorrow
     ```
 
+### Created Date
+
+{: .released }
+Created date was introduced in Tasks 1.26.0.
+
+See [created date]({{ site.baseurl }}{% link getting-started/dates.md %}#-created) for how to make Tasks record the created date on any task lines that it creates.
+
+- `no created date`
+- `has created date`
+- `created (before|after|on) <date>`
+- `created (before|after|in) YYYY-MM-DD YYYY-MM-DD`
+- `created (before|after|in) (last|this|next) (week|month|quarter|year)`
+- `created date is invalid`
+
+Such a filter could be:
+
+    ```tasks
+    created before tomorrow
+    ```
+
 ### Happens
 
 - `happens (before|after|on) <date>`
+- `happens (before|after|in) YYYY-MM-DD YYYY-MM-DD`
+- `happens (before|after|in) (last|this|next) (week|month|quarter|year)`
 
 `happens` returns any task for a matching start date, scheduled date, _or_ due date.
 For example, `happens before tomorrow` will return all tasks that are starting, scheduled, or due earlier than tomorrow.
@@ -185,7 +306,8 @@ because the tasks starts before tomorrow. Only one of the dates needs to match.
   - Return tasks where _any_ of start date, scheduled date, _or_ due date are set.
 
 {: .released }
-`no happens date` and `has happens date` were introduced in Tasks 1.7.0.
+`no happens date` and `has happens date` were introduced in Tasks 1.7.0.<br>
+`happens (before|after|in) <date range>` searches were introduced in Tasks 1.26.0.
 
 ## Filters for Task Statuses
 
@@ -326,6 +448,8 @@ For more information, see [Priorities]({{ site.baseurl }}{% link getting-started
 {: .released }
 Introduced in Tasks 1.6.0.
 
+- `no tags`
+- `has tags`
 - `tags (include|do not include) <tag>` _or_
 - `tag (includes|does not include) <tag>`
   - Matches case-insensitive (disregards capitalization).
@@ -341,7 +465,8 @@ Introduced in Tasks 1.6.0.
   - If searching for sub-tags, remember to escape the slashes in regular expressions: `\/`
 
 {: .released }
-`regex matches` and `regex does not match` were introduced in Tasks 1.13.0.
+`regex matches` and `regex does not match` were introduced in Tasks 1.13.0.<br>
+`no tags` and `has tags` were introduced in Tasks 1.26.0.
 
 #### Tag Query Examples
 {: .no_toc }
