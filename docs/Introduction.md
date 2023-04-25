@@ -4,6 +4,12 @@ publish: true
 
 # Introduction
 
+## What's New?
+
+- 3.4.0: 🔥 Clicking on a [[Backlinks|Backlink]] jumps to the exact task line.
+- 3.4.0: Tasks now requires at least Obsidian 1.1.1.
+- 3.3.0: 🔥 Multiple [[About Task Formats|Task Format]] support - starting with [[Dataview Format]].
+
 ## Task management for the Obsidian knowledge base
 
 Track tasks across your entire [Obsidian](https://obsidian.md/) vault.
