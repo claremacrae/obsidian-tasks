@@ -1,5 +1,6 @@
 import Mustache from 'mustache';
-import { Task } from '../../src/Task';
+import { makeFileContext, makeFileContextForUnknownLocation } from '../../src/lib/FileContext';
+import type { FileContext } from '../../src/lib/FileContext';
 
 /**
  * @summary
@@ -8,30 +9,6 @@ import { Task } from '../../src/Task';
  */
 
 // https://github.com/janl/mustache.js
-
-interface FileContext {
-    path: string | undefined;
-    filename: string | undefined;
-    filenameWithoutExtension: string | undefined;
-}
-
-function makeFileContext(path: string): FileContext {
-    const filename: string = path.split('/').pop() ?? 'Unknown Path.md';
-    return {
-        path: path,
-        filename: filename,
-        filenameWithoutExtension: Task.getFilenameFromPath(path) ?? 'Unknown Path',
-    };
-}
-
-function makeFileContextForUnknownLocation(): FileContext {
-    const text = 'ERROR - path to Query not supplied - cannot expand template';
-    return {
-        path: text,
-        filename: text,
-        filenameWithoutExtension: text,
-    };
-}
 
 interface QueryContext {
     query: {
