@@ -1,4 +1,4 @@
-import Mustache from 'mustache';
+import { expandTemplate } from '../../src/lib/ExpandTemplate';
 import { makeFileContext, makeFileContextForUnknownLocation } from '../../src/lib/FileContext';
 import { makeQueryContext } from '../../src/lib/QueryContext';
 
@@ -9,16 +9,6 @@ import { makeQueryContext } from '../../src/lib/QueryContext';
  */
 
 // https://github.com/janl/mustache.js
-
-function expandTemplate(template: string, view: any): string {
-    // Turn off HTML escaping of things like '/' in file paths:
-    // https://github.com/janl/mustache.js#variables
-    Mustache.escape = function (text) {
-        return text;
-    };
-
-    return Mustache.render(template, view);
-}
 
 describe('', () => {
     it('hard-coded call', () => {
