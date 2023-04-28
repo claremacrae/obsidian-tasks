@@ -43,7 +43,7 @@ function makeQueryContext(path: string): QueryContext {
     };
 }
 
-function expandTemplate(template: string, view: QueryContext): string {
+function expandTemplate(template: string, view: any): string {
     return Mustache.render(template, view);
 }
 
@@ -54,7 +54,7 @@ describe('', () => {
             calc: () => 2 + 4,
         };
 
-        const output = Mustache.render('{{ title }} spends {{ calc }}', view);
+        const output = expandTemplate('{{ title }} spends {{ calc }}', view);
         expect(output).toMatchInlineSnapshot('"Joe spends 6"');
     });
 
