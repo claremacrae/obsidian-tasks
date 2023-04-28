@@ -64,8 +64,7 @@ describe('', () => {
 filename includes {{query.file.filename}}`;
 
         const context = makeQueryContext('a/b/path with space.md');
-        const output = expandTemplate(rawString, context);
-        expect(output).toMatchInlineSnapshot(`
+        expect(expandTemplate(rawString, context)).toMatchInlineSnapshot(`
             "path includes a/b/path with space.md
             filename includes path with space"
         `);
