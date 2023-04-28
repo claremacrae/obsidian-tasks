@@ -32,7 +32,7 @@ export class Query implements IQuery {
 
     private readonly commentRegexp = /^#.*/;
 
-    constructor({ source }: { source: string }, path: string | undefined) {
+    constructor({ source }: { source: string }, path: string | undefined = undefined) {
         this.rawSource = source;
         this.source = source;
         this.filePath = path;

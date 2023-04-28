@@ -29,7 +29,7 @@ export function verifyQuery(instructions: string, options?: Options): void {
  * @param options
  */
 export function verifyQueryExplanation(instructions: string, options?: Options): void {
-    const query = new Query({ source: instructions }, undefined);
+    const query = new Query({ source: instructions });
     const explanation = query.explainQuery();
 
     expect(query.error).toBeUndefined();

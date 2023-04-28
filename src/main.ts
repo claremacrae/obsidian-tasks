@@ -81,8 +81,9 @@ export default class TasksPlugin extends Plugin {
         return this.cache?.getTasks();
     }
 
+    // TODO Require the source path to be passed in
     public search(source: string): TaskGroups | undefined {
-        const query = new Query({ source }, undefined);
+        const query = new Query({ source });
         if (this.cache?.getState() !== State.Warm) {
             return undefined;
         }
