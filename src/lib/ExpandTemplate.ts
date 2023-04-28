@@ -2,7 +2,7 @@ import Mustache from 'mustache';
 
 // https://github.com/janl/mustache.js
 
-export function expandTemplate(template: string, view: any): string {
+export function expandMustacheTemplate(template: string, view: any): string {
     // Turn off HTML escaping of things like '/' in file paths:
     // https://github.com/janl/mustache.js#variables
     Mustache.escape = function (text) {

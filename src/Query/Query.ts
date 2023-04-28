@@ -1,4 +1,4 @@
-import { expandTemplate } from '../lib/ExpandTemplate';
+import { expandMustacheTemplate } from '../lib/ExpandTemplate';
 import { makeQueryContextFromPath } from '../lib/QueryContext';
 import { LayoutOptions } from '../TaskLayout';
 import type { Task } from '../Task';
@@ -50,7 +50,7 @@ ${this.source}`;
         let expandedSource: string;
         if (path) {
             const queryContext = makeQueryContextFromPath(path);
-            expandedSource = expandTemplate(this.source, queryContext);
+            expandedSource = expandMustacheTemplate(this.source, queryContext);
         } else {
             expandedSource = this.source;
         }
