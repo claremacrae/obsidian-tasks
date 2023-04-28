@@ -12,9 +12,9 @@ import { Task } from '../../src/Task';
 // https://github.com/janl/mustache.js
 
 interface FileContext {
-    path: string;
-    filename: string;
-    filenameWithoutExtension: string;
+    path: string | undefined;
+    filename: string | undefined;
+    filenameWithoutExtension: string | undefined;
 }
 
 function makeFileContext(path: string): FileContext {
@@ -26,16 +26,24 @@ function makeFileContext(path: string): FileContext {
     };
 }
 
+function makeFileContextForUnknownLocation(): FileContext {
+    return {
+        path: undefined,
+        filename: undefined,
+        filenameWithoutExtension: undefined,
+    };
+}
+
 interface QueryContext {
     query: {
         file: FileContext;
     };
 }
 
-function makeQueryContext(path: string): QueryContext {
+function makeQueryContext(fileContext: FileContext): QueryContext {
     return {
         query: {
-            file: makeFileContext(path),
+            file: fileContext,
         },
     };
 }
@@ -61,17 +69,27 @@ describe('', () => {
         expect(output).toMatchInlineSnapshot('"Joe spends 6"');
     });
 
-    it('fake query', () => {
-        // {{{ needed to prevent directory separators being encoded
-        const rawString = `path includes {{query.file.path}}
+    const rawString = `path includes {{query.file.path}}
 filename includes {{query.file.filename}}
 filename includes {{query.file.filenameWithoutExtension}}`;
 
-        const context = makeQueryContext('a/b/path with space.md');
-        expect(expandTemplate(rawString, context)).toMatchInlineSnapshot(`
+    it('fake query - with file path', () => {
+        const fileContext = makeFileContext('a/b/path with space.md');
+        const queryContext = makeQueryContext(fileContext);
+        expect(expandTemplate(rawString, queryContext)).toMatchInlineSnapshot(`
             "path includes a/b/path with space.md
             filename includes path with space.md
             filename includes path with space"
+        `);
+    });
+
+    it('fake query - with unknown file path', () => {
+        const fileContext = makeFileContextForUnknownLocation();
+        const queryContext = makeQueryContext(fileContext);
+        expect(expandTemplate(rawString, queryContext)).toMatchInlineSnapshot(`
+            "path includes 
+            filename includes 
+            filename includes "
         `);
     });
 });
