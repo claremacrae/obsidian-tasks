@@ -3,7 +3,10 @@ import { makeFileContext } from '../../src/lib/FileContext';
 import { makeQueryContext } from '../../src/lib/QueryContext';
 
 function expandMustacheTemplate(source: string, view: any) {
-    const template = Handlebars.compile(source);
+    const options: CompileOptions = {
+        strict: true,
+    };
+    const template = Handlebars.compile(source, options);
     return template(view);
 }
 
@@ -35,5 +38,16 @@ filename includes {{query.file.filenameWithoutExtension}}`;
             filename includes path with space.md
             filename includes path with space"
         `);
+    });
+
+    it('should throw an error if unknown template field used', () => {
+        const view = {
+            title: 'Joe',
+        };
+
+        const source = '{{ title }} spends {{ unknownField }}';
+        expect(() => expandMustacheTemplate(source, view)).toThrow(
+            '"unknownField" not defined in [object Object] - 1:22',
+        );
     });
 });
