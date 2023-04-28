@@ -8,6 +8,15 @@ import Mustache from 'mustache';
 
 // https://github.com/janl/mustache.js
 
+interface QueryContext {
+    query: {
+        file: {
+            filename: string;
+            path: string;
+        };
+    };
+}
+
 describe('', () => {
     it('hard-coded call', () => {
         const view = {
@@ -22,7 +31,7 @@ describe('', () => {
     it('fake query', () => {
         const rawString = 'path includes {{ query.file.filename }}';
 
-        const context = {
+        const context: QueryContext = {
             query: {
                 file: {
                     filename: 'path with space.md',
