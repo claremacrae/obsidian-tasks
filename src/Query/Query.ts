@@ -1,3 +1,4 @@
+import { expandTemplate } from '../lib/ExpandTemplate';
 import { type FileContext, makeFileContext, makeFileContextForUnknownLocation } from '../lib/FileContext';
 import { makeQueryContext } from '../lib/QueryContext';
 import { LayoutOptions } from '../TaskLayout';
@@ -45,7 +46,9 @@ export class Query implements IQuery {
         }
         this.queryContext = makeQueryContext(fileContext);
 
-        source
+        const expandedSource = expandTemplate(this.source, this.queryContext);
+
+        expandedSource
             .split('\n')
             .map((line: string) => line.trim())
             .forEach((line: string) => {

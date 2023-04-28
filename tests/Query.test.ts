@@ -797,6 +797,14 @@ filename includes {{query.file.filenameWithoutExtension}}`;
             const query = new Query({ source: rawQuery }, path);
             expect(query.rawSource).toEqual(rawQuery);
             expect(query.source).toEqual(rawQuery);
+            expect(query.explainQuery()).toMatchInlineSnapshot(`
+                "path includes root/some/directory/a file name with spaces.md
+
+                filename includes a file name with spaces.md
+
+                filename includes a file name with spaces
+                "
+            `);
         });
     });
 
