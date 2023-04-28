@@ -1,4 +1,5 @@
-import { expandMustacheTemplate } from '../lib/ExpandTemplate';
+import { Exception } from 'handlebars';
+import { expandHandlebarsTemplate } from '../lib/ExpandTemplate';
 import { makeQueryContextFromPath } from '../lib/QueryContext';
 import { LayoutOptions } from '../TaskLayout';
 import type { Task } from '../Task';
@@ -47,12 +48,24 @@ ${this.source}`;
             }
         }
 
-        let expandedSource: string;
+        let expandedSource: string = this.source;
         if (path) {
             const queryContext = makeQueryContextFromPath(path);
-            expandedSource = expandMustacheTemplate(this.source, queryContext);
-        } else {
-            expandedSource = this.source;
+            try {
+                expandedSource = expandHandlebarsTemplate(this.source, queryContext);
+            } catch (error) {
+                if (error instanceof Exception) {
+                    this._error = `There was an error expanding the template.
+The error message was:
+${error.message}`;
+                } else {
+                    this._error = 'Unknown error expanding the template.';
+                }
+                this._error += `
+The query is:
+${this.source}`;
+                return;
+            }
         }
 
         expandedSource

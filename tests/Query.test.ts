@@ -807,6 +807,19 @@ filename includes {{query.file.filenameWithoutExtension}}`;
             `);
         });
 
+        it('should report an error if an undefined variable is used', () => {
+            const rawQuery = 'path includes {{query.file.nonsense}}';
+            const path = 'p/q/r.md';
+            const query = new Query({ source: rawQuery }, path);
+            expect(query.error).toMatchInlineSnapshot(`
+                "There was an error expanding the template.
+                The error message was:
+                "nonsense" not defined in [object Object] - 1:16
+                The query is:
+                path includes {{query.file.nonsense}}"
+            `);
+        });
+
         it('should report an error if the query has a template, and no file path given', () => {
             const rawQuery = 'path includes {{query.file.path}}';
             const path = undefined;
