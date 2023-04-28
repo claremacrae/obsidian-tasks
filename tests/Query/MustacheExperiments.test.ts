@@ -11,12 +11,6 @@ import { Task } from '../../src/Task';
 
 // https://github.com/janl/mustache.js
 
-// Turn off HTML escaping of things like '/' in file paths:
-// https://github.com/janl/mustache.js#variables
-Mustache.escape = function (text) {
-    return text;
-};
-
 interface FileContext {
     filename: string;
     path: string;
@@ -44,6 +38,12 @@ function makeQueryContext(path: string): QueryContext {
 }
 
 function expandTemplate(template: string, view: any): string {
+    // Turn off HTML escaping of things like '/' in file paths:
+    // https://github.com/janl/mustache.js#variables
+    Mustache.escape = function (text) {
+        return text;
+    };
+
     return Mustache.render(template, view);
 }
 
