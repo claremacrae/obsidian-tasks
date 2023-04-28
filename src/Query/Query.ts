@@ -10,6 +10,7 @@ import type { Grouper } from './Grouper';
 import type { Filter } from './Filter/Filter';
 
 export class Query implements IQuery {
+    public rawSource: string;
     public source: string;
 
     private _limit: number | undefined = undefined;
@@ -29,6 +30,7 @@ export class Query implements IQuery {
     private readonly commentRegexp = /^#.*/;
 
     constructor({ source }: { source: string }) {
+        this.rawSource = source;
         this.source = source;
         source
             .split('\n')

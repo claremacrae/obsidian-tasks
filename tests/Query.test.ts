@@ -788,6 +788,17 @@ describe('Query', () => {
         });
     });
 
+    describe('templating', () => {
+        it('should expand templates, when given a file path', () => {
+            const rawQuery = `path includes {{query.file.path}}
+filename includes {{query.file.filename}}
+filename includes {{query.file.filenameWithoutExtension}}`;
+            const query = new Query({ source: rawQuery });
+            expect(query.rawSource).toEqual(rawQuery);
+            expect(query.source).toEqual(rawQuery);
+        });
+    });
+
     describe('explanations', () => {
         afterEach(() => {
             GlobalFilter.reset();
