@@ -793,7 +793,8 @@ describe('Query', () => {
             const rawQuery = `path includes {{query.file.path}}
 filename includes {{query.file.filename}}
 filename includes {{query.file.filenameWithoutExtension}}`;
-            const query = new Query({ source: rawQuery });
+            const path = 'root/some/directory/a file name with spaces.md';
+            const query = new Query({ source: rawQuery }, path);
             expect(query.rawSource).toEqual(rawQuery);
             expect(query.source).toEqual(rawQuery);
         });

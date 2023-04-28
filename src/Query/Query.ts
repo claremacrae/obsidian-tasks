@@ -1,7 +1,10 @@
+import { type FileContext, makeFileContext, makeFileContextForUnknownLocation } from '../lib/FileContext';
+import { makeQueryContext } from '../lib/QueryContext';
 import { LayoutOptions } from '../TaskLayout';
 import type { Task } from '../Task';
 import type { IQuery } from '../IQuery';
 import { getSettings } from '../Config/Settings';
+import type { QueryContext } from '../lib/QueryContext';
 import { Sort } from './Sort';
 import type { Sorter } from './Sorter';
 import { TaskGroups } from './TaskGroups';
@@ -12,6 +15,7 @@ import type { Filter } from './Filter/Filter';
 export class Query implements IQuery {
     public rawSource: string;
     public source: string;
+    public readonly queryContext: QueryContext;
 
     private _limit: number | undefined = undefined;
     private _layoutOptions: LayoutOptions = new LayoutOptions();
@@ -29,9 +33,18 @@ export class Query implements IQuery {
 
     private readonly commentRegexp = /^#.*/;
 
-    constructor({ source }: { source: string }) {
+    constructor({ source }: { source: string }, path: string | undefined = undefined) {
         this.rawSource = source;
         this.source = source;
+
+        let fileContext: FileContext;
+        if (path) {
+            fileContext = makeFileContext(path);
+        } else {
+            fileContext = makeFileContextForUnknownLocation();
+        }
+        this.queryContext = makeQueryContext(fileContext);
+
         source
             .split('\n')
             .map((line: string) => line.trim())

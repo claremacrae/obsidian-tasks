@@ -1,6 +1,6 @@
 import type { FileContext } from './FileContext';
 
-interface QueryContext {
+export interface QueryContext {
     query: {
         file: FileContext;
     };
