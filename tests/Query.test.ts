@@ -806,6 +806,18 @@ filename includes {{query.file.filenameWithoutExtension}}`;
                 "
             `);
         });
+
+        it('should report an error if the query has a template, and no file path given', () => {
+            const rawQuery = 'path includes {{query.file.path}}';
+            const path = undefined;
+            const query = new Query({ source: rawQuery }, path);
+            expect(query.error).toMatchInlineSnapshot(`
+                "Input looks like it contains a template, with "{{" and "}}"
+                but no file path has been supplied, so cannot expand template values.
+                The query is:
+                path includes {{query.file.path}}"
+            `);
+        });
     });
 
     describe('explanations', () => {

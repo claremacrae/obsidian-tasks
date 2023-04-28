@@ -37,6 +37,15 @@ export class Query implements IQuery {
         this.source = source;
         this.filePath = path;
 
+        if (this.source.includes('{{') && this.source.includes('}}')) {
+            if (this.filePath === undefined) {
+                this._error = `Input looks like it contains a template, with "{{" and "}}"
+but no file path has been supplied, so cannot expand template values.
+The query is:
+${this.source}`;
+                return;
+            }
+        }
         const queryContext = makeQueryContextFromPath(path);
         const expandedSource = expandTemplate(this.source, queryContext);
 
