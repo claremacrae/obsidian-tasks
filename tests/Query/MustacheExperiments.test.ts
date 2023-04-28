@@ -6,7 +6,7 @@ import { Task } from '../../src/Task';
 /**
  * @summary
  * This file contains experiments with the Mustache templates library.
- * It will likley be deleted once the library is in use.
+ * It will likely be deleted once the library is in use.
  */
 
 // https://github.com/janl/mustache.js
@@ -50,14 +50,14 @@ describe('', () => {
             calc: () => 2 + 4,
         };
 
-        const output = Mustache.render('{{title}} spends {{calc}}', view);
+        const output = Mustache.render('{{ title }} spends {{ calc }}', view);
         expect(output).toMatchInlineSnapshot('"Joe spends 6"');
     });
 
     it('fake query', () => {
         // {{{ needed to prevent directory separators being encoded
-        const rawString = `path includes {{ query.file.path }}
-filename includes {{ query.file.filename }}`;
+        const rawString = `path includes {{query.file.path}}
+filename includes {{query.file.filename}}`;
 
         const context = makeQueryContext('a/b/path with space.md');
         const output = Mustache.render(rawString, context);
