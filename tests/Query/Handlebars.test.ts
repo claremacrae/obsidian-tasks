@@ -19,6 +19,7 @@ describe('Handlebars Experiments', () => {
     });
 
     const rawString = `path includes {{query.file.path}}
+filename includes {{query.file.folder}}
 filename includes {{query.file.filename}}
 filename includes {{query.file.filenameWithoutExtension}}`;
 
@@ -27,6 +28,7 @@ filename includes {{query.file.filenameWithoutExtension}}`;
         const queryContext = makeQueryContext(fileContext);
         expect(expandHandlebarsTemplate(rawString, queryContext)).toMatchInlineSnapshot(`
             "path includes a/b/path with space.md
+            filename includes a/b/
             filename includes path with space.md
             filename includes path with space"
         `);
