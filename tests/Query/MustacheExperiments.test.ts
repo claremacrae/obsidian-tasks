@@ -1,8 +1,6 @@
 import Mustache from 'mustache';
 import { Task } from '../../src/Task';
 
-// @ts-ignore
-// @ts-ignore
 /**
  * @summary
  * This file contains experiments with the Mustache templates library.
