@@ -11,6 +11,12 @@ import { Task } from '../../src/Task';
 
 // https://github.com/janl/mustache.js
 
+// Turn off HTML escaping of things like '/' in file paths:
+// https://github.com/janl/mustache.js#variables
+Mustache.escape = function (text) {
+    return text;
+};
+
 interface QueryContext2 {
     query: {
         file: IFileContext;
@@ -50,7 +56,7 @@ describe('', () => {
 
     it('fake query', () => {
         // {{{ needed to prevent directory separators being encoded
-        const rawString = `path includes {{{ query.file.path }}}
+        const rawString = `path includes {{ query.file.path }}
 filename includes {{ query.file.filename }}`;
 
         const context = makeQueryContext('a/b/path with space.md');
