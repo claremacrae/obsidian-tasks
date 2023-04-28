@@ -43,6 +43,10 @@ function makeQueryContext(path: string): QueryContext {
     };
 }
 
+function expandTemplate(template: string, view: QueryContext): string {
+    return Mustache.render(template, view);
+}
+
 describe('', () => {
     it('hard-coded call', () => {
         const view = {
@@ -60,7 +64,7 @@ describe('', () => {
 filename includes {{query.file.filename}}`;
 
         const context = makeQueryContext('a/b/path with space.md');
-        const output = Mustache.render(rawString, context);
+        const output = expandTemplate(rawString, context);
         expect(output).toMatchInlineSnapshot(`
             "path includes a/b/path with space.md
             filename includes path with space"
