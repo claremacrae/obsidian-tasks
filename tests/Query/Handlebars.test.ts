@@ -1,23 +1,25 @@
-import { expandTemplate } from '../../src/lib/ExpandTemplate';
+import Handlebars from 'handlebars';
 import { makeFileContext } from '../../src/lib/FileContext';
 import { makeQueryContext } from '../../src/lib/QueryContext';
 
-/**
- * @summary
- * This file contains experiments with the Mustache templates library.
- * It will likely be deleted once the library is in use.
- */
+function expandMustacheTemplate(source: string, view: any) {
+    const template = Handlebars.compile(source);
+    return template(view);
+}
 
-// https://github.com/janl/mustache.js
+describe('Handlebars Experiments', () => {
+    it('rename me', () => {
+        const output = expandMustacheTemplate('Name: {{name}}', { name: 'Nils' });
+        expect(output).toMatchInlineSnapshot('"Name: Nils"');
+    });
 
-describe('Mustache Experiments', () => {
     it('hard-coded call', () => {
         const view = {
             title: 'Joe',
             calc: () => 2 + 4,
         };
 
-        const output = expandTemplate('{{ title }} spends {{ calc }}', view);
+        const output = expandMustacheTemplate('{{ title }} spends {{ calc }}', view);
         expect(output).toMatchInlineSnapshot('"Joe spends 6"');
     });
 
@@ -28,7 +30,7 @@ filename includes {{query.file.filenameWithoutExtension}}`;
     it('fake query - with file path', () => {
         const fileContext = makeFileContext('a/b/path with space.md');
         const queryContext = makeQueryContext(fileContext);
-        expect(expandTemplate(rawString, queryContext)).toMatchInlineSnapshot(`
+        expect(expandMustacheTemplate(rawString, queryContext)).toMatchInlineSnapshot(`
             "path includes a/b/path with space.md
             filename includes path with space.md
             filename includes path with space"
