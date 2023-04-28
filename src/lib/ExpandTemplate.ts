@@ -1,3 +1,4 @@
+import Handlebars from 'handlebars';
 import Mustache from 'mustache';
 
 // https://github.com/janl/mustache.js
@@ -10,4 +11,12 @@ export function expandMustacheTemplate(template: string, view: any): string {
     };
 
     return Mustache.render(template, view);
+}
+
+export function expandHandlebarsTemplate(source: string, view: any) {
+    const options: CompileOptions = {
+        strict: true,
+    };
+    const template = Handlebars.compile(source, options);
+    return template(view);
 }

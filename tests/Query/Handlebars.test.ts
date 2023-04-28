@@ -1,14 +1,6 @@
-import Handlebars from 'handlebars';
+import { expandHandlebarsTemplate } from '../../src/lib/ExpandTemplate';
 import { makeFileContext } from '../../src/lib/FileContext';
 import { makeQueryContext } from '../../src/lib/QueryContext';
-
-function expandHandlebarsTemplate(source: string, view: any) {
-    const options: CompileOptions = {
-        strict: true,
-    };
-    const template = Handlebars.compile(source, options);
-    return template(view);
-}
 
 describe('Handlebars Experiments', () => {
     it('rename me', () => {
