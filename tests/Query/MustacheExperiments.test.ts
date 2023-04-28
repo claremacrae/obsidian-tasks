@@ -1,4 +1,5 @@
 import Mustache from 'mustache';
+import { Task } from '../../src/Task';
 
 // @ts-ignore
 // @ts-ignore
@@ -23,6 +24,21 @@ interface QueryContext1 {
 interface QueryContext2 {
     query: {
         file: IFileContext;
+    };
+}
+
+function makeFileContext(path: string): IFileContext {
+    return {
+        filename: Task.getFilenameFromPath(path) ?? '',
+        path: path,
+    };
+}
+
+function makeQueryContext(path: string): QueryContext2 {
+    return {
+        query: {
+            file: makeFileContext(path),
+        },
     };
 }
 
@@ -69,15 +85,8 @@ describe('', () => {
     it('fake query', () => {
         const rawString = 'path includes {{ query.file.filename }}';
 
-        const context: QueryContext2 = {
-            query: {
-                file: {
-                    filename: 'path with space.md',
-                    path: 'a/b/path with space.md',
-                },
-            },
-        };
+        const context = makeQueryContext('a/b/path with space.md');
         const output = Mustache.render(rawString, context);
-        expect(output).toMatchInlineSnapshot('"path includes path with space.md"');
+        expect(output).toMatchInlineSnapshot('"path includes path with space"');
     });
 });
