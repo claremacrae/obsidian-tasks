@@ -1,5 +1,5 @@
 import { expandTemplate } from '../../src/lib/ExpandTemplate';
-import { makeFileContext, makeFileContextForUnknownLocation } from '../../src/lib/FileContext';
+import { makeFileContext } from '../../src/lib/FileContext';
 import { makeQueryContext } from '../../src/lib/QueryContext';
 
 /**
@@ -32,16 +32,6 @@ filename includes {{query.file.filenameWithoutExtension}}`;
             "path includes a/b/path with space.md
             filename includes path with space.md
             filename includes path with space"
-        `);
-    });
-
-    it('fake query - with unknown file path', () => {
-        const fileContext = makeFileContextForUnknownLocation();
-        const queryContext = makeQueryContext(fileContext);
-        expect(expandTemplate(rawString, queryContext)).toMatchInlineSnapshot(`
-            "path includes ERROR - path to Query not supplied - cannot expand template
-            filename includes ERROR - path to Query not supplied - cannot expand template
-            filename includes ERROR - path to Query not supplied - cannot expand template"
         `);
     });
 });

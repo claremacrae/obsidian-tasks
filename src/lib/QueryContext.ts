@@ -1,5 +1,5 @@
 import type { FileContext } from './FileContext';
-import { makeFileContext, makeFileContextForUnknownLocation } from './FileContext';
+import { makeFileContext } from './FileContext';
 
 export interface QueryContext {
     query: {
@@ -15,12 +15,7 @@ export function makeQueryContext(fileContext: FileContext): QueryContext {
     };
 }
 
-export function makeQueryContextFromPath(path: string | undefined) {
-    let fileContext: FileContext;
-    if (path) {
-        fileContext = makeFileContext(path);
-    } else {
-        fileContext = makeFileContextForUnknownLocation();
-    }
+export function makeQueryContextFromPath(path: string) {
+    const fileContext: FileContext = makeFileContext(path);
     return makeQueryContext(fileContext);
 }

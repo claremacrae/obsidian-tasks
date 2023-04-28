@@ -46,8 +46,14 @@ ${this.source}`;
                 return;
             }
         }
-        const queryContext = makeQueryContextFromPath(path);
-        const expandedSource = expandTemplate(this.source, queryContext);
+
+        let expandedSource: string;
+        if (path) {
+            const queryContext = makeQueryContextFromPath(path);
+            expandedSource = expandTemplate(this.source, queryContext);
+        } else {
+            expandedSource = this.source;
+        }
 
         expandedSource
             .split('\n')
