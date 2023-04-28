@@ -1,6 +1,5 @@
 import { expandTemplate } from '../lib/ExpandTemplate';
-import { type FileContext, makeFileContext, makeFileContextForUnknownLocation } from '../lib/FileContext';
-import { makeQueryContext } from '../lib/QueryContext';
+import { makeQueryContextFromPath } from '../lib/QueryContext';
 import { LayoutOptions } from '../TaskLayout';
 import type { Task } from '../Task';
 import type { IQuery } from '../IQuery';
@@ -38,14 +37,7 @@ export class Query implements IQuery {
         this.source = source;
         this.filePath = path;
 
-        let fileContext: FileContext;
-        if (path) {
-            fileContext = makeFileContext(path);
-        } else {
-            fileContext = makeFileContextForUnknownLocation();
-        }
-        const queryContext = makeQueryContext(fileContext);
-
+        const queryContext = makeQueryContextFromPath(path);
         const expandedSource = expandTemplate(this.source, queryContext);
 
         expandedSource
