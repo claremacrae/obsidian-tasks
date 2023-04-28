@@ -2,7 +2,7 @@ import Handlebars from 'handlebars';
 import { makeFileContext } from '../../src/lib/FileContext';
 import { makeQueryContext } from '../../src/lib/QueryContext';
 
-function expandMustacheTemplate(source: string, view: any) {
+function expandHandlebarsTemplate(source: string, view: any) {
     const options: CompileOptions = {
         strict: true,
     };
@@ -12,7 +12,7 @@ function expandMustacheTemplate(source: string, view: any) {
 
 describe('Handlebars Experiments', () => {
     it('rename me', () => {
-        const output = expandMustacheTemplate('Name: {{name}}', { name: 'Nils' });
+        const output = expandHandlebarsTemplate('Name: {{name}}', { name: 'Nils' });
         expect(output).toMatchInlineSnapshot('"Name: Nils"');
     });
 
@@ -22,7 +22,7 @@ describe('Handlebars Experiments', () => {
             calc: () => 2 + 4,
         };
 
-        const output = expandMustacheTemplate('{{ title }} spends {{ calc }}', view);
+        const output = expandHandlebarsTemplate('{{ title }} spends {{ calc }}', view);
         expect(output).toMatchInlineSnapshot('"Joe spends 6"');
     });
 
@@ -33,7 +33,7 @@ filename includes {{query.file.filenameWithoutExtension}}`;
     it('fake query - with file path', () => {
         const fileContext = makeFileContext('a/b/path with space.md');
         const queryContext = makeQueryContext(fileContext);
-        expect(expandMustacheTemplate(rawString, queryContext)).toMatchInlineSnapshot(`
+        expect(expandHandlebarsTemplate(rawString, queryContext)).toMatchInlineSnapshot(`
             "path includes a/b/path with space.md
             filename includes path with space.md
             filename includes path with space"
@@ -46,7 +46,7 @@ filename includes {{query.file.filenameWithoutExtension}}`;
         };
 
         const source = '{{ title }} spends {{ unknownField }}';
-        expect(() => expandMustacheTemplate(source, view)).toThrow(
+        expect(() => expandHandlebarsTemplate(source, view)).toThrow(
             '"unknownField" not defined in [object Object] - 1:22',
         );
     });
