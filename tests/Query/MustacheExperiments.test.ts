@@ -1,6 +1,6 @@
 import Mustache from 'mustache';
 import { makeFileContext, makeFileContextForUnknownLocation } from '../../src/lib/FileContext';
-import type { FileContext } from '../../src/lib/FileContext';
+import { makeQueryContext } from '../../src/lib/QueryContext';
 
 /**
  * @summary
@@ -9,20 +9,6 @@ import type { FileContext } from '../../src/lib/FileContext';
  */
 
 // https://github.com/janl/mustache.js
-
-interface QueryContext {
-    query: {
-        file: FileContext;
-    };
-}
-
-function makeQueryContext(fileContext: FileContext): QueryContext {
-    return {
-        query: {
-            file: fileContext,
-        },
-    };
-}
 
 function expandTemplate(template: string, view: any): string {
     // Turn off HTML escaping of things like '/' in file paths:
