@@ -23,5 +23,13 @@
 path includes Templating Experiments
 path includes {{query.file.filename}}
 limit 10
+group by path
+group by heading
+description does not include {{query.file.filenameWithoutExtension}}
+description does not include {{query.file.path}}
+
+# Note cannot generally put arbitrary string in to regular expression,
+# due to special meaning of some characters
+description regex does not match /^{{query.file.pathxx}}$/
 explain
 ```
