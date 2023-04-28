@@ -12,14 +12,14 @@ import { Task } from '../../src/Task';
 // https://github.com/janl/mustache.js
 
 interface FileContext {
-    filename: string;
     path: string;
+    filename: string;
 }
 
 function makeFileContext(path: string): FileContext {
     return {
-        filename: Task.getFilenameFromPath(path) ?? '',
         path: path,
+        filename: Task.getFilenameFromPath(path) ?? '',
     };
 }
 
