@@ -17,10 +17,9 @@ Mustache.escape = function (text) {
     return text;
 };
 
-interface QueryContext {
-    query: {
-        file: FileContext;
-    };
+interface FileContext {
+    filename: string;
+    path: string;
 }
 
 function makeFileContext(path: string): FileContext {
@@ -30,17 +29,18 @@ function makeFileContext(path: string): FileContext {
     };
 }
 
+interface QueryContext {
+    query: {
+        file: FileContext;
+    };
+}
+
 function makeQueryContext(path: string): QueryContext {
     return {
         query: {
             file: makeFileContext(path),
         },
     };
-}
-
-interface FileContext {
-    filename: string;
-    path: string;
 }
 
 describe('', () => {
