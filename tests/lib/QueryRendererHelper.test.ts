@@ -17,7 +17,7 @@ describe('explain', () => {
 
     it('should explain a task', () => {
         const source = '';
-        const query = new Query({ source });
+        const query = new Query({ source }, undefined);
 
         const expectedDisplayText = `Explanation of this Tasks code block query:
 
@@ -30,7 +30,7 @@ No filters supplied. All tasks will match the query.`;
         GlobalFilter.set('#task');
 
         const source = '';
-        const query = new Query({ source });
+        const query = new Query({ source }, undefined);
 
         const expectedDisplayText = `Only tasks containing the global filter '#task'.
 
@@ -44,7 +44,7 @@ No filters supplied. All tasks will match the query.`;
         updateSettings({ globalQuery: 'description includes hello' });
 
         const source = '';
-        const query = new Query({ source });
+        const query = new Query({ source }, undefined);
 
         const expectedDisplayText = `Explanation of the global query:
 
@@ -62,7 +62,7 @@ No filters supplied. All tasks will match the query.`;
         GlobalFilter.set('#task');
 
         const source = '';
-        const query = new Query({ source });
+        const query = new Query({ source }, undefined);
 
         const expectedDisplayText = `Only tasks containing the global filter '#task'.
 
@@ -92,6 +92,9 @@ describe('query used for QueryRenderer', () => {
         const querySource = 'description includes world';
         const globalQuerySource = 'description includes hello';
         updateSettings({ globalQuery: globalQuerySource });
-        expect(getQueryForQueryRenderer(querySource).source).toEqual(`${globalQuerySource}\n${querySource}`);
+        const filePath = 'a/b/c.md';
+        const query = getQueryForQueryRenderer(querySource, filePath);
+        expect(query.source).toEqual(`${globalQuerySource}\n${querySource}`);
+        expect(query.filePath).toEqual(filePath);
     });
 });

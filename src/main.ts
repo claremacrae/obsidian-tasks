@@ -82,7 +82,7 @@ export default class TasksPlugin extends Plugin {
     }
 
     public search(source: string): TaskGroups | undefined {
-        const query = new Query({ source });
+        const query = new Query({ source }, undefined);
         if (this.cache?.getState() !== State.Warm) {
             return undefined;
         }

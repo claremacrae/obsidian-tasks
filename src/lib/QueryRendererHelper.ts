@@ -20,22 +20,23 @@ import { Query } from '../Query/Query';
  *     * Explains the query described by {@link source}
  *
  * @param {string} source The source of the task block to explain
+ * @param {string} path The location of the task block, if known
  * @returns {string}
  */
-export function explainResults(source: string): string {
+export function explainResults(source: string, path: string | undefined = undefined): string {
     let result = '';
 
     if (!GlobalFilter.isEmpty()) {
         result += `Only tasks containing the global filter '${GlobalFilter.get()}'.\n\n`;
     }
 
-    const globalQuery: IQuery = new Query(getGlobalQuerySource());
+    const globalQuery: IQuery = new Query(getGlobalQuerySource(), path);
 
     if (globalQuery.source.trim() !== '') {
         result += `Explanation of the global query:\n\n${globalQuery.explainQuery()}\n`;
     }
 
-    result += `Explanation of this Tasks code block query:\n\n${new Query({ source }).explainQuery()}`;
+    result += `Explanation of this Tasks code block query:\n\n${new Query({ source }, path).explainQuery()}`;
 
     return result;
 }
@@ -48,6 +49,6 @@ export function explainResults(source: string): string {
  * @param {string} source The query source from the task block
  * @returns {Query} The query to execute
  */
-export function getQueryForQueryRenderer(source: string): Query {
-    return new Query(getGlobalQuerySource()).append(new Query({ source }));
+export function getQueryForQueryRenderer(source: string, path: string | undefined): Query {
+    return new Query(getGlobalQuerySource(), path).append(new Query({ source }, path));
 }

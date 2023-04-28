@@ -17,12 +17,15 @@ describe('DebugSettings', () => {
 `;
         const tasks = createTasksFromMarkdown(tasksAsMarkdown, 'some_markdown_file', 'Some Heading');
 
-        const query = new Query({
-            source: `
+        const query = new Query(
+            {
+                source: `
             sort by status
             explain
         `,
-        }); // Would put Task 3 first
+            },
+            undefined,
+        ); // Would put Task 3 first
 
         // Disable sort instructions
         updateSettings({ debugSettings: new DebugSettings(true) });
