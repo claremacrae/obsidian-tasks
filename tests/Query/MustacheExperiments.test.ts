@@ -27,10 +27,11 @@ function makeFileContext(path: string): FileContext {
 }
 
 function makeFileContextForUnknownLocation(): FileContext {
+    const text = 'ERROR - path to Query not supplied - cannot expand template';
     return {
-        path: undefined,
-        filename: undefined,
-        filenameWithoutExtension: undefined,
+        path: text,
+        filename: text,
+        filenameWithoutExtension: text,
     };
 }
 
@@ -87,9 +88,9 @@ filename includes {{query.file.filenameWithoutExtension}}`;
         const fileContext = makeFileContextForUnknownLocation();
         const queryContext = makeQueryContext(fileContext);
         expect(expandTemplate(rawString, queryContext)).toMatchInlineSnapshot(`
-            "path includes 
-            filename includes 
-            filename includes "
+            "path includes ERROR - path to Query not supplied - cannot expand template
+            filename includes ERROR - path to Query not supplied - cannot expand template
+            filename includes ERROR - path to Query not supplied - cannot expand template"
         `);
     });
 });
