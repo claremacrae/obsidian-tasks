@@ -14,12 +14,15 @@ import { Task } from '../../src/Task';
 interface FileContext {
     path: string;
     filename: string;
+    filenameWithoutExtension: string;
 }
 
 function makeFileContext(path: string): FileContext {
+    const filename: string = path.split('/').pop() ?? 'Unknown Path.md';
     return {
         path: path,
-        filename: Task.getFilenameFromPath(path) ?? '',
+        filename: filename,
+        filenameWithoutExtension: Task.getFilenameFromPath(path) ?? 'Unknown Path',
     };
 }
 
@@ -61,11 +64,13 @@ describe('', () => {
     it('fake query', () => {
         // {{{ needed to prevent directory separators being encoded
         const rawString = `path includes {{query.file.path}}
-filename includes {{query.file.filename}}`;
+filename includes {{query.file.filename}}
+filename includes {{query.file.filenameWithoutExtension}}`;
 
         const context = makeQueryContext('a/b/path with space.md');
         expect(expandTemplate(rawString, context)).toMatchInlineSnapshot(`
             "path includes a/b/path with space.md
+            filename includes path with space.md
             filename includes path with space"
         `);
     });
