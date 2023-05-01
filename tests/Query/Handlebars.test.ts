@@ -18,7 +18,8 @@ describe('Handlebars Experiments', () => {
         expect(output).toMatchInlineSnapshot('"Joe spends 6"');
     });
 
-    const rawString = `path includes {{query.file.path}}
+    const rawString = `root includes {{query.file.root}}
+path includes {{query.file.path}}
 filename includes {{query.file.folder}}
 filename includes {{query.file.filename}}
 filename includes {{query.file.filenameWithoutExtension}}`;
@@ -27,7 +28,8 @@ filename includes {{query.file.filenameWithoutExtension}}`;
         const fileContext = makeFileContext('a/b/path with space.md');
         const queryContext = makeQueryContext(fileContext);
         expect(expandHandlebarsTemplate(rawString, queryContext)).toMatchInlineSnapshot(`
-            "path includes a/b/path with space.md
+            "root includes a/
+            path includes a/b/path with space.md
             filename includes a/b/
             filename includes path with space.md
             filename includes path with space"

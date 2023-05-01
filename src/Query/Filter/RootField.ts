@@ -8,7 +8,12 @@ export class RootField extends TextField {
     }
 
     public value(task: Task): string {
-        let path = task.path.replace(/\\/g, '/');
+        const path1 = task.path;
+        return RootField.root(path1);
+    }
+
+    public static root(path1: string) {
+        let path = path1.replace(/\\/g, '/');
 
         if (path.charAt(0) === '/') {
             path = path.substring(1);
