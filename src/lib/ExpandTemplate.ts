@@ -1,5 +1,6 @@
 import Handlebars from 'handlebars';
 import Mustache from 'mustache';
+import proxyData from 'mustache-validator';
 
 // https://github.com/janl/mustache.js
 
@@ -10,7 +11,7 @@ export function expandMustacheTemplate(template: string, view: any): string {
         return text;
     };
 
-    return Mustache.render(template, view);
+    return Mustache.render(template, proxyData(view));
 }
 
 export function expandHandlebarsTemplate(source: string, view: any) {

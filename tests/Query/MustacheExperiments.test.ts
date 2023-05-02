@@ -34,4 +34,13 @@ filename includes {{query.file.filenameWithoutExtension}}`;
             filename includes path with space"
         `);
     });
+
+    it('should throw an error if unknown template field used', () => {
+        const view = {
+            title: 'Joe',
+        };
+
+        const source = '{{ title }} spends {{ unknownField }}';
+        expect(() => expandMustacheTemplate(source, view)).toThrow('Missing Mustache data property: unknownField');
+    });
 });
