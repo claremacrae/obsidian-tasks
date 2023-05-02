@@ -1,0 +1,11 @@
+{
+  "query": {
+    "file": {
+      "root": "a/",
+      "path": "a/b/c.md",
+      "folder": "a/b/",
+      "filename": "c.md",
+      "filenameWithoutExtension": "c"
+    }
+  }
+}
