@@ -813,8 +813,10 @@ filename includes {{query.file.filenameWithoutExtension}}`;
             const query = new Query({ source: rawQuery }, path);
             expect(query.error).toMatchInlineSnapshot(`
                 "There was an error expanding the template.
+
                 The error message was:
                 Missing Mustache data property: query.file.nonsense
+
                 The query is:
                 path includes {{query.file.nonsense}}"
             `);

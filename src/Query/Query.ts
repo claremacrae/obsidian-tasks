@@ -50,6 +50,9 @@ ${this.source}`;
         // TODO Move this error-checking to expandMustacheTemplate()
         // TODO Apply the template one line at a time
         // TODO Optimise the template code and only do the expansion if {{ is in the text
+        // TODO Do not complain about any template errors in comment lines
+        // TODO Show the original and expanded text in explanations
+        // TODO Give user error info if they try and put a string in a regex search
         let expandedSource: string = this.source;
         if (path) {
             const queryContext = makeQueryContextFromPath(path);
@@ -58,12 +61,14 @@ ${this.source}`;
             } catch (error) {
                 if (error instanceof Error) {
                     this._error = `There was an error expanding the template.
+
 The error message was:
 ${error.message.replace(/ > /g, '.')}`;
                 } else {
                     this._error = 'Unknown error expanding the template.';
                 }
                 this._error += `
+
 The query is:
 ${this.source}`;
                 return;
