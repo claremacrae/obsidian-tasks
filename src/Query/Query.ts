@@ -47,6 +47,9 @@ ${this.source}`;
             }
         }
 
+        // TODO Move this error-checking to expandMustacheTemplate()
+        // TODO Apply the template one line at a time
+        // TODO Optmise the template code and only do the expansion if {{ is in the text
         let expandedSource: string = this.source;
         if (path) {
             const queryContext = makeQueryContextFromPath(path);
