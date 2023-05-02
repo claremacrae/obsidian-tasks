@@ -1,5 +1,4 @@
-import { Exception } from 'handlebars';
-import { expandHandlebarsTemplate } from '../lib/ExpandTemplate';
+import { expandMustacheTemplate } from '../lib/ExpandTemplate';
 import { makeQueryContextFromPath } from '../lib/QueryContext';
 import { LayoutOptions } from '../TaskLayout';
 import type { Task } from '../Task';
@@ -52,12 +51,12 @@ ${this.source}`;
         if (path) {
             const queryContext = makeQueryContextFromPath(path);
             try {
-                expandedSource = expandHandlebarsTemplate(this.source, queryContext);
+                expandedSource = expandMustacheTemplate(this.source, queryContext);
             } catch (error) {
-                if (error instanceof Exception) {
+                if (error instanceof Error) {
                     this._error = `There was an error expanding the template.
 The error message was:
-${error.message}`;
+${error.message.replace(/ > /g, '.')}`;
                 } else {
                     this._error = 'Unknown error expanding the template.';
                 }

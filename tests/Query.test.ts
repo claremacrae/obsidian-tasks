@@ -814,7 +814,7 @@ filename includes {{query.file.filenameWithoutExtension}}`;
             expect(query.error).toMatchInlineSnapshot(`
                 "There was an error expanding the template.
                 The error message was:
-                "nonsense" not defined in [object Object] - 1:16
+                Missing Mustache data property: query.file.nonsense
                 The query is:
                 path includes {{query.file.nonsense}}"
             `);
