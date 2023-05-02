@@ -1,4 +1,17 @@
 import Handlebars from 'handlebars';
+import Mustache from 'mustache';
+
+// https://github.com/janl/mustache.js
+
+export function expandMustacheTemplate(template: string, view: any): string {
+    // Turn off HTML escaping of things like '/' in file paths:
+    // https://github.com/janl/mustache.js#variables
+    Mustache.escape = function (text) {
+        return text;
+    };
+
+    return Mustache.render(template, view);
+}
 
 export function expandHandlebarsTemplate(source: string, view: any) {
     const options: CompileOptions = {
