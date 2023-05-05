@@ -3,11 +3,9 @@
  */
 import moment from 'moment';
 
-import { FunctionField } from '../../../src/Query/Filter/FunctionField';
-import { HappensDateField } from '../../../src/Query/Filter/HappensDateField';
-import { RootField } from '../../../src/Query/Filter/RootField';
-import { Grouper } from '../../../src/Query/Grouper';
+import { FunctionField, groupByFn } from '../../../src/Query/Filter/FunctionField';
 import type { GrouperFunction } from '../../../src/Query/Grouper';
+import { Grouper } from '../../../src/Query/Grouper';
 import type { Task } from '../../../src/Task';
 import { TaskBuilder } from '../../TestingTools/TaskBuilder';
 
@@ -51,50 +49,6 @@ describe('FunctionField - grouping', () => {
 });
 
 export type GroupingArg = string | null;
-
-function parameterArguments(task: Task) {
-    const paramsArgs: [string, any][] = [
-        ['created', task.createdDate],
-        ['description', task.description],
-        ['done', task.doneDate],
-        ['due', task.dueDate],
-        ['filename', task.filename],
-        ['happens', new HappensDateField().earliestDate(task)],
-        ['header', task.precedingHeader],
-        ['indentation', task.indentation],
-        ['markdown', task.originalMarkdown],
-        ['path', task.path.replace('.md', '')],
-        ['priority', task.priority],
-        ['recurrence', task.recurrence],
-        ['root', new RootField().value(task)],
-        ['scheduled', task.scheduledDate],
-        ['scheduledDateIsInferred', task.scheduledDateIsInferred],
-        ['start', task.startDate],
-        ['status', task.status],
-        ['t', task],
-        ['tags', task.tags],
-        ['task', task],
-        ['urgency', task.urgency],
-    ];
-    return paramsArgs;
-}
-
-function groupByFn(task: Task, arg?: GroupingArg): string[] {
-    const paramsArgs = parameterArguments(task);
-
-    const params = paramsArgs.map(([p]) => p);
-    const groupBy = arg && new Function(...params, `return ${arg}`);
-
-    if (groupBy instanceof Function) {
-        const args = paramsArgs.map(([_, a]) => a);
-        const result = groupBy(...args);
-        const group = typeof result === 'string' ? result : 'Error with group result';
-
-        return [group];
-    } else {
-        return ['Error parsing group function'];
-    }
-}
 
 describe('lower level tests', () => {
     afterEach(() => {
