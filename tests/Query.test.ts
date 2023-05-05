@@ -204,6 +204,7 @@ describe('Query parsing', () => {
             'group by done',
             'group by due',
             'group by filename',
+            'group by function path.replace("some/prefix/", "")\n',
             'group by folder',
             'group by happens',
             'group by heading',
