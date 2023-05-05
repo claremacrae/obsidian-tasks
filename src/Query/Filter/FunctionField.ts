@@ -27,12 +27,26 @@ export class FunctionField extends Field {
         return true;
     }
 
+    public createGrouperFromLine(line: string): Grouper | null {
+        if (!this.supportsGrouping()) {
+            return null;
+        }
+
+        const match = Field.getMatch(this.grouperRegExp(), line);
+        if (match === null) {
+            return null;
+        }
+        const args = match[1];
+
+        return new Grouper('function', createGrouperFunctionFromLine(args));
+    }
+
     protected grouperRegExp(): RegExp {
         if (!this.supportsGrouping()) {
             throw Error(`grouperRegExp() unimplemented for ${this.fieldNameSingular()}`);
         }
 
-        return new RegExp(`^group by ${this.fieldNameSingularEscaped()}`);
+        return new RegExp(`^group by ${this.fieldNameSingularEscaped()} (.*)`);
     }
 
     public grouper(): GrouperFunction {

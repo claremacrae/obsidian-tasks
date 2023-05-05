@@ -45,8 +45,10 @@ describe('FunctionField - grouping', () => {
         const grouper = field.createGrouperFromLine(instruction);
         expect(grouper).not.toBeNull();
 
-        const task = new TaskBuilder().build();
-        expect(grouper?.grouper(task)).toEqual(['hello world']);
+        expect(grouper?.grouper(new TaskBuilder().path('journal/a/b').build())).toEqual(['journal/']);
+        expect(grouper?.grouper(new TaskBuilder().path('hello/world/from-me.md').build())).toEqual([
+            'hello/world/from-me',
+        ]);
     });
 });
 
