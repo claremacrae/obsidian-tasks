@@ -108,4 +108,31 @@ describe('lower level tests', () => {
         expect(groupByFn(new TaskBuilder().build(), line)).toEqual(['no due date']);
         expect(groupByFn(new TaskBuilder().dueDate('2023-01-23').build(), line)).toEqual(['📅 2023-01']);
     });
+
+    it('using due to group by overdue - simple', () => {
+        const yesdyString = '2023-01-23';
+        const todayString = '2023-01-24';
+        const tomrwString = '2023-01-25';
+
+        jest.useFakeTimers();
+        jest.setSystemTime(new Date(todayString));
+
+        function categoriseDate(due: moment.Moment) {
+            const todayStart = moment().startOf('day');
+            const dueStart = due.startOf('day');
+            let group = '';
+            if (dueStart.isBefore(todayStart)) {
+                group = 'Overdue';
+            } else if (dueStart.isAfter(todayStart)) {
+                group = 'Future';
+            } else {
+                group = 'Today';
+            }
+            return group;
+        }
+
+        expect(categoriseDate(moment(yesdyString))).toStrictEqual('Overdue');
+        expect(categoriseDate(moment(todayString))).toStrictEqual('Today');
+        expect(categoriseDate(moment(tomrwString))).toStrictEqual('Future');
+    });
 });
