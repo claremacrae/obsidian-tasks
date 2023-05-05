@@ -113,32 +113,7 @@ describe('lower level tests', () => {
         expect(groupByFn(new TaskBuilder().dueDate('2023-01-23').build(), line)).toEqual(['📅 2023-01']);
     });
 
-    it('using due to group by overdue - simple', () => {
-        const yesdyString = '2023-01-23';
-        const todayString = '2023-01-24';
-        const tomrwString = '2023-01-25';
-
-        jest.useFakeTimers();
-        jest.setSystemTime(new Date(todayString));
-
-        function categoriseDate(due: moment.Moment) {
-            const todayStart = moment().startOf('day');
-            const dueStart = due.startOf('day');
-            if (dueStart.isBefore(todayStart)) {
-                return 'Overdue';
-            } else if (dueStart.isAfter(todayStart)) {
-                return 'Future';
-            } else {
-                return 'Today';
-            }
-        }
-
-        expect(categoriseDate(moment(yesdyString))).toStrictEqual('Overdue');
-        expect(categoriseDate(moment(todayString))).toStrictEqual('Today');
-        expect(categoriseDate(moment(tomrwString))).toStrictEqual('Future');
-    });
-
-    it('using due to group by overdue - useful', () => {
+    it('using due to group by overdue', () => {
         const yesdyString = '2023-01-23';
         const todayString = '2023-01-24';
         const tomrwString = '2023-01-25';
