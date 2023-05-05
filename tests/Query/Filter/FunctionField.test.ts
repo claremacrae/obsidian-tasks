@@ -90,7 +90,7 @@ describe('FunctionField - grouping', () => {
         jest.setSystemTime(new Date(todayString));
 
         const line =
-            "group by function due.startOf('day').isBefore(moment().startOf('day')) ? 'Overdue' : due.startOf('day').isAfter(moment().startOf('day')) ? 'Future' : 'Today'";
+            "group by function  (!due) ? 'No Due Date' : due.startOf('day').isBefore(moment().startOf('day')) ? 'Overdue' : due.startOf('day').isAfter(moment().startOf('day')) ? 'Future' : 'Today'";
         const field = new FunctionField();
         const grouper = field.createGrouperFromLine(line);
         expect(grouper).not.toBeNull();
@@ -98,5 +98,6 @@ describe('FunctionField - grouping', () => {
         expect(grouper?.grouper(new TaskBuilder().dueDate(yesdyString).build())).toEqual(['Overdue']);
         expect(grouper?.grouper(new TaskBuilder().dueDate(todayString).build())).toEqual(['Today']);
         expect(grouper?.grouper(new TaskBuilder().dueDate(tomrwString).build())).toEqual(['Future']);
+        expect(grouper?.grouper(new TaskBuilder().build())).toEqual(['No Due Date']);
     });
 });
