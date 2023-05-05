@@ -52,18 +52,21 @@ export type GroupingArg = string | null;
 
 function groupByFn(task: Task, arg?: GroupingArg): string[] {
     const paramsArgs: [string, any][] = [
+        ['created', task.createdDate],
         ['description', task.description],
         ['done', task.doneDate],
         ['due', task.dueDate],
         ['filename', task.filename],
         ['happens', new HappensDateField().earliestDate(task)],
         ['header', task.precedingHeader],
+        ['indentation', task.indentation],
         ['markdown', task.originalMarkdown],
         ['path', task.path.replace('.md', '')],
         ['priority', task.priority],
         ['recurrence', task.recurrence],
         ['root', new RootField().value(task)],
         ['scheduled', task.scheduledDate],
+        ['scheduledDateIsInferred', task.scheduledDateIsInferred],
         ['start', task.startDate],
         ['status', task.status],
         ['t', task],
