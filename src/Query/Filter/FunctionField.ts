@@ -101,11 +101,18 @@ function groupByFn(task: Task, arg?: GroupingArg): string[] {
 
     if (groupBy instanceof Function) {
         const args = paramsArgs.map(([_, a]) => a);
-        const result = groupBy(...args);
-        const group = typeof result === 'string' ? result : 'Error with group result'; // TODO Needs better error
-
-        return [group];
+        try {
+            const result = groupBy(...args);
+            const group = typeof result === 'string' ? result : 'Error with group result'; // TODO Needs better error
+            return [group];
+        } catch (error) {
+            let errorMessage = 'Error calculating group name';
+            if (error instanceof Error) {
+                errorMessage += `: message was: ${error.message}`;
+            }
+            return [errorMessage];
+        }
     } else {
-        return ['Error parsing group function']; // TODO better error
+        return [`Error parsing group function: ${arg}`];
     }
 }

@@ -51,6 +51,17 @@ describe('FunctionField - grouping', () => {
         expect(grouper).not.toBeNull();
     });
 
+    it('should give meaningful message for invalid group source', () => {
+        const line = 'group by function abcdef';
+        const grouper = new FunctionField().createGrouperFromLine(line);
+        expect(grouper).not.toBeNull();
+
+        const task = new TaskBuilder().build();
+        const groupNames = grouper?.grouper(task);
+        expect(groupNames?.length).toStrictEqual(1);
+        expect(groupNames![0]).toStrictEqual('Error calculating group name: message was: abcdef is not defined');
+    });
+
     it('using root and path', () => {
         const line = 'group by function root === "journal/" ? root : path';
         const grouper = createGrouper(line);
