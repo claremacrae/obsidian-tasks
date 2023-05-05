@@ -6,6 +6,7 @@ import moment from 'moment';
 import { FunctionField } from '../../../src/Query/Filter/FunctionField';
 import { HappensDateField } from '../../../src/Query/Filter/HappensDateField';
 import { RootField } from '../../../src/Query/Filter/RootField';
+import type { GrouperFunction } from '../../../src/Query/Grouper';
 import type { Task } from '../../../src/Task';
 import { TaskBuilder } from '../../TestingTools/TaskBuilder';
 
@@ -126,5 +127,20 @@ describe('lower level tests', () => {
         expect(groupByFn(new TaskBuilder().dueDate(yesdyString).build(), line)).toEqual(['Overdue']);
         expect(groupByFn(new TaskBuilder().dueDate(todayString).build(), line)).toEqual(['Today']);
         expect(groupByFn(new TaskBuilder().dueDate(tomrwString).build(), line)).toEqual(['Future']);
+    });
+});
+
+function createGrouperFunctionFromLine(line: string): GrouperFunction {
+    return (task: Task) => {
+        return groupByFn(task, line);
+    };
+}
+
+describe('next level tests', () => {
+    it('using path stripping folder', () => {
+        const line = 'path.replace("some/prefix/", "")';
+        const fn = createGrouperFunctionFromLine(line);
+        const task = new TaskBuilder().path('a/b/c.md').build();
+        expect(fn(task)).toEqual(['a/b/c']);
     });
 });
