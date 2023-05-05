@@ -50,9 +50,7 @@ export class FunctionField extends Field {
     }
 
     public grouper(): GrouperFunction {
-        return (_task: Task) => {
-            return ['hello world'];
-        };
+        throw Error('grouper() function not valid for FunctionField. Use createGrouperFromLine() instead.');
     }
 }
 
