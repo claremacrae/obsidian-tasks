@@ -103,9 +103,9 @@ describe('lower level tests', () => {
         expect(groupByFn(new TaskBuilder().path('a/b/c.md').build(), line)).toEqual(['a/b/c']);
     });
 
-    it('using due', () => {
-        const line = 'due ? due.format("YYYY-MM") : "no due date"';
+    it('using due to group by month', () => {
+        const line = 'due ? "📅 " + due.format("YYYY-MM") : "no due date"';
         expect(groupByFn(new TaskBuilder().build(), line)).toEqual(['no due date']);
-        expect(groupByFn(new TaskBuilder().dueDate('2023-01-23').build(), line)).toEqual(['2023-01']);
+        expect(groupByFn(new TaskBuilder().dueDate('2023-01-23').build(), line)).toEqual(['📅 2023-01']);
     });
 });
