@@ -53,8 +53,7 @@ describe('FunctionField - grouping', () => {
 
     it('should give meaningful message for invalid group source', () => {
         const line = 'group by function abcdef';
-        const grouper = new FunctionField().createGrouperFromLine(line);
-        expect(grouper).not.toBeNull();
+        const grouper = createGrouper(line);
 
         const task = new TaskBuilder().build();
         const groupNames = grouper?.grouper(task);
@@ -66,8 +65,7 @@ describe('FunctionField - grouping', () => {
 
     it('should give meaningful message for non-string return type', () => {
         const line = 'group by function due';
-        const grouper = new FunctionField().createGrouperFromLine(line);
-        expect(grouper).not.toBeNull();
+        const grouper = createGrouper(line);
 
         const task = new TaskBuilder().build();
         const groupNames = grouper?.grouper(task);
