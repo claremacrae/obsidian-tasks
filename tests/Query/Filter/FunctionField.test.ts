@@ -6,6 +6,7 @@ import moment from 'moment';
 import { FunctionField } from '../../../src/Query/Filter/FunctionField';
 import { HappensDateField } from '../../../src/Query/Filter/HappensDateField';
 import { RootField } from '../../../src/Query/Filter/RootField';
+import { Grouper } from '../../../src/Query/Grouper';
 import type { GrouperFunction } from '../../../src/Query/Grouper';
 import type { Task } from '../../../src/Task';
 import { TaskBuilder } from '../../TestingTools/TaskBuilder';
@@ -142,5 +143,28 @@ describe('next level tests', () => {
         const fn = createGrouperFunctionFromLine(line);
         const task = new TaskBuilder().path('a/b/c.md').build();
         expect(fn(task)).toEqual(['a/b/c']);
+    });
+});
+
+function createGrouperFromLine(line: string): Grouper | null {
+    // if (!this.supportsGrouping()) {
+    //     return null;
+    // }
+    //
+    // const match = Field.getMatch(this.grouperRegExp(), line);
+    // if (match === null) {
+    //     return null;
+    // }
+
+    // return new Grouper(this.fieldNameSingular(), this.grouper());
+    return new Grouper('function', createGrouperFunctionFromLine(line));
+}
+
+describe('next again level tests', () => {
+    it('using path stripping folder', () => {
+        const line = 'path.replace("some/prefix/", "")';
+        const grouper = createGrouperFromLine(line);
+        const task = new TaskBuilder().path('a/b/c.md').build();
+        expect(grouper?.grouper!(task)).toEqual(['a/b/c']);
     });
 });
