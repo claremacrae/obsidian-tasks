@@ -131,6 +131,15 @@ export class TagsField extends MultiTextField {
         return true;
     }
 
+    protected grouperRegExp(): RegExp {
+        if (!this.supportsGrouping()) {
+            throw Error(`grouperRegExp() unimplemented for ${this.fieldNamePlural()}`);
+        }
+
+        // The $ at end is required to distinguish between group by status and status.name
+        return new RegExp(`^group by ${this.fieldNamePlural()}$`);
+    }
+
     public grouper(): GrouperFunction {
         return (task: Task) => {
             if (task.tags.length == 0) {
