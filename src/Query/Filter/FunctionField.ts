@@ -1,6 +1,6 @@
-import type { GroupingArg } from '../../../tests/Query/Filter/FunctionField.test';
 import type { Task } from '../../Task';
 import type { GrouperFunction } from '../Grouper';
+import { Grouper } from '../Grouper';
 import { Field } from './Field';
 import { FilterOrErrorMessage } from './Filter';
 import { HappensDateField } from './HappensDateField';
@@ -67,6 +67,28 @@ function parameterArguments(task: Task) {
         ['urgency', task.urgency],
     ];
     return paramsArgs;
+}
+
+export type GroupingArg = string | null;
+
+export function createGrouperFunctionFromLine(line: string): GrouperFunction {
+    return (task: Task) => {
+        return groupByFn(task, line);
+    };
+}
+
+export function createGrouperFromLine(line: string): Grouper | null {
+    // if (!this.supportsGrouping()) {
+    //     return null;
+    // }
+    //
+    // const match = Field.getMatch(this.grouperRegExp(), line);
+    // if (match === null) {
+    //     return null;
+    // }
+
+    // return new Grouper(this.fieldNameSingular(), this.grouper());
+    return new Grouper('function', createGrouperFunctionFromLine(line));
 }
 
 export function groupByFn(task: Task, arg?: GroupingArg): string[] {

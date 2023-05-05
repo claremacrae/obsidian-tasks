@@ -3,10 +3,12 @@
  */
 import moment from 'moment';
 
-import { FunctionField, groupByFn } from '../../../src/Query/Filter/FunctionField';
-import type { GrouperFunction } from '../../../src/Query/Grouper';
-import { Grouper } from '../../../src/Query/Grouper';
-import type { Task } from '../../../src/Task';
+import {
+    FunctionField,
+    createGrouperFromLine,
+    createGrouperFunctionFromLine,
+    groupByFn,
+} from '../../../src/Query/Filter/FunctionField';
 import { TaskBuilder } from '../../TestingTools/TaskBuilder';
 
 window.moment = moment;
@@ -48,8 +50,6 @@ describe('FunctionField - grouping', () => {
     });
 });
 
-export type GroupingArg = string | null;
-
 describe('lower level tests', () => {
     afterEach(() => {
         jest.useRealTimers();
@@ -90,12 +90,6 @@ describe('lower level tests', () => {
     });
 });
 
-function createGrouperFunctionFromLine(line: string): GrouperFunction {
-    return (task: Task) => {
-        return groupByFn(task, line);
-    };
-}
-
 describe('next level tests', () => {
     it('using path stripping folder', () => {
         const line = 'path.replace("some/prefix/", "")';
@@ -104,20 +98,6 @@ describe('next level tests', () => {
         expect(fn(task)).toEqual(['a/b/c']);
     });
 });
-
-function createGrouperFromLine(line: string): Grouper | null {
-    // if (!this.supportsGrouping()) {
-    //     return null;
-    // }
-    //
-    // const match = Field.getMatch(this.grouperRegExp(), line);
-    // if (match === null) {
-    //     return null;
-    // }
-
-    // return new Grouper(this.fieldNameSingular(), this.grouper());
-    return new Grouper('function', createGrouperFunctionFromLine(line));
-}
 
 describe('next again level tests', () => {
     it('using path stripping folder', () => {
