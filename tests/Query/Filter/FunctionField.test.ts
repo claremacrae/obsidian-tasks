@@ -8,7 +8,7 @@ import { TaskBuilder } from '../../TestingTools/TaskBuilder';
 
 window.moment = moment;
 
-describe('FunctionField - filter', () => {
+describe('FunctionField - filtering', () => {
     it('should not parse line', () => {
         const functionField = new FunctionField();
         const filterOrErrorMessage = functionField.createFilterOrErrorMessage('hello world');
@@ -43,15 +43,11 @@ describe('FunctionField - grouping', () => {
         expect(field.canCreateGrouperForLine(instruction)).toEqual(true);
         const grouper = field.createGrouperFromLine(instruction);
         expect(grouper).not.toBeNull();
-
-        expect(grouper?.grouper(new TaskBuilder().path('journal/a/b').build())).toEqual(['journal/']);
-        expect(grouper?.grouper(new TaskBuilder().path('hello/world/from-me.md').build())).toEqual([
-            'hello/world/from-me',
-        ]);
     });
 
     it('using root and path', () => {
         const line = 'group by function root === "journal/" ? root : path';
+        // TODO Remove repetition of these 3 lines
         const field = new FunctionField();
         const grouper = field.createGrouperFromLine(line);
         expect(grouper).not.toBeNull();
@@ -60,6 +56,7 @@ describe('FunctionField - grouping', () => {
         expect(grouper?.grouper(new TaskBuilder().path('hello/world/from-me.md').build())).toEqual([
             'hello/world/from-me',
         ]);
+        // TODO Test file in root folder
     });
 
     it('using path stripping folder', () => {
@@ -89,6 +86,8 @@ describe('FunctionField - grouping', () => {
         jest.useFakeTimers();
         jest.setSystemTime(new Date(todayString));
 
+        // TODO Can this be written as in if block - or a function
+        // TODO Really need to make this simpler to write
         const line =
             "group by function  (!due) ? 'No Due Date' : due.startOf('day').isBefore(moment().startOf('day')) ? 'Overdue' : due.startOf('day').isAfter(moment().startOf('day')) ? 'Future' : 'Today'";
         const field = new FunctionField();
@@ -99,5 +98,6 @@ describe('FunctionField - grouping', () => {
         expect(grouper?.grouper(new TaskBuilder().dueDate(todayString).build())).toEqual(['Today']);
         expect(grouper?.grouper(new TaskBuilder().dueDate(tomrwString).build())).toEqual(['Future']);
         expect(grouper?.grouper(new TaskBuilder().build())).toEqual(['No Due Date']);
+        // What about invalid date - groups as Today
     });
 });

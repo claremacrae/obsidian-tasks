@@ -38,6 +38,7 @@ export class FunctionField extends Field {
         }
         const args = match[1];
 
+        // TODO Consider making grouper() take the line - so this can be consistent with other fields
         return new Grouper('function', createGrouperFunctionFromLine(args));
     }
 
@@ -50,11 +51,13 @@ export class FunctionField extends Field {
     }
 
     public grouper(): GrouperFunction {
+        // TODO NEeds test
         throw Error('grouper() function not valid for FunctionField. Use createGrouperFromLine() instead.');
     }
 }
 
 function parameterArguments(task: Task) {
+    // TODO Add this location to 'what to do when new field added to Task'
     const paramsArgs: [string, any][] = [
         ['created', task.createdDate],
         ['description', task.description],
@@ -65,12 +68,12 @@ function parameterArguments(task: Task) {
         ['header', task.precedingHeader],
         ['indentation', task.indentation],
         ['markdown', task.originalMarkdown],
-        ['path', task.path.replace('.md', '')],
+        ['path', task.path.replace('.md', '')], // unsure about removing path
         ['priority', task.priority],
         ['recurrence', task.recurrence],
         ['root', new RootField().value(task)],
         ['scheduled', task.scheduledDate],
-        ['scheduledDateIsInferred', task.scheduledDateIsInferred],
+        ['scheduledDateIsInferred', task.scheduledDateIsInferred], // maybe remove??
         ['start', task.startDate],
         ['status', task.status],
         ['t', task],
@@ -93,15 +96,16 @@ function groupByFn(task: Task, arg?: GroupingArg): string[] {
     const paramsArgs = parameterArguments(task);
 
     const params = paramsArgs.map(([p]) => p);
+    // TODO Needs to guard against crashing - like referencing when no due date
     const groupBy = arg && new Function(...params, `return ${arg}`);
 
     if (groupBy instanceof Function) {
         const args = paramsArgs.map(([_, a]) => a);
         const result = groupBy(...args);
-        const group = typeof result === 'string' ? result : 'Error with group result';
+        const group = typeof result === 'string' ? result : 'Error with group result'; // TODO Needs better error
 
         return [group];
     } else {
-        return ['Error parsing group function'];
+        return ['Error parsing group function']; // TODO better error
     }
 }
