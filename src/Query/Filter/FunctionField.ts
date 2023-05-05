@@ -96,17 +96,19 @@ function groupByFn(task: Task, arg?: GroupingArg): string[] {
     const paramsArgs = parameterArguments(task);
 
     const params = paramsArgs.map(([p]) => p);
-    // TODO Needs to guard against crashing - like referencing when no due date
     const groupBy = arg && new Function(...params, `return ${arg}`);
 
     if (groupBy instanceof Function) {
         const args = paramsArgs.map(([_, a]) => a);
         try {
             const result = groupBy(...args);
-            const group = typeof result === 'string' ? result : 'Error with group result'; // TODO Needs better error
+            const group =
+                typeof result === 'string'
+                    ? result
+                    : `Error with group result: value type "${typeof result}" is not a string in "${arg}"`;
             return [group];
         } catch (error) {
-            let errorMessage = 'Error calculating group name';
+            let errorMessage = `Error calculating group name "${arg}"`;
             if (error instanceof Error) {
                 errorMessage += `: message was: ${error.message}`;
             }

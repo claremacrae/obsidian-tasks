@@ -59,7 +59,20 @@ describe('FunctionField - grouping', () => {
         const task = new TaskBuilder().build();
         const groupNames = grouper?.grouper(task);
         expect(groupNames?.length).toStrictEqual(1);
-        expect(groupNames![0]).toStrictEqual('Error calculating group name: message was: abcdef is not defined');
+        expect(groupNames![0]).toStrictEqual(
+            'Error calculating group name "abcdef": message was: abcdef is not defined',
+        );
+    });
+
+    it('should give meaningful message for non-string return type', () => {
+        const line = 'group by function due';
+        const grouper = new FunctionField().createGrouperFromLine(line);
+        expect(grouper).not.toBeNull();
+
+        const task = new TaskBuilder().build();
+        const groupNames = grouper?.grouper(task);
+        expect(groupNames?.length).toStrictEqual(1);
+        expect(groupNames![0]).toStrictEqual('Error with group result: value type "object" is not a string in "due"');
     });
 
     it('using root and path', () => {
