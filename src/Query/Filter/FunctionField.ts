@@ -83,19 +83,15 @@ function parameterArguments(task: Task) {
     return paramsArgs;
 }
 
-export type GroupingArg = string | null;
+type GroupingArg = string | null;
 
-export function createGrouperFunctionFromLine(line: string): GrouperFunction {
+function createGrouperFunctionFromLine(line: string): GrouperFunction {
     return (task: Task) => {
         return groupByFn(task, line);
     };
 }
 
-export function createGrouperFromLine(line: string): Grouper | null {
-    return new Grouper('function', createGrouperFunctionFromLine(line));
-}
-
-export function groupByFn(task: Task, arg?: GroupingArg): string[] {
+function groupByFn(task: Task, arg?: GroupingArg): string[] {
     const paramsArgs = parameterArguments(task);
 
     const params = paramsArgs.map(([p]) => p);
