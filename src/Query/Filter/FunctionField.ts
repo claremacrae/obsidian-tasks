@@ -92,16 +92,6 @@ export function createGrouperFunctionFromLine(line: string): GrouperFunction {
 }
 
 export function createGrouperFromLine(line: string): Grouper | null {
-    // if (!this.supportsGrouping()) {
-    //     return null;
-    // }
-    //
-    // const match = Field.getMatch(this.grouperRegExp(), line);
-    // if (match === null) {
-    //     return null;
-    // }
-
-    // return new Grouper(this.fieldNameSingular(), this.grouper());
     return new Grouper('function', createGrouperFunctionFromLine(line));
 }
 
