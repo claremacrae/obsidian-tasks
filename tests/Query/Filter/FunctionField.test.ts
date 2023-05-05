@@ -52,7 +52,7 @@ describe('FunctionField - grouping', () => {
 
 export type GroupingArg = string | null;
 
-function groupByFn(task: Task, arg?: GroupingArg): string[] {
+function parameterArguments(task: Task) {
     const paramsArgs: [string, any][] = [
         ['created', task.createdDate],
         ['description', task.description],
@@ -76,6 +76,11 @@ function groupByFn(task: Task, arg?: GroupingArg): string[] {
         ['task', task],
         ['urgency', task.urgency],
     ];
+    return paramsArgs;
+}
+
+function groupByFn(task: Task, arg?: GroupingArg): string[] {
+    const paramsArgs = parameterArguments(task);
 
     const params = paramsArgs.map(([p]) => p);
     const groupBy = arg && new Function(...params, `return ${arg}`);
