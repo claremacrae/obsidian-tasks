@@ -120,15 +120,13 @@ describe('lower level tests', () => {
         function categoriseDate(due: moment.Moment) {
             const todayStart = moment().startOf('day');
             const dueStart = due.startOf('day');
-            let group = '';
             if (dueStart.isBefore(todayStart)) {
-                group = 'Overdue';
+                return 'Overdue';
             } else if (dueStart.isAfter(todayStart)) {
-                group = 'Future';
+                return 'Future';
             } else {
-                group = 'Today';
+                return 'Today';
             }
-            return group;
         }
 
         expect(categoriseDate(moment(yesdyString))).toStrictEqual('Overdue');
