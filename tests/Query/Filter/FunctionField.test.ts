@@ -90,6 +90,10 @@ function groupByFn(task: Task, arg?: GroupingArg): string[] {
 }
 
 describe('lower level tests', () => {
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
     it('using root and path', () => {
         const line = 'root === "journal/" ? root : path';
         expect(groupByFn(new TaskBuilder().path('journal/a/b').build(), line)).toEqual(['journal/']);
