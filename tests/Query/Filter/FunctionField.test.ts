@@ -10,6 +10,10 @@ import { TaskBuilder } from '../../TestingTools/TaskBuilder';
 
 window.moment = moment;
 
+// -----------------------------------------------------------------------------------------------------------------
+// Filtering
+// -----------------------------------------------------------------------------------------------------------------
+
 describe('FunctionField - filtering', () => {
     it('should not parse line', () => {
         const functionField = new FunctionField();
@@ -19,12 +23,20 @@ describe('FunctionField - filtering', () => {
     });
 });
 
+// -----------------------------------------------------------------------------------------------------------------
+// Sorting
+// -----------------------------------------------------------------------------------------------------------------
+
 describe('FunctionField - sorting', () => {
     it('should not support sorting', () => {
         const functionField = new FunctionField();
         expect(functionField.supportsSorting()).toEqual(false);
     });
 });
+
+// -----------------------------------------------------------------------------------------------------------------
+// Grouping
+// -----------------------------------------------------------------------------------------------------------------
 
 function toGroupTask(grouper: Grouper, task: Task, expectedGroupNames: string[]) {
     expect(grouper.grouper(task)).toEqual(expectedGroupNames);
@@ -40,17 +52,17 @@ function toGroupTaskWithPath(grouper: Grouper, path: string, expectedGroupNames:
     toGroupTaskFromBuilder(grouper, taskBuilder, expectedGroupNames);
 }
 
-describe('FunctionField - grouping', () => {
-    afterEach(() => {
-        jest.useRealTimers();
-    });
+afterEach(() => {
+    jest.useRealTimers();
+});
 
-    function createGrouper(line: string) {
-        const grouper = new FunctionField().createGrouperFromLine(line);
-        expect(grouper).not.toBeNull();
-        return grouper;
-    }
+function createGrouper(line: string) {
+    const grouper = new FunctionField().createGrouperFromLine(line);
+    expect(grouper).not.toBeNull();
+    return grouper;
+}
 
+describe('FunctionField - grouping - basics', () => {
     it('should support grouping', () => {
         const field = new FunctionField();
         expect(field.supportsGrouping()).toEqual(true);
@@ -66,7 +78,9 @@ describe('FunctionField - grouping', () => {
         const grouper = field.createGrouperFromLine(instruction);
         expect(grouper).not.toBeNull();
     });
+});
 
+describe('FunctionField - grouping - error-handling', () => {
     it('should give meaningful message for invalid group source', () => {
         const line = 'group by function abcdef';
         const grouper = createGrouper(line);
@@ -88,7 +102,9 @@ describe('FunctionField - grouping', () => {
         expect(groupNames?.length).toStrictEqual(1);
         expect(groupNames![0]).toStrictEqual('Error with group result: value type "object" is not a string in "due"');
     });
+});
 
+describe('FunctionField - grouping - example functions', () => {
     it('using root and path', () => {
         const line = 'group by function root === "journal/" ? root : path';
         const grouper = createGrouper(line);
