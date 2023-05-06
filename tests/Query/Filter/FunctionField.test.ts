@@ -90,6 +90,25 @@ describe('FunctionField - grouping - basics', () => {
         const grouper = field.createGrouperFromLine(instruction);
         expect(grouper).not.toBeNull();
     });
+
+    it('experiment with functions in string', () => {
+        expect(new Function('return "hello"')()).toEqual('hello');
+        expect(new Function('if (1 === 1) { return "yes"; } else { return "no"; }')()).toEqual('yes');
+        expect(new Function('if (1 !== 1) { return "yes"; } else { return "no"; }')()).toEqual('no');
+
+        // Can define a function
+        // JavasScript, not TypeScript - cannot specify parameter and return times
+        const line = `
+        function f(value) {
+            if (value === 1 ) {
+                return "yes";
+            } else {
+                return "no";
+            }
+        }
+        return f(1)`;
+        expect(new Function(line)()).toEqual('yes');
+    });
 });
 
 describe('FunctionField - grouping - error-handling', () => {
@@ -135,25 +154,6 @@ describe('FunctionField - grouping - example functions', () => {
         const grouper = createGrouper(line);
 
         toGroupTaskWithPath(grouper, 'a/b/c.md', ['a/b/c']);
-    });
-
-    it('experiment with functions in string', () => {
-        expect(new Function('return "hello"')()).toEqual('hello');
-        expect(new Function('if (1 === 1) { return "yes"; } else { return "no"; }')()).toEqual('yes');
-        expect(new Function('if (1 !== 1) { return "yes"; } else { return "no"; }')()).toEqual('no');
-
-        // Can define a function
-        // JavasScript, not TypeScript - cannot specify parameter and return times
-        const line = `
-        function f(value) {
-            if (value === 1 ) {
-                return "yes";
-            } else {
-                return "no";
-            }
-        }
-        return f(1)`;
-        expect(new Function(line)()).toEqual('yes');
     });
 
     it('using folder stripping folder', () => {
