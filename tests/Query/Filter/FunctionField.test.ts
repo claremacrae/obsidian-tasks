@@ -30,14 +30,14 @@ function toGroupTask(grouper: Grouper, task: Task, expectedGroupNames: string[])
     expect(grouper.grouper(task)).toEqual(expectedGroupNames);
 }
 
-function toGroupTaskBuilder(grouper: Grouper, taskBuilder: TaskBuilder, expectedGroupNames: string[]) {
+function toGroupTaskFromBuilder(grouper: Grouper, taskBuilder: TaskBuilder, expectedGroupNames: string[]) {
     const task = taskBuilder.build();
     toGroupTask(grouper, task, expectedGroupNames);
 }
 
 function toGroupTaskWithPath(grouper: Grouper, path: string, expectedGroupNames: string[]) {
     const taskBuilder = new TaskBuilder().path(path);
-    toGroupTaskBuilder(grouper, taskBuilder, expectedGroupNames);
+    toGroupTaskFromBuilder(grouper, taskBuilder, expectedGroupNames);
 }
 
 describe('FunctionField - grouping', () => {
@@ -139,8 +139,8 @@ describe('FunctionField - grouping', () => {
         const line = 'group by function due ? "📅 " + due.format("YYYY-MM") : "no due date"';
         const grouper = createGrouper(line);
 
-        toGroupTaskBuilder(grouper!, new TaskBuilder(), ['no due date']);
-        toGroupTaskBuilder(grouper!, new TaskBuilder().dueDate('2023-01-23'), ['📅 2023-01']);
+        toGroupTaskFromBuilder(grouper!, new TaskBuilder(), ['no due date']);
+        toGroupTaskFromBuilder(grouper!, new TaskBuilder().dueDate('2023-01-23'), ['📅 2023-01']);
     });
 
     it('using due to group by overdue', () => {
@@ -153,10 +153,10 @@ describe('FunctionField - grouping', () => {
             "group by function  (!due) ? 'No Due Date' : due.startOf('day').isBefore(moment().startOf('day')) ? 'Overdue' : due.startOf('day').isAfter(moment().startOf('day')) ? 'Future' : 'Today'";
         const grouper = createGrouper(line);
 
-        toGroupTaskBuilder(grouper!, new TaskBuilder().dueDate(yesdyString), ['Overdue']);
-        toGroupTaskBuilder(grouper!, new TaskBuilder().dueDate(todayString), ['Today']);
-        toGroupTaskBuilder(grouper!, new TaskBuilder().dueDate(tomrwString), ['Future']);
-        toGroupTaskBuilder(grouper!, new TaskBuilder(), ['No Due Date']);
+        toGroupTaskFromBuilder(grouper!, new TaskBuilder().dueDate(yesdyString), ['Overdue']);
+        toGroupTaskFromBuilder(grouper!, new TaskBuilder().dueDate(todayString), ['Today']);
+        toGroupTaskFromBuilder(grouper!, new TaskBuilder().dueDate(tomrwString), ['Future']);
+        toGroupTaskFromBuilder(grouper!, new TaskBuilder(), ['No Due Date']);
         // What about invalid date - groups as Today
     });
 
@@ -170,10 +170,10 @@ describe('FunctionField - grouping', () => {
             "group by function (!due) ? '📅 4 No Due Date' : due.startOf('day').isBefore(moment().startOf('day')) ? '📅 1 Overdue' : due.startOf('day').isAfter(moment().startOf('day')) ? '📅 3 Future' : '📅 2 Today'";
         const grouper = createGrouper(line);
 
-        toGroupTaskBuilder(grouper!, new TaskBuilder().dueDate(yesdyString), ['📅 1 Overdue']);
-        toGroupTaskBuilder(grouper!, new TaskBuilder().dueDate(todayString), ['📅 2 Today']);
-        toGroupTaskBuilder(grouper!, new TaskBuilder().dueDate(tomrwString), ['📅 3 Future']);
-        toGroupTaskBuilder(grouper!, new TaskBuilder(), ['📅 4 No Due Date']);
+        toGroupTaskFromBuilder(grouper!, new TaskBuilder().dueDate(yesdyString), ['📅 1 Overdue']);
+        toGroupTaskFromBuilder(grouper!, new TaskBuilder().dueDate(todayString), ['📅 2 Today']);
+        toGroupTaskFromBuilder(grouper!, new TaskBuilder().dueDate(tomrwString), ['📅 3 Future']);
+        toGroupTaskFromBuilder(grouper!, new TaskBuilder(), ['📅 4 No Due Date']);
         // What about invalid date - groups as Today
     });
 });
