@@ -3,6 +3,7 @@ import type { GrouperFunction } from '../Grouper';
 import { Grouper } from '../Grouper';
 import { Field } from './Field';
 import { FilterOrErrorMessage } from './Filter';
+import { FolderField } from './FolderField';
 import { HappensDateField } from './HappensDateField';
 import { RootField } from './RootField';
 
@@ -51,7 +52,7 @@ export class FunctionField extends Field {
     }
 
     public grouper(): GrouperFunction {
-        // TODO NEeds test
+        // TODO Needs test
         throw Error('grouper() function not valid for FunctionField. Use createGrouperFromLine() instead.');
     }
 }
@@ -64,6 +65,7 @@ function parameterArguments(task: Task) {
         ['done', task.doneDate],
         ['due', task.dueDate],
         ['filename', task.filename],
+        ['folder', FolderField.folder(task.path, task.filename!)],
         ['happens', new HappensDateField().earliestDate(task)],
         ['header', task.precedingHeader],
         ['indentation', task.indentation],

@@ -91,6 +91,13 @@ describe('FunctionField - grouping', () => {
         expect(grouper?.grouper(new TaskBuilder().path('a/b/c.md').build())).toEqual(['a/b/c']);
     });
 
+    it('using folder stripping folder', () => {
+        const line = 'group by function folder.replace("a/", "")';
+        const grouper = createGrouper(line);
+
+        expect(grouper?.grouper(new TaskBuilder().path('a/b/c.md').build())).toEqual(['b/']);
+    });
+
     it('using due to group by month', () => {
         const line = 'group by function due ? "📅 " + due.format("YYYY-MM") : "no due date"';
         const grouper = createGrouper(line);
