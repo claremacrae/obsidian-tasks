@@ -98,6 +98,10 @@ describe('FunctionField - grouping', () => {
         // TODO Test file in root folder
     });
 
+    const yesdyString = '2023-01-23';
+    const todayString = '2023-01-24';
+    const tomrwString = '2023-01-25';
+
     it('using path stripping folder', () => {
         const line = 'group by function path.replace("some/prefix/", "")';
         const grouper = createGrouper(line);
@@ -140,10 +144,6 @@ describe('FunctionField - grouping', () => {
     });
 
     it('using due to group by overdue', () => {
-        const yesdyString = '2023-01-23';
-        const todayString = '2023-01-24';
-        const tomrwString = '2023-01-25';
-
         jest.useFakeTimers();
         jest.setSystemTime(new Date(todayString));
 
@@ -161,10 +161,6 @@ describe('FunctionField - grouping', () => {
     });
 
     it('using due to group by overdue - with emoji', () => {
-        const yesdyString = '2023-01-23';
-        const todayString = '2023-01-24';
-        const tomrwString = '2023-01-25';
-
         jest.useFakeTimers();
         jest.setSystemTime(new Date(todayString));
 
