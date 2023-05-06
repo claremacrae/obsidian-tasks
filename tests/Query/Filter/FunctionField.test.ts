@@ -126,4 +126,25 @@ describe('FunctionField - grouping', () => {
         expect(grouper?.grouper(new TaskBuilder().build())).toEqual(['No Due Date']);
         // What about invalid date - groups as Today
     });
+
+    it('using due to group by overdue - with emoji', () => {
+        const yesdyString = '2023-01-23';
+        const todayString = '2023-01-24';
+        const tomrwString = '2023-01-25';
+
+        jest.useFakeTimers();
+        jest.setSystemTime(new Date(todayString));
+
+        // TODO Can this be written as in if block - or a function
+        // TODO Really need to make this simpler to write
+        const line =
+            "group by function (!due) ? '📅 4 No Due Date' : due.startOf('day').isBefore(moment().startOf('day')) ? '📅 1 Overdue' : due.startOf('day').isAfter(moment().startOf('day')) ? '📅 3 Future' : '📅 2 Today'";
+        const grouper = createGrouper(line);
+
+        expect(grouper?.grouper(new TaskBuilder().dueDate(yesdyString).build())).toEqual(['📅 1 Overdue']);
+        expect(grouper?.grouper(new TaskBuilder().dueDate(todayString).build())).toEqual(['📅 2 Today']);
+        expect(grouper?.grouper(new TaskBuilder().dueDate(tomrwString).build())).toEqual(['📅 3 Future']);
+        expect(grouper?.grouper(new TaskBuilder().build())).toEqual(['📅 4 No Due Date']);
+        // What about invalid date - groups as Today
+    });
 });
