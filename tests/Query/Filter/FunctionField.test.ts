@@ -4,6 +4,8 @@
 import moment from 'moment';
 
 import { FunctionField } from '../../../src/Query/Filter/FunctionField';
+import type { Grouper } from '../../../src/Query/Grouper';
+import type { Task } from '../../../src/Task';
 import { TaskBuilder } from '../../TestingTools/TaskBuilder';
 
 window.moment = moment;
@@ -23,6 +25,20 @@ describe('FunctionField - sorting', () => {
         expect(functionField.supportsSorting()).toEqual(false);
     });
 });
+
+function toGroupTask(grouper: Grouper, task: Task, expectedGroupNames: string[]) {
+    expect(grouper.grouper(task)).toEqual(expectedGroupNames);
+}
+
+function toGroupTaskBuilder(grouper: Grouper, taskBuilder: TaskBuilder, expectedGroupNames: string[]) {
+    const task = taskBuilder.build();
+    toGroupTask(grouper, task, expectedGroupNames);
+}
+
+function toGroupTaskWithPath(grouper: Grouper, path: string, expectedGroupNames: string[]) {
+    const taskBuilder = new TaskBuilder().path(path);
+    toGroupTaskBuilder(grouper, taskBuilder, expectedGroupNames);
+}
 
 describe('FunctionField - grouping', () => {
     afterEach(() => {
@@ -77,10 +93,8 @@ describe('FunctionField - grouping', () => {
         const line = 'group by function root === "journal/" ? root : path';
         const grouper = createGrouper(line);
 
-        expect(grouper?.grouper(new TaskBuilder().path('journal/a/b').build())).toEqual(['journal/']);
-        expect(grouper?.grouper(new TaskBuilder().path('hello/world/from-me.md').build())).toEqual([
-            'hello/world/from-me',
-        ]);
+        toGroupTaskWithPath(grouper!, 'journal/a/b', ['journal/']);
+        toGroupTaskWithPath(grouper!, 'hello/world/from-me.md', ['hello/world/from-me']);
         // TODO Test file in root folder
     });
 
@@ -88,7 +102,7 @@ describe('FunctionField - grouping', () => {
         const line = 'group by function path.replace("some/prefix/", "")';
         const grouper = createGrouper(line);
 
-        expect(grouper?.grouper(new TaskBuilder().path('a/b/c.md').build())).toEqual(['a/b/c']);
+        toGroupTaskWithPath(grouper!, 'a/b/c.md', ['a/b/c']);
     });
 
     it('experiment with functions in string', () => {
@@ -114,7 +128,7 @@ describe('FunctionField - grouping', () => {
         const line = 'group by function folder.replace("a/", "")';
         const grouper = createGrouper(line);
 
-        expect(grouper?.grouper(new TaskBuilder().path('a/b/c.md').build())).toEqual(['b/']);
+        toGroupTaskWithPath(grouper!, 'a/b/c.md', ['b/']);
     });
 
     it('using due to group by month', () => {
