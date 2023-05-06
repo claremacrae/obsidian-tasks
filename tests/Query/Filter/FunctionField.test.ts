@@ -135,8 +135,8 @@ describe('FunctionField - grouping', () => {
         const line = 'group by function due ? "📅 " + due.format("YYYY-MM") : "no due date"';
         const grouper = createGrouper(line);
 
-        expect(grouper?.grouper(new TaskBuilder().build())).toEqual(['no due date']);
-        expect(grouper?.grouper(new TaskBuilder().dueDate('2023-01-23').build())).toEqual(['📅 2023-01']);
+        toGroupTaskBuilder(grouper!, new TaskBuilder(), ['no due date']);
+        toGroupTaskBuilder(grouper!, new TaskBuilder().dueDate('2023-01-23'), ['📅 2023-01']);
     });
 
     it('using due to group by overdue', () => {
@@ -153,10 +153,10 @@ describe('FunctionField - grouping', () => {
             "group by function  (!due) ? 'No Due Date' : due.startOf('day').isBefore(moment().startOf('day')) ? 'Overdue' : due.startOf('day').isAfter(moment().startOf('day')) ? 'Future' : 'Today'";
         const grouper = createGrouper(line);
 
-        expect(grouper?.grouper(new TaskBuilder().dueDate(yesdyString).build())).toEqual(['Overdue']);
-        expect(grouper?.grouper(new TaskBuilder().dueDate(todayString).build())).toEqual(['Today']);
-        expect(grouper?.grouper(new TaskBuilder().dueDate(tomrwString).build())).toEqual(['Future']);
-        expect(grouper?.grouper(new TaskBuilder().build())).toEqual(['No Due Date']);
+        toGroupTaskBuilder(grouper!, new TaskBuilder().dueDate(yesdyString), ['Overdue']);
+        toGroupTaskBuilder(grouper!, new TaskBuilder().dueDate(todayString), ['Today']);
+        toGroupTaskBuilder(grouper!, new TaskBuilder().dueDate(tomrwString), ['Future']);
+        toGroupTaskBuilder(grouper!, new TaskBuilder(), ['No Due Date']);
         // What about invalid date - groups as Today
     });
 
@@ -174,10 +174,10 @@ describe('FunctionField - grouping', () => {
             "group by function (!due) ? '📅 4 No Due Date' : due.startOf('day').isBefore(moment().startOf('day')) ? '📅 1 Overdue' : due.startOf('day').isAfter(moment().startOf('day')) ? '📅 3 Future' : '📅 2 Today'";
         const grouper = createGrouper(line);
 
-        expect(grouper?.grouper(new TaskBuilder().dueDate(yesdyString).build())).toEqual(['📅 1 Overdue']);
-        expect(grouper?.grouper(new TaskBuilder().dueDate(todayString).build())).toEqual(['📅 2 Today']);
-        expect(grouper?.grouper(new TaskBuilder().dueDate(tomrwString).build())).toEqual(['📅 3 Future']);
-        expect(grouper?.grouper(new TaskBuilder().build())).toEqual(['📅 4 No Due Date']);
+        toGroupTaskBuilder(grouper!, new TaskBuilder().dueDate(yesdyString), ['📅 1 Overdue']);
+        toGroupTaskBuilder(grouper!, new TaskBuilder().dueDate(todayString), ['📅 2 Today']);
+        toGroupTaskBuilder(grouper!, new TaskBuilder().dueDate(tomrwString), ['📅 3 Future']);
+        toGroupTaskBuilder(grouper!, new TaskBuilder(), ['📅 4 No Due Date']);
         // What about invalid date - groups as Today
     });
 });
