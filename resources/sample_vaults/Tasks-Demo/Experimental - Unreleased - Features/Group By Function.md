@@ -17,6 +17,13 @@ group by function (!due) ? '📅 4 No Due Date' : due.startOf('day').isBefore(mo
 # group by function root === "journal/" ? root : path
 # group by function path.replace("some/prefix/", "")
 # group by function due ? "📅 " + due.format("YYYY-MM") : "no due date"
+
+# group by function folder.replace('{{query.file.folder}}', '')
+# group by function folder.replace('{{query.file.folder}}', '.../')
+# group by function path.replace('{{query.file.folder}}', '')
+# group by function path.replace('{{query.file.folder}}', '.../')
+
+# group by function happens ? happens.format("YYYY-MM MMM") : "no  date"
 ```
 
 ### Example 2
