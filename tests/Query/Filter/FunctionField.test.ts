@@ -164,12 +164,24 @@ describe('FunctionField - grouping - example functions', () => {
         toGroupTaskWithPath(grouper, 'a/b/c.md', ['b/']);
     });
 
-    it('using due to group by month', () => {
+    it('using due to group by month - checking for no date', () => {
         const line = 'group by function due ? "📅 " + due.format("YYYY-MM") : "no due date"';
         const grouper = createGrouper(line);
 
         toGroupTaskFromBuilder(grouper, new TaskBuilder(), ['no due date']);
         toGroupTaskWithDueDate(grouper, '2023-01-23', ['📅 2023-01']);
+        toGroupTaskWithDueDate(grouper, invalString, ['📅 Invalid date']);
+    });
+
+    it('using due to group by month - not checking for no date', () => {
+        const line = 'group by function due.format("YYYY-MM")';
+        const grouper = createGrouper(line);
+
+        toGroupTaskFromBuilder(grouper, new TaskBuilder(), [
+            'Error calculating group name "due.format("YYYY-MM")": message was: Cannot read properties of null (reading \'format\')',
+        ]);
+        toGroupTaskWithDueDate(grouper, '2023-01-23', ['2023-01']);
+        toGroupTaskWithDueDate(grouper, invalString, ['Invalid date']);
     });
 
     it('using due to group by overdue - with ternary operators', () => {
