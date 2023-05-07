@@ -78,9 +78,7 @@ function parameterArguments(task: Task) {
         ['scheduledDateIsInferred', task.scheduledDateIsInferred], // maybe remove??
         ['start', task.startDate],
         ['status', task.status],
-        ['t', task],
         ['tags', task.tags],
-        ['task', task],
         ['urgency', task.urgency],
     ];
     return paramsArgs;
