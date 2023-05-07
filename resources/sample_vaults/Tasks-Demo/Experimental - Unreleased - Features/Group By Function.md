@@ -8,11 +8,11 @@ Based on work by @weirdhorror in <https://github.com/obsidian-tasks-group/obsidi
 
 ### Example 1
 
-```task
-# group by function (!due) ? '📅 4 No Due Date' : due.startOf('day').isBefore(moment().startOf('day')) ? '📅 1 Overdue' : due.startOf('day').isAfter(moment().startOf('day')) ? '📅 3 Future' : '📅 2 Today'
+```tasks
+group by function (!due) ? '📅 4 No Due Date' : due.startOf('day').isBefore(moment().startOf('day')) ? '📅 1 Overdue' : due.startOf('day').isAfter(moment().startOf('day')) ? '📅 3 Future' : '📅 2 Today'
 
 # Maybe reverse arguments so due is passed in to as function arg???
-group by function (!due) ? '📅 4 No Due Date' : due.isBefore(moment().startOf('day')) ? '📅 1 Overdue' : due.isAfter(moment().startOf('day')) ? '📅 3 Future' : '📅 2 Today'
+# group by function (!due) ? '📅 4 No Due Date' : due.isBefore(moment().startOf('day')) ? '📅 1 Overdue' : due.isAfter(moment().startOf('day')) ? '📅 3 Future' : '📅 2 Today'
 
 # group by function root === "journal/" ? root : path
 # group by function path.replace("some/prefix/", "")
@@ -27,7 +27,14 @@ group by function due.format('YYYY-WW')
 group by function due.format('YYYY-MM-DD dddd')
 ```
 
+## Features
+
+- Can use if blocks
+- Can use variables??? Maybe???
+
 ## Limitations
 
 - The expression is only checked when the tasks block is rendered
   - Any errors in the expression are displayed as the group name
+- Cannot spread code over lines - has to be collapsed in to one line
+- Cannot define functions and call them
