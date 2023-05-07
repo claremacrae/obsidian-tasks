@@ -98,7 +98,8 @@ function groupByFn(task: Task, arg?: GroupingArg): string[] {
     const paramsArgs = parameterArguments(task);
 
     const params = paramsArgs.map(([p]) => p);
-    const groupBy = arg && new Function(...params, `return ${arg}`);
+    const fullArg = arg?.includes('return') ? arg : `return ${arg}`;
+    const groupBy = arg && new Function(...params, fullArg);
 
     if (groupBy instanceof Function) {
         const args = paramsArgs.map(([_, a]) => a);

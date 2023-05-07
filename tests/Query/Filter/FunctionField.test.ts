@@ -204,4 +204,20 @@ describe('FunctionField - grouping - example functions', () => {
         toGroupTaskFromBuilder(grouper, new TaskBuilder(), ['📅 4 No Due Date']);
         // What about invalid date - groups as Today
     });
+
+    it('using due to group by overdue - with emoji - written with ifs and returns', () => {
+        jest.useFakeTimers();
+        jest.setSystemTime(new Date(todayString));
+
+        // TODO Really need to make this simpler to write
+        const line =
+            "group by function if (!due)  { return '📅 4 No Due Date'; } else { return  due.format('📅 YYYY-MM-DD ddd'); }";
+        const grouper = createGrouper(line);
+
+        toGroupTaskWithDueDate(grouper, yesdyString, ['📅 2023-01-23 Mon']);
+        toGroupTaskWithDueDate(grouper, todayString, ['📅 2023-01-24 Tue']);
+        toGroupTaskWithDueDate(grouper, tomrwString, ['📅 2023-01-25 Wed']);
+        toGroupTaskFromBuilder(grouper, new TaskBuilder(), ['📅 4 No Due Date']);
+        // What about invalid date - groups as Today
+    });
 });
