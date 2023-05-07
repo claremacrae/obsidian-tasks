@@ -148,6 +148,7 @@ describe('FunctionField - grouping - example functions', () => {
     const yesdyString = '2023-01-23';
     const todayString = '2023-01-24';
     const tomrwString = '2023-01-25';
+    const invalString = '2023-02-31';
 
     it('using path stripping folder', () => {
         const line = 'group by function path.replace("some/prefix/", "")';
@@ -176,14 +177,14 @@ describe('FunctionField - grouping - example functions', () => {
         jest.setSystemTime(new Date(todayString));
 
         const line =
-            "group by function  (!due) ? 'No Due Date' : due.startOf('day').isBefore(moment().startOf('day')) ? 'Overdue' : due.startOf('day').isAfter(moment().startOf('day')) ? 'Future' : 'Today'";
+            "group by function  (!due) ? 'No Due Date' : (!due.isValid()) ? 'Invalid Due Date' : due.startOf('day').isBefore(moment().startOf('day')) ? 'Overdue' : due.startOf('day').isAfter(moment().startOf('day')) ? 'Future' : 'Today'";
         const grouper = createGrouper(line);
 
         toGroupTaskWithDueDate(grouper, yesdyString, ['Overdue']);
         toGroupTaskWithDueDate(grouper, todayString, ['Today']);
         toGroupTaskWithDueDate(grouper, tomrwString, ['Future']);
+        toGroupTaskWithDueDate(grouper, invalString, ['Invalid Due Date']);
         toGroupTaskFromBuilder(grouper, new TaskBuilder(), ['No Due Date']);
-        // What about invalid date - groups as Today
     });
 
     it('using due to group by overdue - as if block', () => {
@@ -191,29 +192,28 @@ describe('FunctionField - grouping - example functions', () => {
         jest.setSystemTime(new Date(todayString));
 
         const line =
-            "group by function if (!due) return 'No Due Date'; if (due.startOf('day').isBefore(moment().startOf('day'))) return 'Overdue'; if (due.startOf('day').isAfter(moment().startOf('day'))) return 'Future'; return 'Today'";
+            "group by function if (!due) return 'No Due Date'; if (!due.isValid()) return 'Invalid Due Date'; if (due.startOf('day').isBefore(moment().startOf('day'))) return 'Overdue'; if (due.startOf('day').isAfter(moment().startOf('day'))) return 'Future'; return 'Today'";
         const grouper = createGrouper(line);
 
         toGroupTaskWithDueDate(grouper, yesdyString, ['Overdue']);
         toGroupTaskWithDueDate(grouper, todayString, ['Today']);
         toGroupTaskWithDueDate(grouper, tomrwString, ['Future']);
+        toGroupTaskWithDueDate(grouper, invalString, ['Invalid Due Date']);
         toGroupTaskFromBuilder(grouper, new TaskBuilder(), ['No Due Date']);
-        // What about invalid date - groups as Today
     });
 
     it('using due to group by overdue - with emoji - written with ifs and returns', () => {
         jest.useFakeTimers();
         jest.setSystemTime(new Date(todayString));
 
-        // TODO Really need to make this simpler to write
         const line =
-            "group by function if (!due)  { return '📅 4 No Due Date'; } else { return  due.format('📅 YYYY-MM-DD ddd'); }";
+            "group by function if (!due)  { return '📅 4 No Due Date'; } else { return  '📅 ' + due.format('YYYY-MM-DD ddd'); }";
         const grouper = createGrouper(line);
 
         toGroupTaskWithDueDate(grouper, yesdyString, ['📅 2023-01-23 Mon']);
         toGroupTaskWithDueDate(grouper, todayString, ['📅 2023-01-24 Tue']);
         toGroupTaskWithDueDate(grouper, tomrwString, ['📅 2023-01-25 Wed']);
+        toGroupTaskWithDueDate(grouper, invalString, ['📅 Invalid date']);
         toGroupTaskFromBuilder(grouper, new TaskBuilder(), ['📅 4 No Due Date']);
-        // What about invalid date - groups as Today
     });
 });
