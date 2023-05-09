@@ -9,7 +9,16 @@ Based on work by @weirdhorror in <https://github.com/obsidian-tasks-group/obsidi
 ### Example 1
 
 ```tasks
+limit 150
+
 group by function (!due) ? '📅 4 No Due Date' : due.startOf('day').isBefore(moment().startOf('day')) ? '📅 1 Overdue' : due.startOf('day').isAfter(moment().startOf('day')) ? '📅 3 Future' : '📅 2 Today'
+
+# This would be nice, except that the groups are sorted alphabetically by name, which makes the output
+# really hard to read:
+group by function due ? due.fromNow() : 'No due date'
+
+# Failed attempt at nicer order of grouping by relative date
+# group by function  { if (due.fromNow().includes('ago')) {     if (due.fromNow().includes('year')} return '1 Overdue by years';     if (due.fromNow().includes('month')} return '2 Overdue by months';     if (due.fromNow().includes('day')} return '3 Overdue by days';     if (due.fromNow().includes('year')} return '4 Overdue'; } return '5 Other'; }
 
 # Maybe reverse arguments so due is passed in to as function arg???
 # group by function (!due) ? '📅 4 No Due Date' : due.isBefore(moment().startOf('day')) ? '📅 1 Overdue' : due.isAfter(moment().startOf('day')) ? '📅 3 Future' : '📅 2 Today'
