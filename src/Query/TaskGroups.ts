@@ -81,9 +81,27 @@ export class TaskGroups {
             const taskGroup = new TaskGroup(groups, groupHeadings, tasks);
             this.add(taskGroup);
         }
+        this.sortTaskGroups();
     }
 
     private add(taskGroup: TaskGroup) {
         this._groups.push(taskGroup);
+    }
+
+    private sortTaskGroups() {
+        const compareFn = (group1: TaskGroup, group2: TaskGroup) => {
+            // Compare two TaskGroup objects, sorting them by the group names at each grouping level.
+            const groupNames1 = group1.groups;
+            const groupNames2 = group2.groups;
+            for (let i = 0; i < groupNames1.length; i++) {
+                const result = groupNames1[i].localeCompare(groupNames2[i], undefined, { numeric: true });
+                if (result !== 0) {
+                    return result;
+                }
+            }
+            // identical if we reach here
+            return 0;
+        };
+        this._groups.sort(compareFn);
     }
 }
