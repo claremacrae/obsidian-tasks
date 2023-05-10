@@ -83,7 +83,6 @@ function parameterArguments(task: Task) {
         ['recurrence', task.recurrence],
         ['root', new RootField().value(task)],
         ['scheduled', task.scheduledDate],
-        ['scheduledDateIsInferred', task.scheduledDateIsInferred], // maybe remove??
         ['start', task.startDate],
         ['status', task.status],
         ['tags', task.tags],
