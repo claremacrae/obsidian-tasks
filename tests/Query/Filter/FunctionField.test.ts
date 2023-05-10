@@ -133,6 +133,16 @@ describe('FunctionField - grouping - error-handling', () => {
         expect(groupNames?.length).toStrictEqual(1);
         expect(groupNames![0]).toStrictEqual('Error with group result: value type "object" is not a string in "due"');
     });
+
+    it('should throw in grouper()', () => {
+        // It's not possible to create a GrouperFunction without a line,
+        // so grouper() method needs to throw and report it cannot work.
+        const field = new FunctionField();
+        const t = () => {
+            field.grouper();
+        };
+        expect(t).toThrow(Error);
+    });
 });
 
 describe('FunctionField - grouping - example functions', () => {

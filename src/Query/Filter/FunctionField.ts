@@ -61,7 +61,6 @@ export class FunctionField extends Field {
      * @throws Error
      */
     public grouper(): GrouperFunction {
-        // TODO Needs test
         throw Error('grouper() function not valid for FunctionField. Use createGrouperFromLine() instead.');
     }
 }
