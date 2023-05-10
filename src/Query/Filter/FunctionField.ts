@@ -39,7 +39,9 @@ export class FunctionField extends Field {
         }
         const args = match[1];
 
-        // TODO Consider making grouper() take the line - so this can be consistent with other fields
+        // I considered making grouper() take the line - so this can be consistent with other fields.
+        // But since the vast majority of 'group by' instructions don't have any options,
+        // it just made a load of test code much more complicated.
         return new Grouper('function', createGrouperFunctionFromLine(args));
     }
 
@@ -51,6 +53,13 @@ export class FunctionField extends Field {
         return new RegExp(`^group by ${this.fieldNameSingularEscaped()} (.*)`);
     }
 
+    /**
+     * This method does not work for 'group by function' as the user's instruction line
+     * is required in order to create the {@link GrouperFunction}.
+     *
+     * So this class overrides {@link createGrouperFromLine} instead.
+     * @throws Error
+     */
     public grouper(): GrouperFunction {
         // TODO Needs test
         throw Error('grouper() function not valid for FunctionField. Use createGrouperFromLine() instead.');
