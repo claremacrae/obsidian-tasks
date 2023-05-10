@@ -1,10 +1,10 @@
 import { verifyAsJson } from 'approvals/lib/Providers/Jest/JestApprovals';
-import { TaskBuilder } from '../../tests/TestingTools/TaskBuilder';
-import { FilenameField } from '../Query/Filter/FilenameField';
-import { FolderField } from '../Query/Filter/FolderField';
-import { PathField } from '../Query/Filter/PathField';
-import { RootField } from '../Query/Filter/RootField';
-import { makeQueryContextFromPath } from './QueryContext';
+import { TaskBuilder } from '../TestingTools/TaskBuilder';
+import { FilenameField } from '../../src/Query/Filter/FilenameField';
+import { FolderField } from '../../src/Query/Filter/FolderField';
+import { PathField } from '../../src/Query/Filter/PathField';
+import { RootField } from '../../src/Query/Filter/RootField';
+import { makeQueryContextFromPath } from '../../src/lib/QueryContext';
 
 describe('QueryContext', () => {
     it('should construct a QueryContext from a path', () => {
