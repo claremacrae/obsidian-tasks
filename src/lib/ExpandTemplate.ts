@@ -1,4 +1,3 @@
-import Handlebars from 'handlebars';
 import Mustache from 'mustache';
 import proxyData from 'mustache-validator';
 
@@ -12,12 +11,4 @@ export function expandMustacheTemplate(template: string, view: any): string {
     };
 
     return Mustache.render(template, proxyData(view));
-}
-
-export function expandHandlebarsTemplate(source: string, view: any) {
-    const options: CompileOptions = {
-        strict: true,
-    };
-    const template = Handlebars.compile(source, options);
-    return template(view);
 }
