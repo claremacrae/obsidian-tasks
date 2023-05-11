@@ -78,7 +78,7 @@ function parameterArguments(task: Task) {
         ['header', task.precedingHeader],
         ['indentation', task.indentation],
         ['markdown', task.originalMarkdown],
-        ['path', task.path.replace('.md', '')], // unsure about removing path
+        ['path', task.path],
         ['priority', task.priority],
         ['recurrence', task.recurrence],
         ['root', new RootField().value(task)],

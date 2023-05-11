@@ -151,7 +151,7 @@ describe('FunctionField - grouping - example functions', () => {
         const grouper = createGrouper(line);
 
         toGroupTaskWithPath(grouper, 'journal/a/b', ['journal/']);
-        toGroupTaskWithPath(grouper, 'hello/world/from-me.md', ['hello/world/from-me']);
+        toGroupTaskWithPath(grouper, 'hello/world/from-me.md', ['hello/world/from-me.md']);
         // TODO Test file in root folder
     });
 
@@ -164,7 +164,7 @@ describe('FunctionField - grouping - example functions', () => {
         const line = 'group by function path.replace("some/prefix/", "")';
         const grouper = createGrouper(line);
 
-        toGroupTaskWithPath(grouper, 'a/b/c.md', ['a/b/c']);
+        toGroupTaskWithPath(grouper, 'a/b/c.md', ['a/b/c.md']);
     });
 
     it('using folder stripping folder', () => {
