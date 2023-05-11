@@ -26,8 +26,9 @@ filename includes {{query.file.filename}}
 filename includes {{query.file.filenameWithoutExtension}}`;
 
     it('fake query - with file path', () => {
-        const fileContext = makeFileContext('a/b/path with space.md');
-        const queryContext = makeQueryContext(fileContext);
+        const path = 'a/b/path with space.md';
+        const fileContext = makeFileContext(path);
+        const queryContext = makeQueryContext(fileContext, path);
         expect(expandMustacheTemplate(rawString, queryContext)).toMatchInlineSnapshot(`
             "path includes a/b/path with space.md
             filename includes path with space.md
