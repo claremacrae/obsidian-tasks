@@ -1,5 +1,4 @@
 import { expandMustacheTemplate } from '../../src/lib/ExpandTemplate';
-import { makeFileContext } from '../../src/lib/FileContext';
 import { makeQueryContext } from '../../src/lib/QueryContext';
 
 /**
@@ -21,14 +20,13 @@ describe('Mustache Experiments', () => {
         expect(output).toMatchInlineSnapshot('"Joe spends 6"');
     });
 
-    const rawString = `path includes {{query.file.path}}
-filename includes {{query.file.filename}}
-filename includes {{query.file.filenameWithoutExtension}}`;
+    const rawString = `path includes {{query.path}}
+filename includes {{query.filename}}
+filename includes {{query.filenameWithoutExtension}}`;
 
     it('fake query - with file path', () => {
         const path = 'a/b/path with space.md';
-        const fileContext = makeFileContext(path);
-        const queryContext = makeQueryContext(fileContext, path);
+        const queryContext = makeQueryContext(path);
         expect(expandMustacheTemplate(rawString, queryContext)).toMatchInlineSnapshot(`
             "path includes a/b/path with space.md
             filename includes path with space.md

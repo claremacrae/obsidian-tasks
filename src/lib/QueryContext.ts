@@ -1,12 +1,9 @@
 import { FolderField } from '../Query/Filter/FolderField';
 import { RootField } from '../Query/Filter/RootField';
 import { Task } from '../Task';
-import type { FileContext } from './FileContext';
-import { makeFileContext } from './FileContext';
 
 export interface QueryContext {
     query: {
-        file: FileContext;
         root: string;
         path: string;
         folder: string;
@@ -15,12 +12,11 @@ export interface QueryContext {
     };
 }
 
-export function makeQueryContext(fileContext: FileContext, path: string): QueryContext {
+export function makeQueryContext(path: string): QueryContext {
     const filename: string = path.split('/').pop() ?? 'Unknown Path.md';
     const folder = FolderField.folder(path, filename);
     return {
         query: {
-            file: fileContext,
             root: RootField.root(path),
             path: path,
             folder: folder,
@@ -31,6 +27,5 @@ export function makeQueryContext(fileContext: FileContext, path: string): QueryC
 }
 
 export function makeQueryContextFromPath(path: string) {
-    const fileContext: FileContext = makeFileContext(path);
-    return makeQueryContext(fileContext, path);
+    return makeQueryContext(path);
 }

@@ -793,9 +793,9 @@ describe('Query', () => {
 
     describe('templating', () => {
         it('should expand templates, when given a file path', () => {
-            const rawQuery = `path includes {{query.file.path}}
-filename includes {{query.file.filename}}
-filename includes {{query.file.filenameWithoutExtension}}`;
+            const rawQuery = `path includes {{query.path}}
+filename includes {{query.filename}}
+filename includes {{query.filenameWithoutExtension}}`;
             const path = 'root/some/directory/a file name with spaces.md';
             const query = new Query({ source: rawQuery }, path);
             expect(query.rawSource).toEqual(rawQuery);
@@ -811,29 +811,29 @@ filename includes {{query.file.filenameWithoutExtension}}`;
         });
 
         it('should report an error if an undefined variable is used', () => {
-            const rawQuery = 'path includes {{query.file.nonsense}}';
+            const rawQuery = 'path includes {{query.nonsense}}';
             const path = 'p/q/r.md';
             const query = new Query({ source: rawQuery }, path);
             expect(query.error).toMatchInlineSnapshot(`
                 "There was an error expanding the template.
 
                 The error message was:
-                Missing Mustache data property: query.file.nonsense
+                Missing Mustache data property: query.nonsense
 
                 The query is:
-                path includes {{query.file.nonsense}}"
+                path includes {{query.nonsense}}"
             `);
         });
 
         it('should report an error if the query has a template, and no file path given', () => {
-            const rawQuery = 'path includes {{query.file.path}}';
+            const rawQuery = 'path includes {{query.path}}';
             const path = undefined;
             const query = new Query({ source: rawQuery }, path);
             expect(query.error).toMatchInlineSnapshot(`
                 "Input looks like it contains a template, with "{{" and "}}"
                 but no file path has been supplied, so cannot expand template values.
                 The query is:
-                path includes {{query.file.path}}"
+                path includes {{query.path}}"
             `);
         });
     });
