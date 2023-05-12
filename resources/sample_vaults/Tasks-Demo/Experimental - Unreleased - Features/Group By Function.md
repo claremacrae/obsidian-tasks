@@ -39,8 +39,8 @@ group by function due ? due.fromNow() : 'No due date'
 
 ```tasks
 limit 100
-group by function due.format('YYYY-WW')
-group by function due.format('YYYY-MM-DD dddd')
+group by function reverse due.format('YYYY-WW')
+group by function reverse due.format('YYYY-MM-DD dddd')
 ```
 
 ## Features
