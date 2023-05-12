@@ -89,6 +89,19 @@ describe('FunctionField - grouping - basics', () => {
         expect(field.canCreateGrouperForLine(instruction)).toEqual(true);
         const grouper = field.createGrouperFromLine(instruction);
         expect(grouper).not.toBeNull();
+        expect(grouper?.reverse).toEqual(false);
+    });
+
+    it('should parse "group by function reverse" line', () => {
+        // Arrange
+        const field = new FunctionField();
+        const instruction = 'group by function reverse root === "journal/" ? root : path';
+
+        // Assert
+        expect(field.canCreateGrouperForLine(instruction)).toEqual(true);
+        const grouper = field.createGrouperFromLine(instruction);
+        expect(grouper).not.toBeNull();
+        expect(grouper?.reverse).toEqual(true);
     });
 
     it('experiment with functions in string', () => {

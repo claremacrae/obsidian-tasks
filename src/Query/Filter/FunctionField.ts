@@ -37,12 +37,13 @@ export class FunctionField extends Field {
         if (match === null) {
             return null;
         }
-        const args = match[1];
+        const reverse = !!match[1];
+        const args = match[2];
 
         // I considered making grouper() take the line - so this can be consistent with other fields.
         // But since the vast majority of 'group by' instructions don't have any options,
         // it just made a load of test code much more complicated.
-        return new Grouper('function', createGrouperFunctionFromLine(args));
+        return new Grouper('function', createGrouperFunctionFromLine(args), reverse);
     }
 
     protected grouperRegExp(): RegExp {
@@ -50,7 +51,7 @@ export class FunctionField extends Field {
             throw Error(`grouperRegExp() unimplemented for ${this.fieldNameSingular()}`);
         }
 
-        return new RegExp(`^group by ${this.fieldNameSingularEscaped()} (.*)`);
+        return new RegExp(`^group by ${this.fieldNameSingularEscaped()}( reverse)? (.*)`);
     }
 
     /**
