@@ -3,7 +3,8 @@
  */
 import moment from 'moment';
 import { FilenameField } from '../src/Query/Filter/FilenameField';
-import type { Grouper } from '../src/Query/Grouper';
+import { PriorityField } from '../src/Query/Filter/PriorityField';
+import { Grouper } from '../src/Query/Grouper';
 import type { Task } from '../src/Task';
 import { PathField } from '../src/Query/Filter/PathField';
 import { TagsField } from '../src/Query/Filter/TagsField';
@@ -284,6 +285,44 @@ describe('Grouping tasks', () => {
             Group names: [2 TODO,2022-12-06 Tuesday]
             ##### 2022-12-06 Tuesday
             - [ ] Task b - later date ⏳ 2022-12-06
+
+            ---
+
+            3 tasks
+            "
+        `);
+    });
+
+    it('should support reverse grouping', () => {
+        const inputs: Task[] = [];
+        ['- [ ] normal', '- [ ] medium 🔼', '- [ ] high ⏫'].forEach((line: string) => {
+            const task = fromLine({
+                line: line,
+            });
+            inputs.push(task);
+        });
+        const grouperFunction = new PriorityField().grouper();
+        const reverse = true;
+        const grouper = new Grouper('priority - reversed', grouperFunction, reverse);
+        const grouping = [grouper];
+        const groups = new TaskGroups(grouping, inputs);
+        expect(groups.toString()).toMatchInlineSnapshot(`
+            "
+            Group names: [Priority 3: None]
+            #### Priority 3: None
+            - [ ] normal
+
+            ---
+
+            Group names: [Priority 2: Medium]
+            #### Priority 2: Medium
+            - [ ] medium 🔼
+
+            ---
+
+            Group names: [Priority 1: High]
+            #### Priority 1: High
+            - [ ] high ⏫
 
             ---
 

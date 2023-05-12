@@ -13,6 +13,7 @@ import { TaskGroup } from './TaskGroup';
  * @see {@link Query.grouping}
  */
 export class TaskGroups {
+    private _groupers: Grouper[];
     private _groups: TaskGroup[] = new Array<TaskGroup>();
     private _totalTaskCount = 0;
 
@@ -23,6 +24,8 @@ export class TaskGroups {
      * @param {Task[]} tasks - all the tasks matching the query, already sorted
      */
     constructor(groups: Grouper[], tasks: Task[]) {
+        this._groupers = groups;
+
         // Grouping doesn't change the number of tasks, and all the tasks
         // will be shown in at least one group.
         this._totalTaskCount = tasks.length;
@@ -99,13 +102,19 @@ export class TaskGroups {
             // The containers are guaranteed to be identical sizes,
             // they have one value for each 'group by' line in the query.
             for (let i = 0; i < groupNames1.length; i++) {
+                const grouper = this._groupers[i];
+
                 // For now, we only have one sort option: sort by the names of the groups.
                 // In future, we will add control over the sorting of group headings,
                 // which will likely involve adjusting this code to sort by applying a Comparator
                 // to the first Task in each group.
                 const result = groupNames1[i].localeCompare(groupNames2[i], undefined, { numeric: true });
                 if (result !== 0) {
-                    return result;
+                    if (grouper.reverse) {
+                        return -result;
+                    } else {
+                        return result;
+                    }
                 }
             }
             // identical if we reach here
