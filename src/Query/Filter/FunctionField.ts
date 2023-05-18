@@ -68,6 +68,11 @@ export class FunctionField extends Field {
 
 function parameterArguments(task: Task) {
     // TODO Add this location to 'what to do when new field added to Task'
+    // These are the variables that you can use in 'group by function' to operate with.
+    // So these types are exposed to users, and changing these types subsequently will break user queries.
+    // For example, the date fields return 'moment.Moment | null'.
+    // Before the first release it would probably be worth introducing a TaskDate wrapper to store
+    // moment.Moment | null, to hide the complexity of dealing with null values.
     const paramsArgs: [string, any][] = [
         ['created', task.createdDate],
         ['description', task.description],
