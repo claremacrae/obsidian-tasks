@@ -35,6 +35,8 @@
 - `query.filename`
 - `query.filenameWithoutExtension`
 
+See also [[Referring to fields in JavaScript]].
+
 ## Limitations
 
 - The symbols are case-sensitive:

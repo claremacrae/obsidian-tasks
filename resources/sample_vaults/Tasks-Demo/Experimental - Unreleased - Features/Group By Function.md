@@ -4,6 +4,32 @@
 
 Based on work by @weirdhorror in <https://github.com/obsidian-tasks-group/obsidian-tasks/pull/1421>
 
+## Reference
+
+Supported values:
+
+- `created`
+- `description`
+- `done`
+- `due`
+- `filename`
+- `folder`
+- `happens`
+- `header`
+- `indentation`
+- `markdown`
+- `path`
+- `priority`
+- `recurrence`
+- `root`
+- `scheduled`
+- `start`
+- `status`
+- `tags`
+- `urgency`
+
+See also [[Referring to fields in JavaScript]].
+
 ## Examples
 
 ### Example 1
