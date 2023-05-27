@@ -49,7 +49,7 @@ export class TaskGroup {
      * All the tasks that match the user's filters and that have the
      * group names exactly matching groups().
      */
-    public readonly tasks: Task[];
+    public tasks: Task[];
 
     /**
      * Constructor
@@ -62,10 +62,22 @@ export class TaskGroup {
         this.tasks = tasks;
     }
 
-    setGroupHeadings(headingsForTaskGroup: GroupDisplayHeading[]) {
+    public setGroupHeadings(headingsForTaskGroup: GroupDisplayHeading[]) {
         for (const groupDisplayHeading of headingsForTaskGroup) {
             this.groupHeadings.push(groupDisplayHeading);
         }
+    }
+
+    /**
+     * Limits {@link tasks} array to a certain number. Tasks exceeding
+     * the limit will be removed from the end, shall be called on sorted tasks.
+     *
+     * @param limit number of tasks for the group to have. If greater
+     * than the task count, no action will be taken.
+     *
+     */
+    public applyTaskLimit(limit: number) {
+        this.tasks = this.tasks.slice(0, limit);
     }
 
     /**
@@ -96,7 +108,7 @@ export class TaskGroup {
             // These headings mimic the behaviour of QueryRenderer,
             // which uses 'h4', 'h5' and 'h6' for nested groups.
             const headingPrefix = '#'.repeat(4 + heading.nestingLevel);
-            output += `${headingPrefix} ${heading.displayName}\n`;
+            output += `${headingPrefix} [${heading.property}] ${heading.displayName}\n`;
         }
 
         output += this.tasksAsStringOfLines();
