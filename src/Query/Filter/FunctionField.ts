@@ -29,10 +29,6 @@ export class FunctionField extends Field {
     }
 
     public createGrouperFromLine(line: string): Grouper | null {
-        if (!this.supportsGrouping()) {
-            return null;
-        }
-
         const match = Field.getMatch(this.grouperRegExp(), line);
         if (match === null) {
             return null;
@@ -47,10 +43,6 @@ export class FunctionField extends Field {
     }
 
     protected grouperRegExp(): RegExp {
-        if (!this.supportsGrouping()) {
-            throw Error(`grouperRegExp() unimplemented for ${this.fieldNameSingular()}`);
-        }
-
         return new RegExp(`^group by ${this.fieldNameSingularEscaped()}( reverse)? (.*)`);
     }
 
