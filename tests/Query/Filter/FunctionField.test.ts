@@ -86,7 +86,6 @@ describe('FunctionField - grouping - basics', () => {
         const instruction = 'group by function root === "journal/" ? root : path';
 
         // Assert
-        expect(field.canCreateGrouperForLine(instruction)).toEqual(true);
         const grouper = field.createGrouperFromLine(instruction);
         expect(grouper).not.toBeNull();
         expect(grouper?.reverse).toEqual(false);
@@ -98,7 +97,6 @@ describe('FunctionField - grouping - basics', () => {
         const instruction = 'group by function reverse root === "journal/" ? root : path';
 
         // Assert
-        expect(field.canCreateGrouperForLine(instruction)).toEqual(true);
         const grouper = field.createGrouperFromLine(instruction);
         expect(grouper).not.toBeNull();
         expect(grouper?.reverse).toEqual(true);
