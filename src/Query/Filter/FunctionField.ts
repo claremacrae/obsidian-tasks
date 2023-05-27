@@ -35,10 +35,6 @@ export class FunctionField extends Field {
         }
         const reverse = !!match[1];
         const args = match[2];
-
-        // I considered making grouper() take the line - so this can be consistent with other fields.
-        // But since the vast majority of 'group by' instructions don't have any options,
-        // it just made a load of test code much more complicated.
         return new Grouper('function', createGrouperFunctionFromLine(args), reverse);
     }
 
