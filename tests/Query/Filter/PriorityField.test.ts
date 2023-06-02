@@ -1,4 +1,4 @@
-import { Priority } from '../../../src/Task';
+import { Priority, Task } from '../../../src/Task';
 import { TaskBuilder } from '../../TestingTools/TaskBuilder';
 import { testFilter } from '../../TestingTools/FilterTestHelpers';
 import { PriorityField } from '../../../src/Query/Filter/PriorityField';
@@ -15,6 +15,19 @@ function testTaskFilterForTaskWithPriority(filter: string, priority: Priority, e
     const filterOrError = new PriorityField().createFilterOrErrorMessage(filter);
     testFilter(filterOrError, builder.priority(priority), expected);
 }
+
+describe('priority naming', () => {
+    it.each(Object.values(Priority))('should name priority value: "%i"', (priority) => {
+        const name = PriorityField.priorityNameUsingNone(priority);
+        expect(name).not.toEqual('ERROR'); // if this fails, code needs to be updated for a new priority
+    });
+
+    it('should name default priority correctly', () => {
+        const none = Priority.None;
+        expect(PriorityField.priorityNameUsingNone(none)).toEqual('None');
+        expect(PriorityField.priorityNameUsingNormal(none)).toEqual('Normal');
+    });
+});
 
 describe('priority is', () => {
     it('priority is highest', () => {
@@ -213,4 +226,33 @@ describe('grouping by priority', () => {
         // Assert
         expect(grouper(fromLine({ line: taskLine }))).toEqual(groups);
     });
+
+    it('should sort groups for PriorityField', () => {
+        const grouper = new PriorityField().createNormalGrouper();
+        const tasks = withAllPriorities();
+
+        expect({ grouper, tasks }).groupHeadingsToBe([
+            'Priority 0: Highest',
+            'Priority 1: High',
+            'Priority 2: Medium',
+            'Priority 3: None',
+            'Priority 4: Low',
+            'Priority 5: Lowest',
+        ]);
+    });
 });
+
+export function withAllPriorities(): Task[] {
+    const tasks: Task[] = [];
+    const allPriorities = Object.values(Priority);
+    allPriorities.forEach((priority) => {
+        // This description is chosen to be useful for including tasks in user docs, so
+        // changing it will change documentation and sample vault content.
+        const priorityName = PriorityField.priorityNameUsingNormal(priority);
+        const description = `#task ${priorityName} priority`;
+
+        const task = new TaskBuilder().priority(priority).description(description).build();
+        tasks.push(task);
+    });
+    return tasks;
+}
