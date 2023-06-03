@@ -5,7 +5,9 @@ import moment from 'moment';
 
 import { FunctionField } from '../../../src/Query/Filter/FunctionField';
 import type { Grouper } from '../../../src/Query/Grouper';
+import { Status } from '../../../src/Status';
 import type { Task } from '../../../src/Task';
+import { Priority } from '../../../src/Task';
 import { TaskBuilder } from '../../TestingTools/TaskBuilder';
 
 window.moment = moment;
@@ -183,6 +185,19 @@ describe('FunctionField - grouping - example functions', () => {
         const grouper = createGrouper(line);
 
         toGroupTaskWithPath(grouper, 'a/b/c.md', ['b/']);
+    });
+
+    it('group by priority', () => {
+        const line = 'group by function priority';
+        const grouper = createGrouper(line);
+        toGroupTaskFromBuilder(grouper, new TaskBuilder().priority(Priority.Highest), ['0']);
+        // TODO Provide Task.priorityName
+    });
+
+    it('group by status symbol', () => {
+        const line = 'group by function status.symbol';
+        const grouper = createGrouper(line);
+        toGroupTaskFromBuilder(grouper, new TaskBuilder().status(Status.makeCancelled()), ['-']);
     });
 
     it('using due to group by month - checking for no date', () => {
