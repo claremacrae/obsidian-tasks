@@ -13,7 +13,6 @@ import { fromLine } from './TestHelpers';
 import { TaskBuilder } from './TestingTools/TaskBuilder';
 import { RecurrenceBuilder } from './TestingTools/RecurrenceBuilder';
 
-jest.mock('obsidian');
 window.moment = moment;
 
 describe('parsing', () => {
@@ -150,8 +149,10 @@ describe('parsing', () => {
         expect(task).not.toBeNull();
         expect(task!.description).toEqual('this is a ✅ done task');
         expect(task!.status).toStrictEqual(Status.DONE);
+        // begin-snippet: test-moment-equality
         expect(task!.dueDate).toEqualMoment(moment('2021-09-12'));
         expect(task!.doneDate).toEqualMoment(moment('2021-06-20'));
+        // end-snippet
         expect(task!.blockLink).toEqual(' ^my-precious');
     });
 

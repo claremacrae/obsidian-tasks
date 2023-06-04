@@ -4,6 +4,25 @@ publish: true
 
 # Grouping
 
+---
+
+## Contents
+
+This page is long. Here are some links to the main sections:
+
+- [[#Basics]
+- [[#Group by Task Statuses]
+- [[#Group by Dates in Tasks]
+- [[#Group by Other Task Properties]
+- [[#Group by File Properties]
+- [[#Multiple groups]
+- [[#Refining groups]
+- [[#Notes]
+- [[#Screenshots]
+- [[#Examples]
+
+---
+
 ## Basics
 
 > [!released]
@@ -13,94 +32,180 @@ By default, Tasks displays tasks in a single list.
 
 To divide the matching tasks up with headings, you can add `group by` lines to the query.
 
-## Available grouping properties
+---
 
-You can group by the following properties.
+## Group by Task Statuses
 
-### File locations
+For more information, including adding your own customised statuses, see [[Statuses]].
 
-1. `path` (the path to the file that contains the task, that is, the folder and the filename)
-1. `root` (the top-level folder of the file that contains the task, that is, the first directory in the path, which will be `/` for files in root of the vault)
-1. `folder` (the folder to the file that contains the task, which will be `/` for files in root of the vault)
-1. `filename` (the link to the file that contains the task, without the `.md` extension)
-    - Note that tasks from different notes with the same file name will be grouped together in the same group.
+### Status
+
+- `group by status` (Done or Todo, which is capitalized for visibility in the headings)
+  - Note that the Done group is displayed before the Todo group,
+      which differs from the Sorting ordering of this property.
+
+### Status Name
+
+- `group by status.name`
+  - This groups by the names you give to your custom statuses, in alphabetical order.
+
+> [!released]
+`group by status.name` was introduced in Tasks 1.23.0.
+
+### Status Type
+
+- `group by status.type`
+  - This groups by the types you have given to your custom statuses.
+  - In order to impose a useful sort order, the types are prefixed with a number, so the groups will appear in this order, and with these group names:
+    - `1 IN_PROGRESS`
+    - `2 TODO`
+    - `3 DONE`
+    - `4 CANCELLED`
+    - `5 NON_TASK`
+
+> [!released]
+`group by status.type` was introduced in Tasks 1.23.0.
+
+---
+
+## Group by Dates in Tasks
+
+### Done Date
+
+- `group by done`
+  - The done date of the task, including the week-day, or `No done date`.
+
+> [!released]
+>
+> - `done` grouping option was introduced in Tasks 1.7.0.
+
+### Due Date
+
+- `group by due`
+  - The due date of the task, including the week-day, or `No due date`.
+
+> [!released]
+>
+> - `due` grouping option was introduced in Tasks 1.7.0.
+
+### Scheduled Date
+
+- `group by scheduled`
+  - The scheduled date of the task, including the week-day, or `No scheduled date`.
+
+> [!released]
+>
+> - `scheduled` grouping option was introduced in Tasks 1.7.0.
+
+### Start Date
+
+- `group by start`
+  - The start date of the task, including the week-day, or `No start date`.
+
+> [!released]
+>
+> - `start` grouping option was introduced in Tasks 1.7.0.
+
+### Created Date
+
+- `group by created`
+  - The created date of the task, including the week-day, or `No created date`.
+
+> [!released]
+`created` grouping option was introduced in Tasks 2.0.0.
+
+### Happens
+
+- `group by happens`
+  - The earliest of start date, scheduled date, and due date, including the week-day, or `No happens date` if none of those are set.
+
+> [!released]
+`happens` grouping option was introduced in Tasks 1.11.0.
+
+---
+
+## Group by Other Task Properties
+
+### Priority
+
+- `group by priority`
+  - The priority of the task, namely one of:
+    - `Priority 0: Highest`
+    - `Priority 1: High`
+    - `Priority 2: Medium`
+    - `Priority 3: None`
+    - `Priority 4: Low`
+    - `Priority 5: Lowest`
+
+> [!released]
+>
+> - `priority` grouping option was introduced in Tasks 1.11.0.
+
+### Urgency
+
+- `group by urgency` ([[Urgency|urgency]])
+  - Currently, the groups run from the lowest urgency to highest.
+  - You can reverse this with `group by urgency reverse`.
+  - In a future release, the default group order will become from the highest urgency to lowest.
+
+> [!released]
+>
+> - `urgency` grouping option was introduced in Tasks 3.6.0.
+
+### Recurrence
+
+- `group by recurring`
+  - Whether the task is recurring: either `Recurring` or `Not Recurring`.
+- `group by recurrence`
+  - The recurrence rule of the task, for example `every week on Sunday`, or `None` for non-recurring tasks.
+  - Note that the text displayed is generated programmatically and standardised, and so may not exactly match the text in any manually typed tasks. For example, a task with `🔁 every Sunday` is grouped in `every week on Sunday`.
+
+> [!released]
+>
+> - `recurring` and `recurrence` grouping options were introduced in Tasks 1.11.0.
+
+### Tags
+
+- `group by tags`
+  - The tags of the tasks or `(No tags)`. If the task has multiple tags, it will show up under every tag.
+
+> [!released]
+>
+> - `tags` grouping option was introduced in Tasks 1.10.0.
+
+---
+
+## Group by File Properties
+
+### File Path
+
+- `group by path` (the path to the file that contains the task, that is, the folder and the filename)
+
+### Root
+
+- `group by root` (the top-level folder of the file that contains the task, that is, the first directory in the path, which will be `/` for files in root of the vault)
 
 > [!released]
 `root` grouping option was introduced in Tasks 1.11.0.
 
-### File contents
+### Folder
 
-1. `backlink` (the text that would be shown in the task's [[Backlinks|backlink]], combining the task's file name and heading, but with no link added)
-1. `heading` (the heading preceding the task, or `(No heading)` if there are no headings in the file)
+- `group by folder` (the folder to the file that contains the task, which will be `/` for files in root of the vault)
 
-### Task date properties
+### File Name
 
-1. `created`
-    - The created date of the task, including the week-day, or `No created date`.
-1. `start`
-    - The start date of the task, including the week-day, or `No start date`.
-1. `scheduled`
-    - The scheduled date of the task, including the week-day, or `No scheduled date`.
-1. `due`
-    - The due date of the task, including the week-day, or `No due date`.
-1. `done`
-    - The done date of the task, including the week-day, or `No done date`.
-1. `happens`
-    - The earliest of start date, scheduled date, and due date, including the week-day, or `No happens date` if none of those are set.
+- `group by filename` (the link to the file that contains the task, without the `.md` extension)
+  - Note that tasks from different notes with the same file name will be grouped together in the same group.
 
-> [!released]
-`happens` grouping option was introduced in Tasks 1.11.0.<br>
-`created` grouping option was introduced in Tasks 2.0.0.
+### Backlink
 
-### Task statuses
+- `group by backlink` (the text that would be shown in the task's [[Backlinks|backlink]], combining the task's file name and heading, but with no link added)
 
-1. `status` (Done or Todo, which is capitalized for visibility in the headings)
-    - Note that the Done group is displayed before the Todo group,
-      which differs from the Sorting ordering of this property.
-1. `status.name`
-    - This groups by the names you give to your custom statuses, in alphabetical order.
-1. `status.type`
-    - This groups by the types you have given to your custom statuses.
-    - In order to impose a useful sort order, the types are prefixed with a number, so the groups will appear in this order, and with these group names:
-        - `1 IN_PROGRESS`
-        - `2 TODO`
-        - `3 DONE`
-        - `4 CANCELLED`
-        - `5 NON_TASK`
+### Heading
 
-> [!released]
-`group by status.name` and `group by status.type` were introduced in Tasks 1.23.0.
+- `group by heading` (the heading preceding the task, or `(No heading)` if there are no headings in the file)
 
-For more information, including adding your own customised statuses, see [[Statuses]].
-
-### Other task properties
-
-1. `priority`
-    - The priority of the task, namely one of:
-        - `Priority 0: Highest`
-        - `Priority 1: High`
-        - `Priority 2: Medium`
-        - `Priority 3: None`
-        - `Priority 4: Low`
-        - `Priority 5: Lowest`
-1. `urgency` ([[Urgency|urgency]])
-    - Currently, the groups run from the lowest urgency to highest.
-    - You can reverse this with `group by urgency reverse`.
-    - In a future release, the default group order will become from the highest urgency to lowest.
-1. `recurring`
-    - Whether the task is recurring: either `Recurring` or `Not Recurring`.
-1. `recurrence`
-    - The recurrence rule of the task, for example `every week on Sunday`, or `None` for non-recurring tasks.
-    - Note that the text displayed is generated programmatically and standardised, and so may not exactly match the text in any manually typed tasks. For example, a task with `🔁 every Sunday` is grouped in `every week on Sunday`.
-1. `tags`
-    - The tags of the tasks or `(No tags)`. If the task has multiple tags, it will show up under every tag.
-
-> [!released]
->
-> - `start`, `scheduled`, `due` and `done` grouping options were introduced in Tasks 1.7.0.<br>
-> - `tags` grouping option was introduced in Tasks 1.10.0.<br>
-> - `priority`, `recurring` and `recurrence` grouping options were introduced in Tasks 1.11.0.
-> - `urgency` grouping option was introduced in Tasks 3.6.0.
+---
 
 ## Multiple groups
 
@@ -118,6 +223,8 @@ See the [screenshots below](#screenshots) for how this looks in practice.
 
 > [!info]
 > Headings are displayed in case-sensitive alphabetical order, not the original order.
+
+---
 
 ## Refining groups
 
@@ -148,6 +255,8 @@ For example:
 You can limit the number of tasks in each group, perhaps to work on the most important things first.
 
 See [[Limiting#Limit number of tasks in each group|Limit number of tasks in each group]].
+
+---
 
 ## Notes
 
