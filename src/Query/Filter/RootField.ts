@@ -8,9 +8,10 @@ export class RootField extends TextField {
     }
 
     public value(task: Task): string {
-        return RootField.root(task.path);
+        return task.file.root;
     }
 
+    // TODO Replace this with use of TasksFile instead, after merge
     public static root(originalPath: string) {
         let path = originalPath.replace(/\\/g, '/');
 
