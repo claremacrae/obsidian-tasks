@@ -10,6 +10,12 @@ describe('QueryContext', () => {
     it('should construct a QueryContext from a path', () => {
         const path = 'a/b/c.md';
         const queryContext = makeQueryContextFromPath(path);
+
+        expect(queryContext.query.file.root).toStrictEqual(queryContext.query.root);
+        expect(queryContext.query.file.path).toStrictEqual(queryContext.query.path);
+        expect(queryContext.query.file.folder).toStrictEqual(queryContext.query.folder);
+        expect(queryContext.query.file.filename).toStrictEqual(queryContext.query.filename);
+
         verifyAsJson(queryContext);
     });
 

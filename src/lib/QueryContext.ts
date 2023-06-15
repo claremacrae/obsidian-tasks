@@ -1,9 +1,11 @@
 import { FolderField } from '../Query/Filter/FolderField';
 import { RootField } from '../Query/Filter/RootField';
+import { TasksFile } from '../Scripting/TasksFile';
 import { Task } from '../Task';
 
 export interface QueryContext {
     query: {
+        file: TasksFile;
         root: string;
         path: string;
         folder: string;
@@ -17,6 +19,7 @@ export function makeQueryContext(path: string): QueryContext {
     const folder = FolderField.folder(path, filename);
     return {
         query: {
+            file: new TasksFile(path),
             root: RootField.root(path),
             path: path,
             folder: folder,
