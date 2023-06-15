@@ -1,5 +1,3 @@
-import { FolderField } from '../Query/Filter/FolderField';
-import { RootField } from '../Query/Filter/RootField';
 import { TasksFile } from '../Scripting/TasksFile';
 import { Task } from '../Task';
 
@@ -15,15 +13,14 @@ export interface QueryContext {
 }
 
 export function makeQueryContext(path: string): QueryContext {
-    const filename: string = path.split('/').pop() ?? 'Unknown Path.md';
-    const folder = FolderField.folder(path, filename);
+    const tasksFile = new TasksFile(path);
     return {
         query: {
-            file: new TasksFile(path),
-            root: RootField.root(path),
-            path: path,
-            folder: folder,
-            filename: filename,
+            file: tasksFile,
+            root: tasksFile.root,
+            path: tasksFile.path,
+            folder: tasksFile.folder,
+            filename: tasksFile.filename,
             filenameWithoutExtension: Task.getFilenameFromPath(path) ?? 'Unknown Path',
         },
     };
