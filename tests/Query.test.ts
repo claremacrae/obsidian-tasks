@@ -212,8 +212,6 @@ describe('Query parsing', () => {
             'group by filename reverse',
             'group by folder',
             'group by folder reverse',
-            'group by function path.replace("some/prefix/", "")',
-            'group by function reverse path.replace("some/prefix/", "")',
             'group by happens',
             'group by happens reverse',
             'group by heading',

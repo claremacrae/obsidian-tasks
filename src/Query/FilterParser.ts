@@ -4,7 +4,6 @@ import { CreatedDateField } from './Filter/CreatedDateField';
 import { DoneDateField } from './Filter/DoneDateField';
 import { DueDateField } from './Filter/DueDateField';
 import { ExcludeSubItemsField } from './Filter/ExcludeSubItemsField';
-import { FunctionField } from './Filter/FunctionField';
 import { HeadingField } from './Filter/HeadingField';
 import { PathField } from './Filter/PathField';
 import { PriorityField } from './Filter/PriorityField';
@@ -56,7 +55,6 @@ const fieldCreators: EndsWith<BooleanField> = [
     () => new FilenameField(),
     () => new UrgencyField(),
     () => new RecurrenceField(),
-    () => new FunctionField(),
     () => new BooleanField(), // --- Please make sure to keep BooleanField last (see comment above) ---
 ];
 
