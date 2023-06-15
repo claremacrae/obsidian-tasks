@@ -11,15 +11,6 @@ export class FolderField extends TextField {
         return task.file.folder;
     }
 
-    // TODO Replace this with use of TasksFile instead, after merge
-    public static folder(path: string, fileNameWithExtension: string) {
-        const folder = path.substring(0, path.lastIndexOf(fileNameWithExtension));
-        if (folder === '') {
-            return '/';
-        }
-        return folder;
-    }
-
     public supportsGrouping(): boolean {
         return true;
     }
