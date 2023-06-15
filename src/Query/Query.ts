@@ -12,9 +12,9 @@ import type { Grouper } from './Grouper';
 import type { Filter } from './Filter/Filter';
 
 export class Query implements IQuery {
-    public rawSource: string;
-    public source: string;
-    public filePath: string | undefined;
+    public readonly rawSource: string;
+    public readonly source: string;
+    public readonly filePath: string | undefined;
 
     private _limit: number | undefined = undefined;
     private _taskGroupLimit: number | undefined = undefined;

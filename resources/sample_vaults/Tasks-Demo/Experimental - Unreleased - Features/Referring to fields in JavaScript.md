@@ -14,7 +14,6 @@ See:
 | `done`                                       |                                             |
 | `due`                                        |                                             |
 | `filename`                                   | `{{query.filename}}`                        |
-|                                              | `{{query.filenameWithoutExtension}}`        |
 | `folder`                                     | `{{query.folder}}`                          |
 | `happens`                                    |                                             |
 | `header`                                     |                                             |

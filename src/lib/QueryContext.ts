@@ -1,5 +1,4 @@
 import { TasksFile } from '../Scripting/TasksFile';
-import { Task } from '../Task';
 
 export interface QueryContext {
     query: {
@@ -8,7 +7,6 @@ export interface QueryContext {
         path: string;
         folder: string;
         filename: string;
-        filenameWithoutExtension: string;
     };
 }
 
@@ -21,7 +19,6 @@ export function makeQueryContext(path: string): QueryContext {
             path: tasksFile.path,
             folder: tasksFile.folder,
             filename: tasksFile.filename,
-            filenameWithoutExtension: Task.getFilenameFromPath(path) ?? 'Unknown Path',
         },
     };
 }

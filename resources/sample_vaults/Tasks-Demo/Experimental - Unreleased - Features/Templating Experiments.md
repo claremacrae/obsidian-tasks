@@ -19,11 +19,13 @@
 ```json
 {
   "query": {
+    "file": {
+      "_path": "a/b/c.md"
+    },
     "root": "a/",
     "path": "a/b/c.md",
     "folder": "a/b/",
-    "filename": "c.md",
-    "filenameWithoutExtension": "c"
+    "filename": "c.md"
   }
 }
 ```
@@ -33,7 +35,6 @@
 - `query.path`
 - `query.folder`
 - `query.filename`
-- `query.filenameWithoutExtension`
 
 See also [[Referring to fields in JavaScript]].
 
@@ -71,7 +72,7 @@ path includes {{queryx.file.filename}}
 limit 10
 group by path
 group by heading
-description does not include {{query.filenameWithoutExtension}}
+description does not include {{query.filename}}
 description does not include {{query.path}}
 
 # Note cannot generally put arbitrary string in to regular expression,

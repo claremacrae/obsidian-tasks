@@ -21,16 +21,14 @@ describe('Mustache Experiments', () => {
     });
 
     const rawString = `path includes {{query.path}}
-filename includes {{query.filename}}
-filename includes {{query.filenameWithoutExtension}}`;
+filename includes {{query.filename}}`;
 
     it('fake query - with file path', () => {
         const path = 'a/b/path with space.md';
         const queryContext = makeQueryContext(path);
         expect(expandMustacheTemplate(rawString, queryContext)).toMatchInlineSnapshot(`
             "path includes a/b/path with space.md
-            filename includes path with space.md
-            filename includes path with space"
+            filename includes path with space.md"
         `);
     });
 
