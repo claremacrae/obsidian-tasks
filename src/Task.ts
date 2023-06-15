@@ -10,14 +10,18 @@ import { renderTaskLine } from './TaskLineRenderer';
 import type { TaskLineRenderDetails } from './TaskLineRenderer';
 import { DateFallback } from './DateFallback';
 import { compareByDate } from './lib/DateTools';
+import { TasksDate } from './Scripting/TasksDate';
+import { StatusType } from './StatusConfiguration';
+import { TasksFile } from './Scripting/TasksFile';
+import { PriorityTools } from './lib/PriorityTools';
 
 /**
  * When sorting, make sure low always comes after none. This way any tasks with low will be below any exiting
  * tasks that have no priority which would be the default.
  *
  * Values can be converted to strings with:
- * - {@link priorityNameUsingNone} in {@link PriorityField}
- * - {@link priorityNameUsingNormal} in {@link PriorityField}
+ * - {@link priorityNameUsingNone} in {@link PriorityTools}
+ * - {@link priorityNameUsingNormal} in {@link PriorityTools}
  *
  * @export
  * @enum {number}
@@ -33,6 +37,7 @@ export enum Priority {
 
 export class TaskRegularExpressions {
     public static readonly dateFormat = 'YYYY-MM-DD';
+    public static readonly dateTimeFormat = 'YYYY-MM-DD HH:mm';
 
     // Matches indentation before a list marker (including > for potentially nested blockquotes or Obsidian callouts)
     public static readonly indentationRegex = /^([\s\t>]*)/;
@@ -395,6 +400,42 @@ export class Task {
         return recurrenceOnNextLine ? newTasks.reverse() : newTasks;
     }
 
+    /**
+     * Return whether the task is considered done.
+     * @returns true if the status type is {@link StatusType.DONE}, {@link StatusType.CANCELLED} or {@link StatusType.NON_TASK}, and false otherwise.
+     */
+    public get isDone(): boolean {
+        return (
+            this.status.type === StatusType.DONE ||
+            this.status.type === StatusType.CANCELLED ||
+            this.status.type === StatusType.NON_TASK
+        );
+    }
+
+    /**
+     * Return the number of the Task's priority.
+     *     - Highest = 0
+     *     - High = 1
+     *     - Medium = 2
+     *     - None = 3
+     *     - Low = 4
+     *     - Lowest = 5
+     * @see priorityName
+     */
+    public get priorityNumber(): number {
+        return Number.parseInt(this.priority);
+    }
+
+    /**
+     * Return the name of the Task's priority.
+     *
+     * Note that the default priority is called 'Normal', not 'None'.
+     @see priorityNumber
+     */
+    public get priorityName(): string {
+        return PriorityTools.priorityNameUsingNormal(this.priority);
+    }
+
     public get urgency(): number {
         if (this._urgency === null) {
             this._urgency = Urgency.calculate(this);
@@ -405,6 +446,94 @@ export class Task {
 
     public get path(): string {
         return this.taskLocation.path;
+    }
+
+    /**
+     * Return {@link createdDate} as a {@link TasksDate}, so the field names in scripting docs are consistent with the existing search instruction names, and null values are easy to deal with.
+     */
+    public get created(): TasksDate {
+        return new TasksDate(this.createdDate);
+    }
+
+    /**
+     * Return {@link doneDate} as a {@link TasksDate}, so the field names in scripting docs are consistent with the existing search instruction names, and null values are easy to deal with.
+     */
+    public get done(): TasksDate {
+        return new TasksDate(this.doneDate);
+    }
+
+    /**
+     * Return {@link dueDate} as a {@link TasksDate}, so the field names in scripting docs are consistent with the existing search instruction names, and null values are easy to deal with.
+     */
+    public get due(): TasksDate {
+        return new TasksDate(this.dueDate);
+    }
+
+    /**
+     * Return {@link scheduledDate} as a {@link TasksDate}, so the field names in scripting docs are consistent with the existing search instruction names, and null values are easy to deal with.
+     */
+    public get scheduled(): TasksDate {
+        return new TasksDate(this.scheduledDate);
+    }
+
+    /**
+     * Return {@link startDate} as a {@link TasksDate}, so the field names in scripting docs are consistent with the existing search instruction names, and null values are easy to deal with.
+     */
+    public get start(): TasksDate {
+        return new TasksDate(this.startDate);
+    }
+
+    /**
+     * Return the date fields that contribute to 'happens' searches.
+     *
+     * @see happens
+     * @see {@link HappensDateField}
+     */
+    public get happensDates(): (Moment | null)[] {
+        return Array.of(this.startDate, this.scheduledDate, this.dueDate);
+    }
+
+    /**
+     * Return the earliest of the dates used by 'happens' in this given task as a {@link TasksDate}.
+     *
+     * Generally speaking, the earliest date is considered to be the highest priority,
+     * as it is the first point at which the user might wish to act on the task.
+     *
+     * @see happensDates
+     * @see {@link HappensDateField}
+     */
+    public get happens(): TasksDate {
+        const happensDates = this.happensDates;
+        const sortedHappensDates = happensDates.sort(compareByDate);
+        return new TasksDate(sortedHappensDates[0]);
+    }
+
+    /**
+     * Return true if the Task has a valid recurrence rule, and false otherwise,
+     * that is, false if it does not have a recurrence rule, or the recurrence rule is invalid.
+     */
+    public get isRecurring(): boolean {
+        return this.recurrence !== null;
+    }
+
+    /**
+     * Return the text of the Task's recurrence rule, if it is supplied and is valid,
+     * and an empty string otherwise.
+     */
+    public get recurrenceRule(): string {
+        return this.recurrence ? this.recurrence.toText() : '';
+    }
+
+    public get heading(): string | null {
+        return this.precedingHeader;
+    }
+
+    public get hasHeading(): boolean {
+        return this.precedingHeader !== null;
+    }
+
+    public get file(): TasksFile {
+        return new TasksFile(this.path);
     }
 
     /**

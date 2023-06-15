@@ -6,6 +6,7 @@ publish: true
 
 ## What's New?
 
+- 4.0.0: 🔥 Add [[Custom Grouping|custom grouping]], using [[Task Properties|task properties]] to create [[expressions|expressions]] - the start of a whole new [[About Scripting|scripting]] world in Tasks!
 - 3.9.0: 🔥 Add [[Priority#Priorities and Order|lowest and highest]] priorities
 - 3.8.0: 🔥 Add [[Limiting#Limit number of tasks in each group|limiting tasks per group]]
 - 3.8.0: 🔥 Add option to control the [[Recurring Tasks#Order of the new task|order of new recurring tasks]]
@@ -32,6 +33,7 @@ These are the main pages and sections, that connect to all the pages here:
 >
 > ### Advanced and Detail
 >
+> - [[About Scripting|Scripting ...]]
 > - [[About Advanced|Advanced ...]]
 > - [[About Other Plugins|Other Plugins ...]]
 > - [[About Reference|Reference ...]]
