@@ -540,14 +540,7 @@ export class Task {
      * Return the name of the file containing the task, with the .md extension removed.
      */
     public get filename(): string | null {
-        return Task.getFilenameFromPath(this.path);
-    }
-
-    /**
-     * Return the name of the file from a path, with the .md extension removed.
-     */
-    public static getFilenameFromPath(path: string): string | null {
-        const fileNameMatch = path.match(/([^/]+)\.md$/);
+        const fileNameMatch = this.path.match(/([^/]+)\.md$/);
         if (fileNameMatch !== null) {
             return fileNameMatch[1];
         } else {
