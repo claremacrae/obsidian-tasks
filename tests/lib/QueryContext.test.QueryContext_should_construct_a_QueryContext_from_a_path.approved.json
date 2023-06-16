@@ -2,10 +2,6 @@
   "query": {
     "file": {
       "_path": "a/b/c.md"
-    },
-    "root": "a/",
-    "path": "a/b/c.md",
-    "folder": "a/b/",
-    "filename": "c.md"
+    }
   }
 }
