@@ -31,19 +31,19 @@
 ```
 <!-- endSnippet -->
 
-- `query.root`
-- `query.path`
-- `query.folder`
-- `query.filename`
+- `query.file.root`
+- `query.file.path`
+- `query.file.folder`
+- `query.file.filename`
 
 See also [[Referring to fields in JavaScript]].
 
 ## Limitations
 
 - The symbols are case-sensitive:
-  - `query.fileName` is not recognised
-  - `path includes {{query.fileName}}` gives:
-    - `Missing Mustache data property: query.fileName`
+  - `query.file.fileName` is not recognised
+  - `path includes {{query.file.fileName}}` gives:
+    - `Missing Mustache data property: query.file.fileName`
 - Error handling
   - The reference to `Mustache` in error messages may be confusing??
   - Use of unrecognised symbols inside `{{ }}` is spotted, and the name is written out
@@ -72,12 +72,12 @@ path includes {{queryx.file.filename}}
 limit 10
 group by path
 group by heading
-description does not include {{query.filename}}
-description does not include {{query.path}}
+description does not include {{query.file.filename}}
+description does not include {{query.file.path}}
 
 # Note cannot generally put arbitrary string in to regular expression,
 # due to special meaning of some characters
-# description regex does not match /^{{query.path}}$/
+# description regex does not match /^{{query.file.path}}$/
 # explain
 ```
 

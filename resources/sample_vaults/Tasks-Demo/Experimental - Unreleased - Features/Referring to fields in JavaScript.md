@@ -13,16 +13,16 @@ See:
 | `description`                                |                                             |
 | `done`                                       |                                             |
 | `due`                                        |                                             |
-| `filename`                                   | `{{query.filename}}`                        |
-| `folder`                                     | `{{query.folder}}`                          |
+| `filename`                                   | `{{query.file.filename}}`                   |
+| `folder`                                     | `{{query.file.folder}}`                     |
 | `happens`                                    |                                             |
 | `header`                                     |                                             |
 | `indentation`                                |                                             |
 | `markdown`                                   |                                             |
-| `path`                                       | `{{query.path}}`                            |
+| `path`                                       | `{{query.file.path}}`                       |
 | `priority`                                   |                                             |
 | `recurrence`                                 |                                             |
-| `root`                                       | `{{query.root}}`                            |
+| `root`                                       | `{{query.file.root}}`                       |
 | `scheduled`                                  |                                             |
 | `start`                                      |                                             |
 | `status`                                     |                                             |

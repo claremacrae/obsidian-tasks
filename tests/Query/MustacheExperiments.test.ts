@@ -20,8 +20,8 @@ describe('Mustache Experiments', () => {
         expect(output).toMatchInlineSnapshot('"Joe spends 6"');
     });
 
-    const rawString = `path includes {{query.path}}
-filename includes {{query.filename}}`;
+    const rawString = `path includes {{query.file.path}}
+filename includes {{query.file.filename}}`;
 
     it('fake query - with file path', () => {
         const path = 'a/b/path with space.md';
