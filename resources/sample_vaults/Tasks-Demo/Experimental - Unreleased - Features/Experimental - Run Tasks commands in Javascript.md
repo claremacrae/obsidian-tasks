@@ -18,14 +18,14 @@ const query = `due before today
 not done
 group by path`
 
-const groups = tasksPlugin.search(query)
+const queryResults = tasksPlugin.search(query)
 
-dv.paragraph(`number of matches: ${groups.totalTasksCount()}`)
+dv.paragraph(`number of matches: ${queryResults.totalTasksCount}`)
 
 // Note: this gives a text-only, non-interactive representation of the found tasks.
 // There is no way to complete them or edit them via this output.
 let output = '';
-for (const taskGroup of groups.groups) {
+for (const taskGroup of queryResults.groups) {
     for (const task of taskGroup.tasks) {
         output += task.toString()
         output += '\n';

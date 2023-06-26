@@ -7,6 +7,7 @@ import { TaskBuilder } from '../TestingTools/TaskBuilder';
 import { Urgency } from '../../src/Urgency';
 import { Priority } from '../../src/Task';
 import { calculateRelativeDate } from '../TestingTools/DateTestHelpers';
+import { fromLine } from '../TestHelpers';
 
 window.moment = moment;
 
@@ -41,12 +42,43 @@ function lowPriorityBuilder() {
 }
 
 // -----------------------------------------------------------------
+// Time of day does not affect result
+
+describe('urgency - test time-of-day impact on due-date score', () => {
+    // Test to reproduce https://github.com/obsidian-tasks-group/obsidian-tasks/issues/2068
+    beforeEach(() => {
+        jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
+    const task = fromLine({ line: '- [ ] #task 🔽 📅 2023-06-26', path: 'a/b/c.md', precedingHeader: null });
+
+    it.each([
+        // Force new line for each time
+        ['00:00'],
+        ['00:01'],
+        ['06:00'],
+        ['09:00'],
+        ['11:59'],
+        ['12:00'],
+        ['12:01'],
+        ['19:00'],
+        ['23:59'],
+    ])('with time  "%s"', (time: string) => {
+        jest.setSystemTime(new Date('2023-06-26 ' + time));
+        expect(Urgency.calculate(task)).toEqual(8.8);
+    });
+});
+
+// -----------------------------------------------------------------
 // Priority tests
 
 describe('urgency - priority component', () => {
     it('should score correctly for priority', () => {
         const builder = new TaskBuilder();
-        // I don't really know what values should I put here
         testUrgency(builder.priority(Priority.Highest), 9.0);
         testUrgency(builder.priority(Priority.High), 6.0);
         testUrgency(builder.priority(Priority.Medium), 3.9);
@@ -74,17 +106,17 @@ describe('urgency - due date component', () => {
 
     it('Due between 7 days ago and in 14 days: Range of 12.0 to 0.2', () => {
         testUrgencyForDueDate(-7, 12.0);
-        testUrgencyForDueDate(0, 8.8); // documentation says: 9.0 for "today"
+        testUrgencyForDueDate(0, 8.8);
         testUrgencyForDueDate(1, 8.34286);
         testUrgencyForDueDate(6, 6.05714);
         testUrgencyForDueDate(13, 2.85714);
-        testUrgencyForDueDate(14, 2.4); // documentation says: 0.2
+        testUrgencyForDueDate(14, 2.4);
     });
 
     it('More than 14 days until due: 0.2', () => {
-        testUrgencyForDueDate(15, 2.4); // // documentation says: 0.2
-        testUrgencyForDueDate(40, 2.4); // // documentation says: 0.2
-        testUrgencyForDueDate(200, 2.4); // // documentation says: 0.2
+        testUrgencyForDueDate(15, 2.4);
+        testUrgencyForDueDate(40, 2.4);
+        testUrgencyForDueDate(200, 2.4);
     });
 
     it('not due: 0.0', () => {

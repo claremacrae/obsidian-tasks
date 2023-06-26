@@ -4,7 +4,8 @@ import type { Comparator } from '../Sorter';
 import type { GrouperFunction } from '../Grouper';
 import { PriorityTools } from '../../lib/PriorityTools';
 import { Field } from './Field';
-import { Filter, FilterOrErrorMessage } from './Filter';
+import { Filter } from './Filter';
+import { FilterOrErrorMessage } from './FilterOrErrorMessage';
 
 export class PriorityField extends Field {
     // The trick in the following to manage whitespace with optional values
@@ -15,7 +16,6 @@ export class PriorityField extends Field {
         /^priority(\s+is)?(\s+(above|below|not))?(\s+(lowest|low|none|medium|high|highest))$/;
 
     createFilterOrErrorMessage(line: string): FilterOrErrorMessage {
-        const result = new FilterOrErrorMessage(line);
         const priorityMatch = Field.getMatch(this.filterRegExp(), line);
         if (priorityMatch !== null) {
             const filterPriorityString = priorityMatch[5];
@@ -43,8 +43,7 @@ export class PriorityField extends Field {
             }
 
             if (filterPriority === null) {
-                result.error = 'do not understand priority';
-                return result;
+                return FilterOrErrorMessage.fromError(line, 'do not understand priority');
             }
 
             let explanation = line;
@@ -64,11 +63,10 @@ export class PriorityField extends Field {
                     explanation = `${this.fieldName()} is ${filterPriorityString}`;
             }
 
-            result.filter = new Filter(line, filter, new Explanation(explanation));
+            return FilterOrErrorMessage.fromFilter(new Filter(line, filter, new Explanation(explanation)));
         } else {
-            result.error = 'do not understand query filter (priority)';
+            return FilterOrErrorMessage.fromError(line, 'do not understand query filter (priority)');
         }
-        return result;
     }
 
     public fieldName(): string {

@@ -3,7 +3,7 @@ import { Plugin } from 'obsidian';
 import { Cache, State } from './Cache';
 import { Commands } from './Commands';
 import { Query } from './Query/Query';
-import type { TaskGroups } from './Query/TaskGroups';
+import type { QueryResult } from './Query/QueryResult';
 import { TasksEvents } from './TasksEvents';
 import { initializeFile } from './File';
 import { InlineRenderer } from './InlineRenderer';
@@ -82,7 +82,7 @@ export default class TasksPlugin extends Plugin {
     }
 
     // TODO Require the source path to be passed in
-    public search(source: string): TaskGroups | undefined {
+    public search(source: string): QueryResult | undefined {
         const query = new Query({ source });
         if (this.cache?.getState() !== State.Warm) {
             return undefined;
