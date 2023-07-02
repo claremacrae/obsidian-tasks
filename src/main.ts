@@ -86,7 +86,7 @@ export default class TasksPlugin extends Plugin {
         if (this.cache?.getState() !== State.Warm) {
             return undefined;
         }
-        const query = getQueryForQueryRenderer(source);
+        const query = getQueryForQueryRenderer(source, undefined);
         return query.applyQueryToTasks(this.cache?.getTasks());
     }
 }

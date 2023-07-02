@@ -47,6 +47,7 @@ export function explainResults(source: string, path: string | undefined = undefi
  * This query is the result of joining the global query with the query in the task block
  *
  * @param {string} source The query source from the task block
+ * @param {string | undefined} path The path to the file containing the query, if available.
  * @returns {Query} The query to execute
  */
 export function getQueryForQueryRenderer(source: string, path: string | undefined): Query {
