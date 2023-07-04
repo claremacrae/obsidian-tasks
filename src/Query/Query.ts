@@ -4,6 +4,7 @@ import { LayoutOptions } from '../TaskLayout';
 import type { Task } from '../Task';
 import type { IQuery } from '../IQuery';
 import { getSettings } from '../Config/Settings';
+import { errorMessageForException } from '../lib/ExceptionTools';
 import { Sort } from './Sort';
 import type { Sorter } from './Sorter';
 import { TaskGroups } from './TaskGroups';
@@ -217,21 +218,26 @@ ${this.source}`;
     }
 
     public applyQueryToTasks(tasks: Task[]): QueryResult {
-        this.filters.forEach((filter) => {
-            tasks = tasks.filter(filter.filterFunction);
-        });
+        try {
+            this.filters.forEach((filter) => {
+                tasks = tasks.filter(filter.filterFunction);
+            });
 
-        const { debugSettings } = getSettings();
-        const tasksSorted = debugSettings.ignoreSortInstructions ? tasks : Sort.by(this.sorting, tasks);
-        const tasksSortedLimited = tasksSorted.slice(0, this.limit);
+            const { debugSettings } = getSettings();
+            const tasksSorted = debugSettings.ignoreSortInstructions ? tasks : Sort.by(this.sorting, tasks);
+            const tasksSortedLimited = tasksSorted.slice(0, this.limit);
 
-        const taskGroups = new TaskGroups(this.grouping, tasksSortedLimited);
+            const taskGroups = new TaskGroups(this.grouping, tasksSortedLimited);
 
-        if (this._taskGroupLimit !== undefined) {
-            taskGroups.applyTaskLimit(this._taskGroupLimit);
+            if (this._taskGroupLimit !== undefined) {
+                taskGroups.applyTaskLimit(this._taskGroupLimit);
+            }
+
+            return new QueryResult(taskGroups);
+        } catch (e) {
+            const description = 'Search failed';
+            return QueryResult.fromError(errorMessageForException(description, e));
         }
-
-        return new QueryResult(taskGroups);
     }
 
     private parseHideOptions({ line }: { line: string }): void {
