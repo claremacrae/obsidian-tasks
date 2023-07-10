@@ -4,13 +4,13 @@
 
 import moment from 'moment';
 
-import type { Task } from '../../src/Task';
-import { SampleTasks } from '../TestHelpers';
+import type { Task } from '../../../../src/Task';
+import { SampleTasks } from '../../../TestHelpers';
 import {
     type QueryInstructionLineAndDescription,
     verifyFunctionFieldGrouperSamplesForDocs,
     verifyFunctionFieldGrouperSamplesOnTasks,
-} from '../Query/Filter/ReferenceDocs/FilterReference/VerifyFunctionFieldSamples';
+} from '../../../Query/Filter/ReferenceDocs/FilterReference/VerifyFunctionFieldSamples';
 
 window.moment = moment;
 
@@ -28,7 +28,7 @@ type TaskPropertyName = string;
 
 type CustomGroupingPropertyTestData = [TaskPropertyName, QueryInstructionLineAndDescription[], Task[]];
 
-describe('custom grouping by', () => {
+describe('dates', () => {
     const testData: CustomGroupingPropertyTestData[] = [
         // ---------------------------------------------------------------------------------
         // DATE FIELDS
@@ -120,6 +120,18 @@ describe('custom grouping by', () => {
                     'This is best understood by pasting it in to a Tasks block in Obsidian and then deleting parts of the expression.',
                     'The key technique is to say that if the day is Sunday (`0`), then force it to be displayed as date number `8`, so it comes after the other days of the week',
                 ],
+                [
+                    "group by function (!task.due.moment) ? '%%4%% Undated' : result = task.due.moment.isBefore(moment(), 'day') ? '%%1%% Overdue' : result = task.due.moment.isSame(moment(), 'day') ? '%%2%% Today' : '%%3%% Future'",
+                    'Group task due dates in to 4 broad categories: `Overdue`, `Today`, `Future` and `Undated`, displayed in that order.',
+                    'Try this on a line before `group by due` if there are a lot of due date headings, and you would like them to be broken down in to some kind of structure.',
+                    'A limitation of Tasks expressions is that they each need to fit on a single line, so this uses nested ternary operators, making it powerful but very hard to read.',
+                    'In fact, for ease of development and testing, it was written in a full-fledged development environment as a series of if/else blocks, and then automatically refactored in these nested ternary operators',
+                ],
+                [
+                    "group by function (!task.due.moment) ? '%%4%% ==Undated==' : result = task.due.moment.isBefore(moment(), 'day') ? '%%1%% ==Overdue==' : result = task.due.moment.isSame(moment(), 'day') ? '%%2%% ==Today==' : '%%3%% ==Future=='",
+                    'As above, but the headings `Overdue`, `Today`, `Future` and `Undated` are highlighted.',
+                    'See the sample screenshot below',
+                ],
             ],
             SampleTasks.withAllRepresentativeDueDates(),
         ],
@@ -156,7 +168,19 @@ describe('custom grouping by', () => {
             ],
             SampleTasks.withAllRepresentativeStartDates(),
         ],
+    ];
 
+    it.each(testData)('%s results', (_: string, groups: QueryInstructionLineAndDescription[], tasks: Task[]) => {
+        verifyFunctionFieldGrouperSamplesOnTasks(groups, tasks);
+    });
+
+    it.each(testData)('%s docs', (_: string, groups: QueryInstructionLineAndDescription[], _tasks: Task[]) => {
+        verifyFunctionFieldGrouperSamplesForDocs(groups);
+    });
+});
+
+describe('file properties', () => {
+    const testData: CustomGroupingPropertyTestData[] = [
         // ---------------------------------------------------------------------------------
         // FILE FIELDS
         // ---------------------------------------------------------------------------------
@@ -221,7 +245,73 @@ describe('custom grouping by', () => {
             ],
             SampleTasks.withAllRootsPathsHeadings(),
         ],
+    ];
 
+    it.each(testData)('%s results', (_: string, groups: QueryInstructionLineAndDescription[], tasks: Task[]) => {
+        verifyFunctionFieldGrouperSamplesOnTasks(groups, tasks);
+    });
+
+    it.each(testData)('%s docs', (_: string, groups: QueryInstructionLineAndDescription[], _tasks: Task[]) => {
+        verifyFunctionFieldGrouperSamplesForDocs(groups);
+    });
+});
+
+describe('statuses', () => {
+    const testData: CustomGroupingPropertyTestData[] = [
+        [
+            'task.status.name',
+            [
+                ['group by function task.status.name', 'Identical to "group by status.name"'],
+                ['group by function task.status.name.toUpperCase()', 'Convert the status names to capitals'],
+            ],
+            SampleTasks.withAllStatuses(),
+        ],
+
+        [
+            'task.status.nextSymbol',
+            [
+                [
+                    'group by function "Next status symbol: " + task.status.nextSymbol.replace(" ", "space")',
+                    'Group by the next status symbol, making space characters visible',
+                ],
+            ],
+            SampleTasks.withAllStatuses(),
+        ],
+
+        [
+            'task.status.symbol',
+            [
+                [
+                    'group by function "Status symbol: " + task.status.symbol.replace(" ", "space")',
+                    'Group by the status symbol, making space characters visible',
+                ],
+            ],
+            SampleTasks.withAllStatuses(),
+        ],
+
+        [
+            'task.status.type',
+            [
+                [
+                    'group by function task.status.type',
+                    'Unlike "group by status.type", this sorts the status types in alphabetical order',
+                ],
+            ],
+            SampleTasks.withAllStatuses(),
+        ],
+    ];
+
+    it.each(testData)('%s results', (_: string, groups: QueryInstructionLineAndDescription[], tasks: Task[]) => {
+        verifyFunctionFieldGrouperSamplesOnTasks(groups, tasks);
+    });
+
+    it.each(testData)('%s docs', (_: string, groups: QueryInstructionLineAndDescription[], _tasks: Task[]) => {
+        verifyFunctionFieldGrouperSamplesForDocs(groups);
+    });
+});
+
+describe('other properties', () => {
+    const testData: CustomGroupingPropertyTestData[] = [
         // ---------------------------------------------------------------------------------
         // RECURRENCE FIELDS
         // ---------------------------------------------------------------------------------
@@ -349,48 +439,6 @@ describe('custom grouping by', () => {
         ],
 
         [
-            'task.status.name',
-            [
-                ['group by function task.status.name', 'Identical to "group by status.name"'],
-                ['group by function task.status.name.toUpperCase()', 'Convert the status names to capitals'],
-            ],
-            SampleTasks.withAllStatuses(),
-        ],
-
-        [
-            'task.status.nextSymbol',
-            [
-                [
-                    'group by function "Next status symbol: " + task.status.nextSymbol.replace(" ", "space")',
-                    'Group by the next status symbol, making space characters visible',
-                ],
-            ],
-            SampleTasks.withAllStatuses(),
-        ],
-
-        [
-            'task.status.symbol',
-            [
-                [
-                    'group by function "Status symbol: " + task.status.symbol.replace(" ", "space")',
-                    'Group by the status symbol, making space characters visible',
-                ],
-            ],
-            SampleTasks.withAllStatuses(),
-        ],
-
-        [
-            'task.status.type',
-            [
-                [
-                    'group by function task.status.type',
-                    'Unlike "group by status.type", this sorts the status types in alphabetical order',
-                ],
-            ],
-            SampleTasks.withAllStatuses(),
-        ],
-
-        [
             'task.tags',
             [
                 [
@@ -488,7 +536,19 @@ describe('custom grouping by', () => {
             ],
             SampleTasks.withAllPriorities(),
         ],
+    ];
 
+    it.each(testData)('%s results', (_: string, groups: QueryInstructionLineAndDescription[], tasks: Task[]) => {
+        verifyFunctionFieldGrouperSamplesOnTasks(groups, tasks);
+    });
+
+    it.each(testData)('%s docs', (_: string, groups: QueryInstructionLineAndDescription[], _tasks: Task[]) => {
+        verifyFunctionFieldGrouperSamplesForDocs(groups);
+    });
+});
+
+describe('special cases', () => {
+    const testData: CustomGroupingPropertyTestData[] = [
         [
             'formatting',
             [
