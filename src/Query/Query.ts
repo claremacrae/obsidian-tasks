@@ -107,7 +107,7 @@ ${this.source}`;
                     case this.parseFilter(line):
                         break;
                     default:
-                        this._error = `do not understand query: ${line}`;
+                        this.setError('do not understand query', line);
                 }
             });
     }
@@ -217,6 +217,10 @@ ${this.source}`;
         return this._error;
     }
 
+    private setError(message: string, line: string) {
+        this._error = `${message}:\n${line}`;
+    }
+
     public applyQueryToTasks(tasks: Task[]): QueryResult {
         try {
             this.filters.forEach((filter) => {
@@ -284,7 +288,7 @@ ${this.source}`;
                     this._layoutOptions.hideTags = hide;
                     break;
                 default:
-                    this._error = 'do not understand hide/show option';
+                    this.setError('do not understand hide/show option', line);
             }
         }
     }
@@ -292,8 +296,11 @@ ${this.source}`;
     private parseFilter(line: string) {
         const filterOrError = FilterParser.parseFilter(line);
         if (filterOrError != null) {
-            if (filterOrError.filter) this._filters.push(filterOrError.filter);
-            else this._error = filterOrError.error;
+            if (filterOrError.filter) {
+                this._filters.push(filterOrError.filter);
+            } else {
+                this.setError(filterOrError.error ?? 'Unknown error', line);
+            }
             return true;
         }
         return false;
@@ -302,7 +309,7 @@ ${this.source}`;
     private parseLimit({ line }: { line: string }): void {
         const limitMatch = line.match(this.limitRegexp);
         if (limitMatch === null) {
-            this._error = 'do not understand query limit';
+            this.setError('do not understand query limit', line);
             return;
         }
 
