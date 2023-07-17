@@ -57,6 +57,31 @@ Note how it shows the dates being searched for very clearly, including the day o
 
 It also shows that `starts` searches also match tasks with not start date.
 
+### Regular Expressions are explained
+
+> [!released]
+> Introduced in Tasks 4.3.0.
+
+For example, when the following [[Regular Expressions|regular expression]] is placed in a tasks query block:
+
+<!-- snippet: DocsSamplesForExplain.test.explain_regular_expression.approved.query.text -->
+```text
+explain
+path regex matches /^Root/Sub-Folder/Sample File\.md/i
+```
+<!-- endSnippet -->
+
+the results begin with the following:
+
+<!-- snippet: DocsSamplesForExplain.test.explain_regular_expression.approved.explanation.text -->
+```text
+Explanation of this Tasks code block query:
+
+path regex matches /^Root/Sub-Folder/Sample File\.md/i =>
+  using regex:     '^Root\/Sub-Folder\/Sample File\.md' with flag 'i'
+```
+<!-- endSnippet -->
+
 ### Boolean combinations are displayed
 
 For example, when the following text is placed in a tasks query block:
@@ -116,6 +141,52 @@ Explanation of this Tasks code block query:
         description includes 7
       NOT:
         description includes 7
+```
+<!-- endSnippet -->
+
+### Global Query is displayed
+
+> [!released]
+The Global Query setting was added in Tasks 3.5.0.
+
+For example, with this [[Global Query|global query]]:
+
+<!-- snippet: DocsSamplesForExplain.test.explain_example_global_query.approved.query.text -->
+```text
+limit 50
+heading includes tasks
+```
+<!-- endSnippet -->
+
+and when the following text is placed in a tasks query block:
+
+<!-- snippet: DocsSamplesForExplain.test.explain_explains_task_block_with_global_query_active.approved.query.text -->
+```text
+not done
+due next week
+explain
+```
+<!-- endSnippet -->
+
+the results begin with the following, on `2022-10-21`:
+
+<!-- snippet: DocsSamplesForExplain.test.explain_explains_task_block_with_global_query_active.approved.explanation.text -->
+```text
+Explanation of the global query:
+
+heading includes tasks
+
+
+At most 50 tasks.
+
+Explanation of this Tasks code block query:
+
+not done
+
+due next week =>
+  due date is between:
+    2022-10-24 (Monday 24th October 2022) and
+    2022-10-30 (Sunday 30th October 2022) inclusive
 ```
 <!-- endSnippet -->
 

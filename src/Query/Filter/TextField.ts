@@ -34,12 +34,14 @@ export abstract class TextField extends Field {
             try {
                 matcher = RegexMatcher.validateAndConstruct(filterValue);
             } catch (e) {
-                return FilterOrErrorMessage.fromError(line, errorMessageForException('Parsing regular expression', e));
+                const message =
+                    errorMessageForException('Parsing regular expression', e) + `\n\n${RegexMatcher.helpMessage()}`;
+                return FilterOrErrorMessage.fromError(line, message);
             }
             if (matcher === null) {
                 return FilterOrErrorMessage.fromError(
                     line,
-                    `cannot parse regex (${this.fieldName()}); check your leading and trailing slashes for your query`,
+                    `Invalid instruction: '${line}'\n\n${RegexMatcher.helpMessage()}`,
                 );
             }
         }
