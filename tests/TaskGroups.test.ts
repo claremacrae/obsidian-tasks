@@ -12,7 +12,7 @@ import { TaskGroups } from '../src/Query/TaskGroups';
 import { StatusTypeField } from '../src/Query/Filter/StatusTypeField';
 import { HappensDateField } from '../src/Query/Filter/HappensDateField';
 import { DueDateField } from '../src/Query/Filter/DueDateField';
-import { fromLine } from './TestHelpers';
+import { createTasksFromMarkdown, fromLine } from './TestHelpers';
 
 window.moment = moment;
 
@@ -500,6 +500,57 @@ describe('Grouping tasks', () => {
             ---
 
             4 tasks
+            "
+        `);
+    });
+
+    it('should calculate counts of tasks in leaf groups', () => {
+        // Arrange
+        const markdown = `
+- [ ] 1.1 #tag1
+- [ ] 2.1 #tag2
+- [ ] 3.2 #tag2
+- [ ] 3.1 #tag3
+- [ ] 3.2 #tag3
+- [ ] 3.3 #tag3
+        `;
+        const tasks = createTasksFromMarkdown(markdown, 'File Name.md', 'Heading');
+
+        // Act
+        const grouping = [new TagsField().createNormalGrouper()];
+        const groups = new TaskGroups(grouping, tasks);
+        groups.applyTaskLimit(1);
+
+        // Assert
+        expect(groups.toString(true)).toMatchInlineSnapshot(`
+            "Groupers (if any):
+            - tags
+
+            Group names: [#tag1]
+            #### [tags] #tag1
+            - [ ] 1.1 #tag1
+
+            1 task
+
+            ---
+
+            Group names: [#tag2]
+            #### [tags] #tag2
+            - [ ] 2.1 #tag2
+
+            1 of 2 tasks displayed
+
+            ---
+
+            Group names: [#tag3]
+            #### [tags] #tag3
+            - [ ] 3.1 #tag3
+
+            1 of 3 tasks displayed
+
+            ---
+
+            3 tasks
             "
         `);
     });

@@ -1,6 +1,10 @@
 import type { Task } from '../Task';
 import type { GroupDisplayHeading } from './GroupDisplayHeading';
 
+function taskCountPluralised(count: number) {
+    return `${count} task` + (count !== 1 ? 's' : '');
+}
+
 /**
  * Store a single group of tasks, that all share the same group names.
  * {@link TaskGroup} objects are stored in a {@link TaskGroups} object.
@@ -52,6 +56,12 @@ export class TaskGroup {
     public tasks: Task[];
 
     /**
+     * The original number of tasks in this group, before any limit was applied
+     * @private
+     */
+    public originalTaskCount: number;
+
+    /**
      * Constructor
      * @param {string[]} groups - See {@link groups} for details
      * @param tasks {Task[]} - See {@link tasks} for details
@@ -60,6 +70,7 @@ export class TaskGroup {
         this.groups = groups;
         this.groupHeadings = [];
         this.tasks = tasks;
+        this.originalTaskCount = this.tasks.length;
     }
 
     public setGroupHeadings(headingsForTaskGroup: GroupDisplayHeading[]) {
@@ -78,6 +89,13 @@ export class TaskGroup {
      */
     public applyTaskLimit(limit: number) {
         this.tasks = this.tasks.slice(0, limit);
+    }
+
+    public describeTaskCount() {
+        if (this.tasks.length === this.originalTaskCount) {
+            return taskCountPluralised(this.originalTaskCount);
+        }
+        return `${this.tasks.length} of ${taskCountPluralised(this.originalTaskCount)} displayed`;
     }
 
     /**

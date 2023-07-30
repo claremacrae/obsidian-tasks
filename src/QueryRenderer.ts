@@ -287,7 +287,7 @@ class QueryRenderChild extends MarkdownRenderChild {
         for (const group of tasksSortedLimitedGrouped.groups) {
             // If there were no 'group by' instructions, group.groupHeadings
             // will be empty, and no headings will be added.
-            this.addGroupHeadings(content, group.groupHeadings);
+            this.addGroupHeadings(content, group.groupHeadings, group.describeTaskCount());
 
             const { taskList } = await this.createTasksList({
                 tasks: group.tasks,
@@ -304,13 +304,18 @@ class QueryRenderChild extends MarkdownRenderChild {
      *                        in which case no headings will be added.
      * @private
      */
-    private addGroupHeadings(content: HTMLDivElement, groupHeadings: GroupDisplayHeading[]) {
+    private addGroupHeadings(
+        content: HTMLDivElement,
+        groupHeadings: GroupDisplayHeading[],
+        taskCountDescription: string,
+    ) {
         for (const heading of groupHeadings) {
-            this.addGroupHeading(content, heading);
+            const isLastDisplayedHeading = heading === groupHeadings.at(-1);
+            this.addGroupHeading(content, heading, isLastDisplayedHeading ? `(${taskCountDescription})` : '');
         }
     }
 
-    private async addGroupHeading(content: HTMLDivElement, group: GroupDisplayHeading) {
+    private async addGroupHeading(content: HTMLDivElement, group: GroupDisplayHeading, taskCountDescription: string) {
         // Headings nested to 2 or more levels are all displayed with 'h6:
         let header: keyof HTMLElementTagNameMap = 'h6';
         if (group.nestingLevel === 0) {
@@ -322,7 +327,8 @@ class QueryRenderChild extends MarkdownRenderChild {
         const headerEl = content.createEl(header, {
             cls: 'tasks-group-heading',
         });
-        await MarkdownRenderer.renderMarkdown(group.displayName, headerEl, this.filePath, this);
+        const heading = group.displayName + ' ' + taskCountDescription;
+        await MarkdownRenderer.renderMarkdown(heading, headerEl, this.filePath, this);
     }
 
     private addBacklinks(listItem: HTMLElement, task: Task, shortMode: boolean, isFilenameUnique: boolean | undefined) {

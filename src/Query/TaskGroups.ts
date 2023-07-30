@@ -75,8 +75,10 @@ export class TaskGroups {
      *
      * Note that this is used in snapshot testing, so if the format is
      * changed, the snapshots will need to be updated.
+     *
+     * @param includeTaskCount Optionally, add the task count to all group headings
      */
-    public toString(): string {
+    public toString(includeTaskCount: boolean = false): string {
         let output = '';
         output += 'Groupers (if any):\n';
         for (const grouper of this._groupers) {
@@ -85,6 +87,11 @@ export class TaskGroups {
         }
         for (const taskGroup of this.groups) {
             output += taskGroup.toString();
+            if (includeTaskCount) {
+                // This is not an accurate representation of the rendering.
+                // QueryRenderer only displays the count on leaf group headings, not all groups
+                output += `\n${taskGroup.describeTaskCount()}\n`;
+            }
             output += '\n---\n';
         }
         const totalTasksCount = this.totalTasksCount();
