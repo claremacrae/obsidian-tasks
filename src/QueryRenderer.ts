@@ -424,7 +424,13 @@ class QueryRenderChild extends MarkdownRenderChild {
                 return null;
             }
 
-            return window.moment().add(1, 'days');
+            // If overdue, fast-forward to today
+            if (oldDate.isBefore(window.moment(), 'day')) {
+                return window.moment().startOf('day');
+            }
+
+            // Otherwise, fast-forward to next day
+            return oldDate.clone().add(1, 'days');
         }
 
         const updatedTask = new Task({ ...task, dueDate: snooze(task.dueDate) });
