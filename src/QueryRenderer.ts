@@ -424,7 +424,18 @@ class QueryRenderChild extends MarkdownRenderChild {
             scheduledDate: snooze(task.scheduledDate),
             startDate: snooze(task.startDate),
         });
+        this.addButton(listItem, cls, shortMode, icon, buttonDisplayText, task, updatedTask);
+    }
 
+    private addButton(
+        listItem: HTMLElement,
+        cls: string,
+        shortMode: boolean,
+        icon: string,
+        buttonDisplayText: string,
+        task: Task,
+        updatedTask: Task,
+    ) {
         const snoozeButton = listItem.createSpan({ cls: cls });
 
         const button = snoozeButton.createEl('button');
