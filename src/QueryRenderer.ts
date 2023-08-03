@@ -403,25 +403,6 @@ class QueryRenderChild extends MarkdownRenderChild {
         const cls = 'tasks-snooze-button';
         const icon = '⏩';
         const buttonDisplayText = 'Snooze';
-
-        const snoozeButton = listItem.createSpan({ cls: cls });
-
-        const button = snoozeButton.createEl('button');
-
-        button.addClass('internal-button');
-        if (shortMode) {
-            button.addClass('internal-button-short-mode');
-        }
-
-        let buttonText: string;
-        if (shortMode) {
-            buttonText = ' ' + icon;
-        } else {
-            buttonText = ' ⏩ ' + buttonDisplayText;
-        }
-
-        button.setText(buttonText);
-
         function snooze(oldDate: Moment | null) {
             // If no date, do not add one
             if (!oldDate) {
@@ -443,6 +424,25 @@ class QueryRenderChild extends MarkdownRenderChild {
             scheduledDate: snooze(task.scheduledDate),
             startDate: snooze(task.startDate),
         });
+
+        const snoozeButton = listItem.createSpan({ cls: cls });
+
+        const button = snoozeButton.createEl('button');
+
+        button.addClass('internal-button');
+        if (shortMode) {
+            button.addClass('internal-button-short-mode');
+        }
+
+        let buttonText: string;
+        if (shortMode) {
+            buttonText = ' ' + icon;
+        } else {
+            buttonText = ' ⏩ ' + buttonDisplayText;
+        }
+
+        button.setText(buttonText);
+
         button.addEventListener('click', async () => {
             replaceTaskWithTasks({
                 originalTask: task,
