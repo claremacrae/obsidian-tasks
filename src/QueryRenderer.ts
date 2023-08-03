@@ -1,6 +1,7 @@
 import { App, Keymap, MarkdownRenderChild, MarkdownRenderer, Plugin, TFile } from 'obsidian';
 import type { EventRef, MarkdownPostProcessorContext } from 'obsidian';
 
+import type { Moment } from 'moment';
 import type { IQuery } from './IQuery';
 import { State } from './Cache';
 import { getTaskLineAndFile, replaceTaskWithTasks } from './File';
@@ -417,11 +418,16 @@ class QueryRenderChild extends MarkdownRenderChild {
 
         button.setText(buttonText);
 
-        function snooze() {
+        function snooze(oldDate: Moment | null) {
+            // If no date, do not add one
+            if (!oldDate) {
+                return null;
+            }
+
             return window.moment().add(1, 'days');
         }
 
-        const updatedTask = new Task({ ...task, dueDate: snooze() });
+        const updatedTask = new Task({ ...task, dueDate: snooze(task.dueDate) });
         button.addEventListener('click', async () => {
             replaceTaskWithTasks({
                 originalTask: task,
