@@ -417,7 +417,11 @@ class QueryRenderChild extends MarkdownRenderChild {
 
         button.setText(buttonText);
 
-        const updatedTask = new Task({ ...task, dueDate: window.moment().add(1, 'days') });
+        function snooze() {
+            return window.moment().add(1, 'days');
+        }
+
+        const updatedTask = new Task({ ...task, dueDate: snooze() });
         button.addEventListener('click', async () => {
             replaceTaskWithTasks({
                 originalTask: task,
