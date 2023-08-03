@@ -401,6 +401,9 @@ class QueryRenderChild extends MarkdownRenderChild {
 
     private addSnoozeButton(listItem: HTMLElement, task: Task, shortMode: boolean) {
         const cls = 'tasks-snooze-button';
+        const icon = '⏩';
+        const buttonDisplayText = 'Snooze';
+
         const snoozeButton = listItem.createSpan({ cls: cls });
 
         const button = snoozeButton.createEl('button');
@@ -410,12 +413,10 @@ class QueryRenderChild extends MarkdownRenderChild {
             button.addClass('internal-button-short-mode');
         }
 
-        const icon = '⏩';
         let buttonText: string;
         if (shortMode) {
             buttonText = ' ' + icon;
         } else {
-            const buttonDisplayText = 'Snooze';
             buttonText = ' ⏩ ' + buttonDisplayText;
         }
 
