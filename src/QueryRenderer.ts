@@ -442,11 +442,9 @@ class QueryRenderChild extends MarkdownRenderChild {
             button.addClass('internal-button-short-mode');
         }
 
-        let buttonText: string;
-        if (shortMode) {
-            buttonText = ' ' + icon;
-        } else {
-            buttonText = ' ⏩ ' + buttonDisplayText;
+        let buttonText = ' ' + icon;
+        if (!shortMode) {
+            buttonText += ' ' + buttonDisplayText;
         }
 
         button.setText(buttonText);
