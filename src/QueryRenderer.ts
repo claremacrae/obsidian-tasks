@@ -241,12 +241,12 @@ class QueryRenderChild extends MarkdownRenderChild {
                 this.addUrgency(extrasSpan, task);
             }
 
-            if (!this.query.layoutOptions.hideSnoozeButton) {
-                this.addSnoozeButton(extrasSpan, task, shortMode);
-            }
-
             if (!this.query.layoutOptions.hideBacklinks) {
                 this.addBacklinks(extrasSpan, task, shortMode, isFilenameUnique);
+            }
+
+            if (!this.query.layoutOptions.hideSnoozeButton) {
+                this.addSnoozeButton(extrasSpan, task, shortMode);
             }
 
             if (!this.query.layoutOptions.hideEditButton) {
