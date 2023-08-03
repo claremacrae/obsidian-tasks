@@ -433,7 +433,12 @@ class QueryRenderChild extends MarkdownRenderChild {
             return oldDate.clone().add(1, 'days');
         }
 
-        const updatedTask = new Task({ ...task, dueDate: snooze(task.dueDate) });
+        const updatedTask = new Task({
+            ...task,
+            dueDate: snooze(task.dueDate),
+            scheduledDate: snooze(task.scheduledDate),
+            startDate: snooze(task.startDate),
+        });
         button.addEventListener('click', async () => {
             replaceTaskWithTasks({
                 originalTask: task,
