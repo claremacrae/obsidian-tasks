@@ -400,9 +400,6 @@ class QueryRenderChild extends MarkdownRenderChild {
     }
 
     private addSnoozeButton(listItem: HTMLElement, task: Task, shortMode: boolean) {
-        const cls = 'tasks-snooze-button';
-        const icon = '⏩';
-        const buttonDisplayText = 'Snooze';
         function snooze(oldDate: Moment | null) {
             // If no date, do not add one
             if (!oldDate) {
@@ -424,7 +421,7 @@ class QueryRenderChild extends MarkdownRenderChild {
             scheduledDate: snooze(task.scheduledDate),
             startDate: snooze(task.startDate),
         });
-        this.addButton(listItem, cls, shortMode, icon, buttonDisplayText, task, updatedTask);
+        this.addButton(listItem, 'tasks-snooze-button', shortMode, '⏩', 'Snooze', task, updatedTask);
     }
 
     private addButton(
