@@ -246,6 +246,7 @@ class QueryRenderChild extends MarkdownRenderChild {
             }
 
             if (!this.query.layoutOptions.hideSnoozeButton) {
+                this.addUnSnoozeButton(extrasSpan, task, shortMode);
                 this.addSnoozeButton(extrasSpan, task, shortMode);
             }
 
@@ -422,6 +423,27 @@ class QueryRenderChild extends MarkdownRenderChild {
             startDate: snooze(task.startDate),
         });
         this.addButton(listItem, 'tasks-snooze-button', shortMode, '⏩', 'Snooze', task, updatedTask);
+    }
+
+    // Move any dates a day earlier
+    private addUnSnoozeButton(listItem: HTMLElement, task: Task, shortMode: boolean) {
+        function unSnooze(oldDate: Moment | null) {
+            // If no date, do not add one
+            if (!oldDate) {
+                return null;
+            }
+
+            // Otherwise, rewind to previous day
+            return oldDate.clone().subtract(1, 'days');
+        }
+
+        const updatedTask = new Task({
+            ...task,
+            dueDate: unSnooze(task.dueDate),
+            scheduledDate: unSnooze(task.scheduledDate),
+            startDate: unSnooze(task.startDate),
+        });
+        this.addButton(listItem, 'tasks-unsnooze-button', shortMode, '⏪', 'UnSnooze', task, updatedTask);
     }
 
     private addButton(
