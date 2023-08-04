@@ -75,10 +75,8 @@
 .internal-button {
     background-color: transparent;
     padding: 0;
-    padding: 0;
-    background-color: transparent;
     display: contents;
-    font-size: var(--font-ui-large);
+    font-size: var(--font-ui-smaller);
     cursor: pointer;
 }
 
