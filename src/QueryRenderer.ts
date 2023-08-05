@@ -455,6 +455,7 @@ class QueryRenderChild extends MarkdownRenderChild {
         task: Task,
         updatedTask: Task,
     ) {
+        // TODO Add a Tooltip describing what the change will be
         const snoozeButton = listItem.createSpan({ cls: cls });
 
         const button = snoozeButton.createEl('button');
