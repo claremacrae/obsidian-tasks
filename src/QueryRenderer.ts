@@ -400,49 +400,49 @@ class QueryRenderChild extends MarkdownRenderChild {
         }
     }
 
-    private addSnoozeButton(listItem: HTMLElement, task: Task, shortMode: boolean) {
-        function snooze(oldDate: Moment | null, amount: moment.DurationInputArg1) {
-            // If no date, do not add one
-            if (!oldDate) {
-                return null;
-            }
-
-            // If overdue, fast-forward to today
-            if (oldDate.isBefore(window.moment(), 'day')) {
-                return window.moment().startOf('day');
-            }
-
-            // Otherwise, fast-forward to next day
-            return oldDate.clone().add(amount, 'days');
+    private snooze(oldDate: Moment | null, amount: moment.DurationInputArg1) {
+        // If no date, do not add one
+        if (!oldDate) {
+            return null;
         }
 
+        // If overdue, fast-forward to today
+        if (oldDate.isBefore(window.moment(), 'day')) {
+            return window.moment().startOf('day');
+        }
+
+        // Otherwise, fast-forward to next day
+        return oldDate.clone().add(amount, 'days');
+    }
+
+    private addSnoozeButton(listItem: HTMLElement, task: Task, shortMode: boolean) {
         const amount = 1;
         const updatedTask = new Task({
             ...task,
-            dueDate: snooze(task.dueDate, amount),
-            scheduledDate: snooze(task.scheduledDate, amount),
-            startDate: snooze(task.startDate, amount),
+            dueDate: this.snooze(task.dueDate, amount),
+            scheduledDate: this.snooze(task.scheduledDate, amount),
+            startDate: this.snooze(task.startDate, amount),
         });
         this.addButton(listItem, 'tasks-snooze-button', shortMode, '⏩', 'Snooze', task, updatedTask);
     }
 
-    // Move any dates a day earlier
-    private addUnSnoozeButton(listItem: HTMLElement, task: Task, shortMode: boolean) {
-        function unSnooze(oldDate: Moment | null) {
-            // If no date, do not add one
-            if (!oldDate) {
-                return null;
-            }
-
-            // Otherwise, rewind to previous day
-            return oldDate.clone().subtract(1, 'days');
+    private unSnooze(oldDate: Moment | null) {
+        // If no date, do not add one
+        if (!oldDate) {
+            return null;
         }
 
+        // Otherwise, rewind to previous day
+        return oldDate.clone().subtract(1, 'days');
+    }
+
+    // Move any dates a day earlier
+    private addUnSnoozeButton(listItem: HTMLElement, task: Task, shortMode: boolean) {
         const updatedTask = new Task({
             ...task,
-            dueDate: unSnooze(task.dueDate),
-            scheduledDate: unSnooze(task.scheduledDate),
-            startDate: unSnooze(task.startDate),
+            dueDate: this.unSnooze(task.dueDate),
+            scheduledDate: this.unSnooze(task.scheduledDate),
+            startDate: this.unSnooze(task.startDate),
         });
         this.addButton(listItem, 'tasks-unsnooze-button', shortMode, '⏪', 'UnSnooze', task, updatedTask);
     }
