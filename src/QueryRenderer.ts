@@ -401,7 +401,7 @@ class QueryRenderChild extends MarkdownRenderChild {
     }
 
     private addSnoozeButton(listItem: HTMLElement, task: Task, shortMode: boolean) {
-        function snooze(oldDate: Moment | null) {
+        function snooze(oldDate: Moment | null, amount: moment.DurationInputArg1) {
             // If no date, do not add one
             if (!oldDate) {
                 return null;
@@ -413,14 +413,15 @@ class QueryRenderChild extends MarkdownRenderChild {
             }
 
             // Otherwise, fast-forward to next day
-            return oldDate.clone().add(1, 'days');
+            return oldDate.clone().add(amount, 'days');
         }
 
+        const amount = 1;
         const updatedTask = new Task({
             ...task,
-            dueDate: snooze(task.dueDate),
-            scheduledDate: snooze(task.scheduledDate),
-            startDate: snooze(task.startDate),
+            dueDate: snooze(task.dueDate, amount),
+            scheduledDate: snooze(task.scheduledDate, amount),
+            startDate: snooze(task.startDate, amount),
         });
         this.addButton(listItem, 'tasks-snooze-button', shortMode, '⏩', 'Snooze', task, updatedTask);
     }
