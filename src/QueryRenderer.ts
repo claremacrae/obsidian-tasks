@@ -251,7 +251,8 @@ class QueryRenderChild extends MarkdownRenderChild {
 
             if (!this.query.layoutOptions.hideSnoozeButton) {
                 this.addUnSnoozeButton(extrasSpan, task, shortMode);
-                this.addSnoozeButton(extrasSpan, task, shortMode);
+                this.addSnoozeButton1Day(extrasSpan, task, shortMode);
+                this.addSnoozeButton3Days(extrasSpan, task, shortMode);
             }
 
             taskList.appendChild(listItem);
@@ -415,7 +416,7 @@ class QueryRenderChild extends MarkdownRenderChild {
         return oldDate.clone().add(amount, 'days');
     }
 
-    private addSnoozeButton(listItem: HTMLElement, task: Task, shortMode: boolean) {
+    private addSnoozeButton1Day(listItem: HTMLElement, task: Task, shortMode: boolean) {
         const amount = 1;
         const updatedTask = new Task({
             ...task,
@@ -423,7 +424,18 @@ class QueryRenderChild extends MarkdownRenderChild {
             scheduledDate: this.snooze(task.scheduledDate, amount),
             startDate: this.snooze(task.startDate, amount),
         });
-        this.addButton(listItem, 'tasks-snooze-button', shortMode, '⏩', 'Snooze', task, updatedTask);
+        this.addButton(listItem, 'tasks-snooze-button-1', shortMode, '⏩', 'Snooze 1', task, updatedTask);
+    }
+
+    private addSnoozeButton3Days(listItem: HTMLElement, task: Task, shortMode: boolean) {
+        const amount = 3;
+        const updatedTask = new Task({
+            ...task,
+            dueDate: this.snooze(task.dueDate, amount),
+            scheduledDate: this.snooze(task.scheduledDate, amount),
+            startDate: this.snooze(task.startDate, amount),
+        });
+        this.addButton(listItem, 'tasks-snooze-button-3', shortMode, '⏭', 'Snooze 3', task, updatedTask);
     }
 
     private unSnooze(oldDate: Moment | null) {
