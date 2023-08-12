@@ -30,13 +30,17 @@ export function explainResults(source: string, path: string | undefined = undefi
         result += `Only tasks containing the global filter '${GlobalFilter.get()}'.\n\n`;
     }
 
-    const globalQuery: IQuery = new Query(getGlobalQuerySource(), path);
+    const tasksBlockQuery = new Query({ source }, path);
 
-    if (globalQuery.source.trim() !== '') {
-        result += `Explanation of the global query:\n\n${globalQuery.explainQuery()}\n`;
+    if (!tasksBlockQuery.ignoreGlobalQuery) {
+        const globalQuery: IQuery = new Query(getGlobalQuerySource(), path);
+
+        if (globalQuery.source.trim() !== '') {
+            result += `Explanation of the global query:\n\n${globalQuery.explainQuery()}\n`;
+        }
     }
 
-    result += `Explanation of this Tasks code block query:\n\n${new Query({ source }, path).explainQuery()}`;
+    result += `Explanation of this Tasks code block query:\n\n${tasksBlockQuery.explainQuery()}`;
 
     return result;
 }
@@ -51,5 +55,12 @@ export function explainResults(source: string, path: string | undefined = undefi
  * @returns {Query} The query to execute
  */
 export function getQueryForQueryRenderer(source: string, path: string | undefined): Query {
-    return new Query(getGlobalQuerySource(), path).append(new Query({ source }, path));
+    const globalQuery = new Query(getGlobalQuerySource(), path);
+    const tasksBlockQuery = new Query({ source }, path);
+
+    if (tasksBlockQuery.ignoreGlobalQuery) {
+        return tasksBlockQuery;
+    }
+
+    return globalQuery.append(tasksBlockQuery);
 }
