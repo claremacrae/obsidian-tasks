@@ -470,7 +470,7 @@ class QueryRenderChild extends MarkdownRenderChild {
         cls: string,
         shortMode: boolean,
         icon: string,
-        buttonDisplayText: string,
+        _buttonDisplayText: string,
         task: Task,
         updatedTask: Task,
     ) {
@@ -484,9 +484,10 @@ class QueryRenderChild extends MarkdownRenderChild {
             button.addClass('internal-button-short-mode');
         }
 
-        let buttonText = ' ' + icon;
+        const buttonText = ' ' + icon;
         if (!shortMode) {
-            buttonText += ' ' + buttonDisplayText;
+            // TODO Put this text in to a tooltip instead
+            // buttonText += ' ' + _buttonDisplayText;
         }
 
         button.setText(buttonText);
