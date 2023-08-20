@@ -407,7 +407,7 @@ class QueryRenderChild extends MarkdownRenderChild {
         }
     }
 
-    private snooze(oldDate: Moment | null, amount: moment.DurationInputArg1) {
+    private snoozeViaToday(oldDate: Moment | null, amount: moment.DurationInputArg1) {
         // If no date, do not add one
         if (!oldDate) {
             return null;
@@ -426,9 +426,9 @@ class QueryRenderChild extends MarkdownRenderChild {
         const amount = 1;
         const updatedTask = new Task({
             ...task,
-            dueDate: this.snooze(task.dueDate, amount),
-            scheduledDate: this.snooze(task.scheduledDate, amount),
-            startDate: this.snooze(task.startDate, amount),
+            dueDate: this.snoozeViaToday(task.dueDate, amount),
+            scheduledDate: this.snoozeViaToday(task.scheduledDate, amount),
+            startDate: this.snoozeViaToday(task.startDate, amount),
         });
         this.addButton(listItem, 'tasks-snooze-button-1', shortMode, '⏩', 'Snooze 1', task, updatedTask);
     }
@@ -437,9 +437,9 @@ class QueryRenderChild extends MarkdownRenderChild {
         const amount = 3;
         const updatedTask = new Task({
             ...task,
-            dueDate: this.snooze(task.dueDate, amount),
-            scheduledDate: this.snooze(task.scheduledDate, amount),
-            startDate: this.snooze(task.startDate, amount),
+            dueDate: this.snoozeViaToday(task.dueDate, amount),
+            scheduledDate: this.snoozeViaToday(task.scheduledDate, amount),
+            startDate: this.snoozeViaToday(task.startDate, amount),
         });
         this.addButton(listItem, 'tasks-snooze-button-3', shortMode, '⏭', 'Snooze 3', task, updatedTask);
     }
