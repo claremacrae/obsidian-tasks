@@ -422,6 +422,21 @@ class QueryRenderChild extends MarkdownRenderChild {
         return oldDate.clone().add(amount, 'days');
     }
 
+    private snoozeToFutureDate(oldDate: Moment | null, amount: moment.DurationInputArg1) {
+        // If no date, do not add one
+        if (!oldDate) {
+            return null;
+        }
+
+        // If due today or earlier, move to n days after today
+        if (oldDate.isSameOrBefore(window.moment(), 'day')) {
+            return window.moment().startOf('day').add(amount, 'days');
+        }
+
+        // Otherwise, fast-forward n days from current day
+        return oldDate.clone().add(amount, 'days');
+    }
+
     private addSnoozeButton1Day(listItem: HTMLElement, task: Task, shortMode: boolean) {
         const amount = 1;
         const updatedTask = new Task({
@@ -437,9 +452,9 @@ class QueryRenderChild extends MarkdownRenderChild {
         const amount = 3;
         const updatedTask = new Task({
             ...task,
-            dueDate: this.snoozeViaToday(task.dueDate, amount),
-            scheduledDate: this.snoozeViaToday(task.scheduledDate, amount),
-            startDate: this.snoozeViaToday(task.startDate, amount),
+            dueDate: this.snoozeToFutureDate(task.dueDate, amount),
+            scheduledDate: this.snoozeToFutureDate(task.scheduledDate, amount),
+            startDate: this.snoozeToFutureDate(task.startDate, amount),
         });
         this.addButton(listItem, 'tasks-snooze-button-3', shortMode, '⏭', 'Snooze 3', task, updatedTask);
     }
