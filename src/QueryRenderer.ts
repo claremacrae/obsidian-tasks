@@ -96,6 +96,16 @@ function snoozeTaskToFutureDate(task: Task, amount: number) {
     return updatedTask;
 }
 
+function unSnooze2(oldDate: moment.Moment | null) {
+    // If no date, do not add one
+    if (!oldDate) {
+        return null;
+    }
+
+    // Otherwise, rewind to previous day
+    return oldDate.clone().subtract(1, 'days');
+}
+
 class QueryRenderChild extends MarkdownRenderChild {
     private readonly app: App;
     private readonly events: TasksEvents;
@@ -475,13 +485,7 @@ class QueryRenderChild extends MarkdownRenderChild {
     }
 
     private unSnooze(oldDate: Moment | null) {
-        // If no date, do not add one
-        if (!oldDate) {
-            return null;
-        }
-
-        // Otherwise, rewind to previous day
-        return oldDate.clone().subtract(1, 'days');
+        return unSnooze2(oldDate);
     }
 
     // Move any dates a day earlier
