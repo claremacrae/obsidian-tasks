@@ -3,7 +3,7 @@
  */
 
 import moment from 'moment';
-import { snoozeTaskToFutureDate, snoozeTaskViaToday } from '../src/Snooze';
+import { snoozeTaskToFutureDate, snoozeTaskViaToday, unSnoozeTask } from '../src/Snooze';
 import { TaskBuilder } from './TestingTools/TaskBuilder';
 
 window.moment = moment;
@@ -19,6 +19,7 @@ describe('Snooze', () => {
         jest.useRealTimers();
     });
 
+    // TODO Add tests that dates in original tasks are not modified
     it('snoozeTaskViaToday(..., 1) should snooze a task due today to next day', () => {
         const task = new TaskBuilder().dueDate(today).build();
         expect(snoozeTaskViaToday(task, 1).dueDate).toEqualMoment(moment('2023-02-16'));
@@ -65,5 +66,17 @@ describe('Snooze', () => {
         const newTask = snoozeTaskToFutureDate(task, 1);
         expect(newTask.scheduledDate).toEqualMoment(moment('2023-02-16'));
         expect(newTask.scheduledDateIsInferred).toEqual(false);
+    });
+
+    it('unSnoozeTask(..., 3) on future dates should advance all dates', () => {
+        const task = new TaskBuilder()
+            .startDate('2023-02-16')
+            .scheduledDate('2023-02-17')
+            .dueDate('2023-02-18')
+            .build();
+        const newTask = unSnoozeTask(task);
+        expect(newTask.startDate).toEqualMoment(moment('2023-02-15'));
+        expect(newTask.scheduledDate).toEqualMoment(moment('2023-02-16'));
+        expect(newTask.dueDate).toEqualMoment(moment('2023-02-17'));
     });
 });
