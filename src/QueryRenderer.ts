@@ -105,6 +105,16 @@ function unSnooze2(oldDate: moment.Moment | null) {
     return oldDate.clone().subtract(1, 'days');
 }
 
+function unSnoozeTask(task: Task) {
+    const updatedTask = new Task({
+        ...task,
+        dueDate: unSnooze2(task.dueDate),
+        scheduledDate: unSnooze2(task.scheduledDate),
+        startDate: unSnooze2(task.startDate),
+    });
+    return updatedTask;
+}
+
 class QueryRenderChild extends MarkdownRenderChild {
     private readonly app: App;
     private readonly events: TasksEvents;
@@ -484,12 +494,7 @@ class QueryRenderChild extends MarkdownRenderChild {
     }
     // Move any dates a day earlier
     private addUnSnoozeButton(listItem: HTMLElement, task: Task, shortMode: boolean) {
-        const updatedTask = new Task({
-            ...task,
-            dueDate: unSnooze2(task.dueDate),
-            scheduledDate: unSnooze2(task.scheduledDate),
-            startDate: unSnooze2(task.startDate),
-        });
+        const updatedTask = unSnoozeTask(task);
         this.addButton(listItem, 'tasks-unsnooze-button', shortMode, '⏪', 'UnSnooze', task, updatedTask);
     }
 
