@@ -1,10 +1,7 @@
 import { DateFallback } from './DateFallback';
 import { Task } from './Task';
 
-function snoozeViaToday2(
-    oldDate: moment.Moment | null,
-    amount: moment.Duration | number | string | moment.FromTo | moment.DurationInputObject | null | undefined,
-) {
+function snoozeViaToday2(oldDate: moment.Moment | null, amount: moment.DurationInputArg1) {
     // If no date, do not add one
     if (!oldDate) {
         return null;
@@ -29,10 +26,7 @@ export function snoozeTaskViaToday(task: Task, amount: number) {
     return DateFallback.removeInferredStatusIfNeeded(task, [newTask])[0];
 }
 
-function snoozeToFutureDate2(
-    oldDate: moment.Moment | null,
-    amount: moment.Duration | number | string | moment.FromTo | moment.DurationInputObject | null | undefined,
-) {
+function snoozeToFutureDate2(oldDate: moment.Moment | null, amount: moment.DurationInputArg1) {
     // If no date, do not add one
     if (!oldDate) {
         return null;
