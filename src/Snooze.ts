@@ -19,13 +19,12 @@ function snoozeViaToday2(
 }
 
 export function snoozeTaskViaToday(task: Task, amount: number) {
-    const updatedTask = new Task({
+    return new Task({
         ...task,
         dueDate: snoozeViaToday2(task.dueDate, amount),
         scheduledDate: snoozeViaToday2(task.scheduledDate, amount),
         startDate: snoozeViaToday2(task.startDate, amount),
     });
-    return updatedTask;
 }
 
 function snoozeToFutureDate2(
@@ -47,13 +46,12 @@ function snoozeToFutureDate2(
 }
 
 export function snoozeTaskToFutureDate(task: Task, amount: number) {
-    const updatedTask = new Task({
+    return new Task({
         ...task,
         dueDate: snoozeToFutureDate2(task.dueDate, amount),
         scheduledDate: snoozeToFutureDate2(task.scheduledDate, amount),
         startDate: snoozeToFutureDate2(task.startDate, amount),
     });
-    return updatedTask;
 }
 
 function unSnooze2(oldDate: moment.Moment | null) {
@@ -67,11 +65,10 @@ function unSnooze2(oldDate: moment.Moment | null) {
 }
 
 export function unSnoozeTask(task: Task) {
-    const updatedTask = new Task({
+    return new Task({
         ...task,
         dueDate: unSnooze2(task.dueDate),
         scheduledDate: unSnooze2(task.scheduledDate),
         startDate: unSnooze2(task.startDate),
     });
-    return updatedTask;
 }
