@@ -17,11 +17,12 @@ function snoozeViaToday2(oldDate: moment.Moment | null, amount: moment.DurationI
 }
 
 export function snoozeTaskViaToday(task: Task, amount: number) {
+    const snoozeFunc = snoozeViaToday2;
     const newTask = new Task({
         ...task,
-        dueDate: snoozeViaToday2(task.dueDate, amount),
-        scheduledDate: snoozeViaToday2(task.scheduledDate, amount),
-        startDate: snoozeViaToday2(task.startDate, amount),
+        dueDate: snoozeFunc(task.dueDate, amount),
+        scheduledDate: snoozeFunc(task.scheduledDate, amount),
+        startDate: snoozeFunc(task.startDate, amount),
     });
     return DateFallback.removeInferredStatusIfNeeded(task, [newTask])[0];
 }
