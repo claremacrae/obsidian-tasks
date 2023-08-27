@@ -1,3 +1,4 @@
+import { DateFallback } from './DateFallback';
 import { Task } from './Task';
 
 function snoozeViaToday2(
@@ -19,12 +20,13 @@ function snoozeViaToday2(
 }
 
 export function snoozeTaskViaToday(task: Task, amount: number) {
-    return new Task({
+    const newTask = new Task({
         ...task,
         dueDate: snoozeViaToday2(task.dueDate, amount),
         scheduledDate: snoozeViaToday2(task.scheduledDate, amount),
         startDate: snoozeViaToday2(task.startDate, amount),
     });
+    return DateFallback.removeInferredStatusIfNeeded(task, [newTask])[0];
 }
 
 function snoozeToFutureDate2(

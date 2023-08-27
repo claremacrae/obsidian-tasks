@@ -48,6 +48,13 @@ describe('Snooze', () => {
         expect(snoozeTaskViaToday(task, 1).dueDate).toEqualMoment(moment(today));
     });
 
+    it('snoozeTaskViaToday(..., 1) when scheduled date is inferred should set new date and remove the flag', () => {
+        const task = new TaskBuilder().scheduledDate('2023-01-01').scheduledDateIsInferred(true).build();
+        const newTask = snoozeTaskViaToday(task, 1);
+        expect(newTask.scheduledDate).toEqualMoment(moment(today));
+        expect(newTask.scheduledDateIsInferred).toEqual(false);
+    });
+
     it('snoozeTaskToFutureDate(..., 1) should snooze an overdue task to tomorrow', () => {
         const task = new TaskBuilder().dueDate('2023-01-01').build();
         expect(snoozeTaskToFutureDate(task, 1).dueDate).toEqualMoment(moment('2023-02-16'));
