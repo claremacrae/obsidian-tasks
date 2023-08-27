@@ -1,7 +1,6 @@
 import { App, Keymap, MarkdownRenderChild, MarkdownRenderer, Plugin, TFile } from 'obsidian';
 import type { EventRef, MarkdownPostProcessorContext } from 'obsidian';
 
-import type { Moment } from 'moment';
 import type { IQuery } from './IQuery';
 import { State } from './Cache';
 import { getTaskLineAndFile, replaceTaskWithTasks } from './File';
@@ -483,18 +482,13 @@ class QueryRenderChild extends MarkdownRenderChild {
         const updatedTask = snoozeTaskToFutureDate(task, amount);
         this.addButton(listItem, 'tasks-snooze-button-3', shortMode, '⏭', 'Snooze 3', task, updatedTask);
     }
-
-    private unSnooze(oldDate: Moment | null) {
-        return unSnooze2(oldDate);
-    }
-
     // Move any dates a day earlier
     private addUnSnoozeButton(listItem: HTMLElement, task: Task, shortMode: boolean) {
         const updatedTask = new Task({
             ...task,
-            dueDate: this.unSnooze(task.dueDate),
-            scheduledDate: this.unSnooze(task.scheduledDate),
-            startDate: this.unSnooze(task.startDate),
+            dueDate: unSnooze2(task.dueDate),
+            scheduledDate: unSnooze2(task.scheduledDate),
+            startDate: unSnooze2(task.startDate),
         });
         this.addButton(listItem, 'tasks-unsnooze-button', shortMode, '⏪', 'UnSnooze', task, updatedTask);
     }
