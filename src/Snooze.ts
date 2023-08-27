@@ -53,7 +53,7 @@ export function snoozeTaskToFutureDate(task: Task, amount: number) {
     return genericSnoozer(snoozeToFutureDate2, task, amount);
 }
 
-function unSnooze2(oldDate: moment.Moment | null, amount: moment.DurationInputArg1 = 1) {
+function unSnooze2(oldDate: moment.Moment | null, amount: moment.DurationInputArg1) {
     // If no date, do not add one
     if (!oldDate) {
         return null;
@@ -64,10 +64,11 @@ function unSnooze2(oldDate: moment.Moment | null, amount: moment.DurationInputAr
 }
 
 export function unSnoozeTask(task: Task) {
+    const amount = 1;
     return new Task({
         ...task,
-        dueDate: unSnooze2(task.dueDate),
-        scheduledDate: unSnooze2(task.scheduledDate),
-        startDate: unSnooze2(task.startDate),
+        dueDate: unSnooze2(task.dueDate, amount),
+        scheduledDate: unSnooze2(task.scheduledDate, amount),
+        startDate: unSnooze2(task.startDate, amount),
     });
 }
