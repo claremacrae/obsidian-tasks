@@ -31,8 +31,7 @@ function genericSnoozer(
 }
 
 export function snoozeTaskViaToday(task: Task, amount: number) {
-    const snoozeFunc = snoozeViaToday2;
-    return genericSnoozer(snoozeFunc, task, amount);
+    return genericSnoozer(snoozeViaToday2, task, amount);
 }
 
 function snoozeToFutureDate2(oldDate: moment.Moment | null, amount: moment.DurationInputArg1) {
