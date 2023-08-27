@@ -64,11 +64,5 @@ function unSnooze2(oldDate: moment.Moment | null, amount: moment.DurationInputAr
 }
 
 export function unSnoozeTask(task: Task) {
-    const amount = 1;
-    return new Task({
-        ...task,
-        dueDate: unSnooze2(task.dueDate, amount),
-        scheduledDate: unSnooze2(task.scheduledDate, amount),
-        startDate: unSnooze2(task.startDate, amount),
-    });
+    return genericSnoozer(unSnooze2, task, 1);
 }

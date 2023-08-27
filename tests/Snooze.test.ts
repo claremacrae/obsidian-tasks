@@ -68,7 +68,7 @@ describe('Snooze', () => {
         expect(newTask.scheduledDateIsInferred).toEqual(false);
     });
 
-    it('unSnoozeTask(..., 3) on future dates should advance all dates', () => {
+    it('unSnoozeTask(...) on future dates should advance all dates', () => {
         const task = new TaskBuilder()
             .startDate('2023-02-16')
             .scheduledDate('2023-02-17')
@@ -78,5 +78,12 @@ describe('Snooze', () => {
         expect(newTask.startDate).toEqualMoment(moment('2023-02-15'));
         expect(newTask.scheduledDate).toEqualMoment(moment('2023-02-16'));
         expect(newTask.dueDate).toEqualMoment(moment('2023-02-17'));
+    });
+
+    it('unSnoozeTask(...) when scheduled date is inferred should set new date and remove the flag', () => {
+        const task = new TaskBuilder().scheduledDate('2023-01-01').scheduledDateIsInferred(true).build();
+        const newTask = unSnoozeTask(task);
+        expect(newTask.scheduledDate).toEqualMoment(moment('2022-12-31'));
+        expect(newTask.scheduledDateIsInferred).toEqual(false);
     });
 });
