@@ -21,7 +21,7 @@ function genericSnoozer(
     task: Task,
     amount: number,
 ) {
-    if (task.dueDate || task.scheduledDate || task.startDate) {
+    if (task.happens.moment) {
         const newTask = new Task({
             ...task,
             dueDate: snoozeFunc(task.dueDate, amount),
