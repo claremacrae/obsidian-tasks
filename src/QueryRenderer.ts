@@ -58,7 +58,7 @@ function snoozeViaToday2(
     return oldDate.clone().add(amount, 'days');
 }
 
-function snoozeTask(task: Task, amount: number) {
+function snoozeTaskViaToday(task: Task, amount: number) {
     const updatedTask = new Task({
         ...task,
         dueDate: snoozeViaToday2(task.dueDate, amount),
@@ -451,7 +451,7 @@ class QueryRenderChild extends MarkdownRenderChild {
 
     private addSnoozeButton1Day(listItem: HTMLElement, task: Task, shortMode: boolean) {
         const amount = 1;
-        const updatedTask = snoozeTask(task, amount);
+        const updatedTask = snoozeTaskViaToday(task, amount);
         this.addButton(listItem, 'tasks-snooze-button-1', shortMode, '⏩', 'Snooze 1', task, updatedTask);
     }
 
