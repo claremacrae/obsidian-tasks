@@ -50,12 +50,7 @@ function snoozeToFutureDate2(oldDate: moment.Moment | null, amount: moment.Durat
 }
 
 export function snoozeTaskToFutureDate(task: Task, amount: number) {
-    return new Task({
-        ...task,
-        dueDate: snoozeToFutureDate2(task.dueDate, amount),
-        scheduledDate: snoozeToFutureDate2(task.scheduledDate, amount),
-        startDate: snoozeToFutureDate2(task.startDate, amount),
-    });
+    return genericSnoozer(snoozeToFutureDate2, task, amount);
 }
 
 function unSnooze2(oldDate: moment.Moment | null) {

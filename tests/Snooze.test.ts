@@ -59,4 +59,11 @@ describe('Snooze', () => {
         const task = new TaskBuilder().dueDate('2023-01-01').build();
         expect(snoozeTaskToFutureDate(task, 1).dueDate).toEqualMoment(moment('2023-02-16'));
     });
+
+    it('snoozeTaskToFutureDate(..., 1) when scheduled date is inferred should set new date and remove the flag', () => {
+        const task = new TaskBuilder().scheduledDate('2023-01-01').scheduledDateIsInferred(true).build();
+        const newTask = snoozeTaskToFutureDate(task, 1);
+        expect(newTask.scheduledDate).toEqualMoment(moment('2023-02-16'));
+        expect(newTask.scheduledDateIsInferred).toEqual(false);
+    });
 });
