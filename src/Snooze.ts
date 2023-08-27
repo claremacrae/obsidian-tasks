@@ -17,8 +17,8 @@ function snoozeViaToday2(oldDate: moment.Moment | null, amount: moment.DurationI
 }
 
 function genericSnoozer(
+    snoozeFunc: (oldDate: moment.Moment | null, amount: moment.DurationInputArg1) => any,
     task: Task,
-    snoozeFunc: (oldDate: moment.Moment | null, amount: moment.DurationInputArg1) => null | any,
     amount: number,
 ) {
     const newTask = new Task({
@@ -32,7 +32,7 @@ function genericSnoozer(
 
 export function snoozeTaskViaToday(task: Task, amount: number) {
     const snoozeFunc = snoozeViaToday2;
-    return genericSnoozer(task, snoozeFunc, amount);
+    return genericSnoozer(snoozeFunc, task, amount);
 }
 
 function snoozeToFutureDate2(oldDate: moment.Moment | null, amount: moment.DurationInputArg1) {
