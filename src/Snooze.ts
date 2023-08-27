@@ -16,8 +16,11 @@ function snoozeViaToday2(oldDate: moment.Moment | null, amount: moment.DurationI
     return oldDate.clone().add(amount, 'days');
 }
 
-export function snoozeTaskViaToday(task: Task, amount: number) {
-    const snoozeFunc = snoozeViaToday2;
+function genericSnoozer(
+    task: Task,
+    snoozeFunc: (oldDate: moment.Moment | null, amount: moment.DurationInputArg1) => null | any,
+    amount: number,
+) {
     const newTask = new Task({
         ...task,
         dueDate: snoozeFunc(task.dueDate, amount),
@@ -25,6 +28,11 @@ export function snoozeTaskViaToday(task: Task, amount: number) {
         startDate: snoozeFunc(task.startDate, amount),
     });
     return DateFallback.removeInferredStatusIfNeeded(task, [newTask])[0];
+}
+
+export function snoozeTaskViaToday(task: Task, amount: number) {
+    const snoozeFunc = snoozeViaToday2;
+    return genericSnoozer(task, snoozeFunc, amount);
 }
 
 function snoozeToFutureDate2(oldDate: moment.Moment | null, amount: moment.DurationInputArg1) {
