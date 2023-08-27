@@ -86,6 +86,16 @@ function snoozeToFutureDate2(
     return oldDate.clone().add(amount, 'days');
 }
 
+function snoozeTaskToFutureDate(task: Task, amount: number) {
+    const updatedTask = new Task({
+        ...task,
+        dueDate: snoozeToFutureDate2(task.dueDate, amount),
+        scheduledDate: snoozeToFutureDate2(task.scheduledDate, amount),
+        startDate: snoozeToFutureDate2(task.startDate, amount),
+    });
+    return updatedTask;
+}
+
 class QueryRenderChild extends MarkdownRenderChild {
     private readonly app: App;
     private readonly events: TasksEvents;
@@ -460,12 +470,7 @@ class QueryRenderChild extends MarkdownRenderChild {
 
     private addSnoozeButton3Days(listItem: HTMLElement, task: Task, shortMode: boolean) {
         const amount = 3;
-        const updatedTask = new Task({
-            ...task,
-            dueDate: snoozeToFutureDate2(task.dueDate, amount),
-            scheduledDate: snoozeToFutureDate2(task.scheduledDate, amount),
-            startDate: snoozeToFutureDate2(task.startDate, amount),
-        });
+        const updatedTask = snoozeTaskToFutureDate(task, amount);
         this.addButton(listItem, 'tasks-snooze-button-3', shortMode, '⏭', 'Snooze 3', task, updatedTask);
     }
 
