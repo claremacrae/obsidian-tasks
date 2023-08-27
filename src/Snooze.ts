@@ -21,13 +21,21 @@ function genericSnoozer(
     task: Task,
     amount: number,
 ) {
-    const newTask = new Task({
-        ...task,
-        dueDate: snoozeFunc(task.dueDate, amount),
-        scheduledDate: snoozeFunc(task.scheduledDate, amount),
-        startDate: snoozeFunc(task.startDate, amount),
-    });
-    return DateFallback.removeInferredStatusIfNeeded(task, [newTask])[0];
+    if (task.dueDate || task.scheduledDate || task.startDate) {
+        const newTask = new Task({
+            ...task,
+            dueDate: snoozeFunc(task.dueDate, amount),
+            scheduledDate: snoozeFunc(task.scheduledDate, amount),
+            startDate: snoozeFunc(task.startDate, amount),
+        });
+        return DateFallback.removeInferredStatusIfNeeded(task, [newTask])[0];
+    } else {
+        // If no dates set, just set 'due' date to 'today'
+        return new Task({
+            ...task,
+            dueDate: window.moment().startOf('day'),
+        });
+    }
 }
 
 export function snoozeTaskViaToday(task: Task, amount: number) {

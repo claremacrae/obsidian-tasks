@@ -42,6 +42,12 @@ describe('Snooze', () => {
         expect(newTask.dueDate).toEqualMoment(moment('2023-02-21'));
     });
 
+    it('snoozeTaskViaToday(..., 1) on undated task should set due to today', () => {
+        const task = new TaskBuilder().build();
+        const newTask = snoozeTaskViaToday(task, 1);
+        expect(newTask.dueDate).toEqualMoment(moment(today));
+    });
+
     it('snoozeTaskViaToday(..., 3) should not change created and done dates', () => {
         const task = new TaskBuilder().createdDate('2023-02-16').doneDate('2023-02-17').build();
         const newTask = snoozeTaskViaToday(task, 2);
@@ -66,6 +72,12 @@ describe('Snooze', () => {
         expect(snoozeTaskToFutureDate(task, 1).dueDate).toEqualMoment(moment('2023-02-16'));
     });
 
+    it('snoozeTaskToFutureDate(..., 1) on undated task should set due to today', () => {
+        const task = new TaskBuilder().build();
+        const newTask = snoozeTaskToFutureDate(task, 1);
+        expect(newTask.dueDate).toEqualMoment(moment(today));
+    });
+
     it('snoozeTaskToFutureDate(..., 1) when scheduled date is inferred should set new date and remove the flag', () => {
         const task = new TaskBuilder().scheduledDate('2023-01-01').scheduledDateIsInferred(true).build();
         const newTask = snoozeTaskToFutureDate(task, 1);
@@ -83,6 +95,12 @@ describe('Snooze', () => {
         expect(newTask.startDate).toEqualMoment(moment('2023-02-15'));
         expect(newTask.scheduledDate).toEqualMoment(moment('2023-02-16'));
         expect(newTask.dueDate).toEqualMoment(moment('2023-02-17'));
+    });
+
+    it('unSnoozeTask(..., 1) on undated task should set due to today', () => {
+        const task = new TaskBuilder().build();
+        const newTask = unSnoozeTask(task);
+        expect(newTask.dueDate).toEqualMoment(moment(today));
     });
 
     it('unSnoozeTask(...) when scheduled date is inferred should set new date and remove the flag', () => {
