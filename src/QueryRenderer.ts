@@ -40,6 +40,24 @@ export class QueryRenderer {
     }
 }
 
+function snoozeViaToday2(
+    oldDate: moment.Moment | null,
+    amount: moment.Duration | number | string | moment.FromTo | moment.DurationInputObject | null | undefined,
+) {
+    // If no date, do not add one
+    if (!oldDate) {
+        return null;
+    }
+
+    // If overdue, fast-forward to today
+    if (oldDate.isBefore(window.moment(), 'day')) {
+        return window.moment().startOf('day');
+    }
+
+    // Otherwise, fast-forward to next day
+    return oldDate.clone().add(amount, 'days');
+}
+
 class QueryRenderChild extends MarkdownRenderChild {
     private readonly app: App;
     private readonly events: TasksEvents;
@@ -408,18 +426,7 @@ class QueryRenderChild extends MarkdownRenderChild {
     }
 
     private snoozeViaToday(oldDate: Moment | null, amount: moment.DurationInputArg1) {
-        // If no date, do not add one
-        if (!oldDate) {
-            return null;
-        }
-
-        // If overdue, fast-forward to today
-        if (oldDate.isBefore(window.moment(), 'day')) {
-            return window.moment().startOf('day');
-        }
-
-        // Otherwise, fast-forward to next day
-        return oldDate.clone().add(amount, 'days');
+        return snoozeViaToday2(oldDate, amount);
     }
 
     private snoozeToFutureDate(oldDate: Moment | null, amount: moment.DurationInputArg1) {
