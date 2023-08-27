@@ -20,9 +20,14 @@ describe('Snooze', () => {
     });
 
     // TODO Add tests that dates in original tasks are not modified
-    it('snoozeTaskViaToday(..., 1) should snooze a task due today to next day', () => {
+    it('snoozeTaskViaToday(..., 1) should snooze a task due today to next day, and not touch other dates', () => {
         const task = new TaskBuilder().dueDate(today).build();
-        expect(snoozeTaskViaToday(task, 1).dueDate).toEqualMoment(moment('2023-02-16'));
+        const newTask = snoozeTaskViaToday(task, 1);
+        expect(newTask.dueDate).toEqualMoment(moment('2023-02-16'));
+        expect(newTask.createdDate).toBeNull();
+        expect(newTask.doneDate).toBeNull();
+        expect(newTask.scheduledDate).toBeNull();
+        expect(newTask.startDate).toBeNull();
     });
 
     it('snoozeTaskViaToday(..., 3) on future dates should advance all dates', () => {
