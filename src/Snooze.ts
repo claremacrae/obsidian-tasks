@@ -53,14 +53,14 @@ export function snoozeTaskToFutureDate(task: Task, amount: number) {
     return genericSnoozer(snoozeToFutureDate2, task, amount);
 }
 
-function unSnooze2(oldDate: moment.Moment | null) {
+function unSnooze2(oldDate: moment.Moment | null, amount: moment.DurationInputArg1 = 1) {
     // If no date, do not add one
     if (!oldDate) {
         return null;
     }
 
     // Otherwise, rewind to previous day
-    return oldDate.clone().subtract(1, 'days');
+    return oldDate.clone().subtract(amount, 'days');
 }
 
 export function unSnoozeTask(task: Task) {
