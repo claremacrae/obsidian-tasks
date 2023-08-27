@@ -424,11 +424,6 @@ class QueryRenderChild extends MarkdownRenderChild {
             backLink.append(')');
         }
     }
-
-    private snoozeViaToday(oldDate: Moment | null, amount: moment.DurationInputArg1) {
-        return snoozeViaToday2(oldDate, amount);
-    }
-
     private snoozeToFutureDate(oldDate: Moment | null, amount: moment.DurationInputArg1) {
         // If no date, do not add one
         if (!oldDate) {
@@ -448,9 +443,9 @@ class QueryRenderChild extends MarkdownRenderChild {
         const amount = 1;
         const updatedTask = new Task({
             ...task,
-            dueDate: this.snoozeViaToday(task.dueDate, amount),
-            scheduledDate: this.snoozeViaToday(task.scheduledDate, amount),
-            startDate: this.snoozeViaToday(task.startDate, amount),
+            dueDate: snoozeViaToday2(task.dueDate, amount),
+            scheduledDate: snoozeViaToday2(task.scheduledDate, amount),
+            startDate: snoozeViaToday2(task.startDate, amount),
         });
         this.addButton(listItem, 'tasks-snooze-button-1', shortMode, '⏩', 'Snooze 1', task, updatedTask);
     }
