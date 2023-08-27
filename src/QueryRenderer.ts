@@ -68,6 +68,24 @@ function snoozeTaskViaToday(task: Task, amount: number) {
     return updatedTask;
 }
 
+function snoozeToFutureDate2(
+    oldDate: moment.Moment | null,
+    amount: moment.Duration | number | string | moment.FromTo | moment.DurationInputObject | null | undefined,
+) {
+    // If no date, do not add one
+    if (!oldDate) {
+        return null;
+    }
+
+    // If due today or earlier, move to n days after today
+    if (oldDate.isSameOrBefore(window.moment(), 'day')) {
+        return window.moment().startOf('day').add(amount, 'days');
+    }
+
+    // Otherwise, fast-forward n days from current day
+    return oldDate.clone().add(amount, 'days');
+}
+
 class QueryRenderChild extends MarkdownRenderChild {
     private readonly app: App;
     private readonly events: TasksEvents;
@@ -435,18 +453,7 @@ class QueryRenderChild extends MarkdownRenderChild {
         }
     }
     private snoozeToFutureDate(oldDate: Moment | null, amount: moment.DurationInputArg1) {
-        // If no date, do not add one
-        if (!oldDate) {
-            return null;
-        }
-
-        // If due today or earlier, move to n days after today
-        if (oldDate.isSameOrBefore(window.moment(), 'day')) {
-            return window.moment().startOf('day').add(amount, 'days');
-        }
-
-        // Otherwise, fast-forward n days from current day
-        return oldDate.clone().add(amount, 'days');
+        return snoozeToFutureDate2(oldDate, amount);
     }
 
     private addSnoozeButton1Day(listItem: HTMLElement, task: Task, shortMode: boolean) {
