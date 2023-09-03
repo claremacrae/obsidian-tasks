@@ -56,6 +56,7 @@ describe('TaskLayout tests', () => {
             tasks-layout-hide-doneDate
             tasks-layout-hide-tags
             tasks-layout-hide-backlinks
+            tasks-layout-hide-snooze-button
             tasks-layout-hide-edit-button
             tasks-layout-short-mode"
         `);
