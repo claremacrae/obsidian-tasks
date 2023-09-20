@@ -81,11 +81,12 @@ export default class TasksPlugin extends Plugin {
         return this.cache?.getTasks();
     }
 
-    public search(source: string): QueryResult | undefined {
+    public search(source: string, path: string | undefined = undefined): QueryResult | undefined {
         if (this.cache?.getState() !== State.Warm) {
             return undefined;
         }
-        const query = getQueryForQueryRenderer(source);
+        // path is required for placeholders to work
+        const query = getQueryForQueryRenderer(source, path);
         return query.applyQueryToTasks(this.cache?.getTasks());
     }
 }
