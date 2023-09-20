@@ -1,5 +1,5 @@
-import { expandMustacheTemplate } from '../lib/ExpandTemplate';
-import { makeQueryContextFromPath } from '../lib/QueryContext';
+import { expandPlaceholders } from '../Scripting/ExpandPlaceholders';
+import { makeQueryContext } from '../Scripting/QueryContext';
 import { LayoutOptions } from '../TaskLayout';
 import type { Task } from '../Task';
 import type { IQuery } from '../IQuery';
@@ -14,7 +14,7 @@ import type { Filter } from './Filter/Filter';
 import { QueryResult } from './QueryResult';
 
 export class Query implements IQuery {
-    public readonly rawSource: string;
+    /** Note: source is the raw source, before expanding any placeholders */
     public readonly source: string;
     public readonly filePath: string | undefined;
 
@@ -38,52 +38,19 @@ export class Query implements IQuery {
     private readonly commentRegexp = /^#.*/;
 
     constructor({ source }: { source: string }, path: string | undefined = undefined) {
-        this.rawSource = source;
         this.source = source;
         this.filePath = path;
 
-        if (this.source.includes('{{') && this.source.includes('}}')) {
-            if (this.filePath === undefined) {
-                this._error = `Input looks like it contains a template, with "{{" and "}}"
-but no file path has been supplied, so cannot expand template values.
-The query is:
-${this.source}`;
-                return;
-            }
-        }
-
-        // TODO Move this error-checking to expandMustacheTemplate()
-        // TODO Apply the template one line at a time
-        // TODO Optimise the template code and only do the expansion if {{ is in the text
-        // TODO Do not complain about any template errors in comment lines
-        // TODO Show the original and expanded text in explanations
-        // TODO Give user error info if they try and put a string in a regex search
-        let expandedSource: string = this.source;
-        if (path) {
-            const queryContext = makeQueryContextFromPath(path);
-            try {
-                expandedSource = expandMustacheTemplate(this.source, queryContext);
-            } catch (error) {
-                if (error instanceof Error) {
-                    this._error = `There was an error expanding the template.
-
-The error message was:
-${error.message.replace(/ > /g, '.')}`;
-                } else {
-                    this._error = 'Unknown error expanding the template.';
-                }
-                this._error += `
-
-The query is:
-${this.source}`;
-                return;
-            }
-        }
-
-        expandedSource
+        source
             .split('\n')
-            .map((line: string) => line.trim())
-            .forEach((line: string) => {
+            .map((rawLine: string) => rawLine.trim())
+            .forEach((rawLine: string) => {
+                const line = this.expandPlaceholders(rawLine, path);
+                if (this.error !== undefined) {
+                    // There was an error expanding placeholders.
+                    return;
+                }
+
                 switch (true) {
                     case line === '':
                         break;
@@ -115,6 +82,37 @@ ${this.source}`;
                         this.setError('do not understand query', line);
                 }
             });
+    }
+
+    private expandPlaceholders(source: string, path: string | undefined) {
+        if (source.includes('{{') && source.includes('}}')) {
+            if (this.filePath === undefined) {
+                this._error = `The query looks like it contains a placeholder, with "{{" and "}}"
+but no file path has been supplied, so cannot expand placeholder values.
+The query is:
+${source}`;
+                return source;
+            }
+        }
+
+        // TODO Do not complain about any placeholder errors in comment lines
+        // TODO Show the original and expanded text in explanations
+        // TODO Give user error info if they try and put a string in a regex search
+        let expandedSource: string = source;
+        if (path) {
+            const queryContext = makeQueryContext(path);
+            try {
+                expandedSource = expandPlaceholders(source, queryContext);
+            } catch (error) {
+                if (error instanceof Error) {
+                    this._error = error.message;
+                } else {
+                    this._error = 'Internal error. expandPlaceholders() threw something other than Error.';
+                }
+                return source;
+            }
+        }
+        return expandedSource;
     }
 
     /**
@@ -151,6 +149,12 @@ ${this.source}`;
      */
     public explainQuery(): string {
         let result = '';
+
+        if (this.error !== undefined) {
+            result += 'Query has an error:\n';
+            result += this.error + '\n';
+            return result;
+        }
 
         const numberOfFilters = this.filters.length;
         if (numberOfFilters === 0) {
