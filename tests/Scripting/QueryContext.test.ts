@@ -1,23 +1,15 @@
-import { verifyAsJson } from 'approvals/lib/Providers/Jest/JestApprovals';
 import { TaskBuilder } from '../TestingTools/TaskBuilder';
 import { FilenameField } from '../../src/Query/Filter/FilenameField';
 import { FolderField } from '../../src/Query/Filter/FolderField';
 import { PathField } from '../../src/Query/Filter/PathField';
 import { RootField } from '../../src/Query/Filter/RootField';
-import { makeQueryContextFromPath } from '../../src/lib/QueryContext';
+import { makeQueryContext } from '../../src/Scripting/QueryContext';
 
 describe('QueryContext', () => {
-    it('should construct a QueryContext from a path', () => {
-        const path = 'a/b/c.md';
-        const queryContext = makeQueryContextFromPath(path);
-
-        verifyAsJson(queryContext);
-    });
-
     describe('values should all match their corresponding filters', () => {
         const path = 'a/b/c.md';
         const task = new TaskBuilder().path(path).build();
-        const queryContext = makeQueryContextFromPath(path);
+        const queryContext = makeQueryContext(path);
 
         it('root', () => {
             const instruction = `root includes ${queryContext.query.file.root}`;
