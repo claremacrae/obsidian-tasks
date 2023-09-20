@@ -13,45 +13,9 @@
 - [ ] #task Explain to show the line with template, then the expanded line
 - [ ] #task Must be able to test this stuff - can we use a TFile in tests?
 
-## Symbols Supported
-
-<!-- snippet: QueryContext.test.QueryContext_should_construct_a_QueryContext_from_a_path.approved.json -->
-```json
-{
-  "query": {
-    "file": {
-      "_path": "a/b/c.md"
-    },
-    "root": "a/",
-    "path": "a/b/c.md",
-    "folder": "a/b/",
-    "filename": "c.md"
-  }
-}
-```
-<!-- endSnippet -->
-
-- `query.file.root`
-- `query.file.path`
-- `query.file.folder`
-- `query.file.filename`
-
-See also [[Referring to fields in JavaScript]].
-
 ## Limitations
 
-- The symbols are case-sensitive:
-  - `query.file.fileName` is not recognised
-  - `path includes {{query.file.fileName}}` gives:
-    - `Missing Mustache data property: query.file.fileName`
 - Error handling
-  - The reference to `Mustache` in error messages may be confusing??
-  - Use of unrecognised symbols inside `{{ }}` is spotted, and the name is written out
-    - But if you write `{{queryx.file.filename}}`, it doesn't get past `queryx`
-    - So the error would be:
-      - `Missing Mustache data property: queryx`
-  - If there is an error, the entire input string is written out, and it can be hard to spot the problem line
-  - At the moment the whole query is checked as one string, so the error message contains the whole input, making any problem a little harder to space
   - It complains about any unrecognised template values in comments, even though comments are then ignored
 - explanations
   - `explain` instructions only show the expanded text
@@ -85,4 +49,3 @@ description does not include {{query.file.path}}
 
 - Searching by today's date or time
 - Get date string from file names
--
