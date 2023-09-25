@@ -1,10 +1,13 @@
 import { App, Keymap, MarkdownRenderChild, MarkdownRenderer, Plugin, TFile } from 'obsidian';
 import type { EventRef, MarkdownPostProcessorContext } from 'obsidian';
+import { GlobalFilter } from './Config/GlobalFilter';
+import { GlobalQuery } from './Config/GlobalQuery';
 
 import type { IQuery } from './IQuery';
 import { State } from './Cache';
 import { getTaskLineAndFile, replaceTaskWithTasks } from './File';
 import type { GroupDisplayHeading } from './Query/GroupDisplayHeading';
+import { taskToLi } from './TaskLineRenderer';
 import { TaskModal } from './TaskModal';
 import type { TasksEvents } from './TasksEvents';
 import type { Task } from './Task';
@@ -89,12 +92,12 @@ class QueryRenderChild extends MarkdownRenderChild {
         // added later.
         switch (this.containerEl.className) {
             case 'block-language-tasks':
-                this.query = getQueryForQueryRenderer(this.source, this.filePath);
+                this.query = getQueryForQueryRenderer(this.source, GlobalQuery.getInstance(), this.filePath);
                 this.queryType = 'tasks';
                 break;
 
             default:
-                this.query = getQueryForQueryRenderer(this.source, this.filePath);
+                this.query = getQueryForQueryRenderer(this.source, GlobalQuery.getInstance(), this.filePath);
                 this.queryType = 'tasks';
                 break;
         }
@@ -135,7 +138,7 @@ class QueryRenderChild extends MarkdownRenderChild {
         const millisecondsToMidnight = midnight.getTime() - now.getTime();
 
         this.queryReloadTimeout = setTimeout(() => {
-            this.query = getQueryForQueryRenderer(this.source, this.filePath);
+            this.query = getQueryForQueryRenderer(this.source, GlobalQuery.getInstance(), this.filePath);
             // Process the current cache state:
             this.events.triggerRequestCacheUpdate(this.render.bind(this));
             this.reloadQueryAtMidnight();
@@ -198,7 +201,12 @@ class QueryRenderChild extends MarkdownRenderChild {
 
     // Use the 'explain' instruction to enable this
     private createExplanation(content: HTMLDivElement) {
-        const explanationAsString = explainResults(this.source, this.filePath);
+        const explanationAsString = explainResults(
+            this.source,
+            GlobalFilter.getInstance(),
+            GlobalQuery.getInstance(),
+            this.filePath,
+        );
 
         const explanationsBlock = content.createEl('pre');
         explanationsBlock.addClasses(['plugin-tasks-query-explanation']);
@@ -206,26 +214,17 @@ class QueryRenderChild extends MarkdownRenderChild {
         content.appendChild(explanationsBlock);
     }
 
-    private async createTasksList({
-        tasks,
-        content,
-    }: {
-        tasks: Task[];
-        content: HTMLDivElement;
-    }): Promise<{ taskList: HTMLUListElement; tasksCount: number }> {
-        const tasksCount = tasks.length;
-
+    private async createTaskList(tasks: Task[], content: HTMLDivElement): Promise<void> {
         const layout = new TaskLayout(this.query.layoutOptions);
         const taskList = content.createEl('ul');
         taskList.addClasses(['contains-task-list', 'plugin-tasks-query-result']);
         taskList.addClasses(layout.taskListHiddenClasses);
         const groupingAttribute = this.getGroupingAttribute();
         if (groupingAttribute && groupingAttribute.length > 0) taskList.dataset.taskGroupBy = groupingAttribute;
-        for (let i = 0; i < tasksCount; i++) {
-            const task = tasks[i];
+        for (const [i, task] of tasks.entries()) {
             const isFilenameUnique = this.isFilenameUnique({ task });
 
-            const listItem = await task.toLi({
+            const listItem = await taskToLi(task, {
                 parentUlElement: taskList,
                 listIndex: i,
                 layoutOptions: this.query.layoutOptions,
@@ -238,8 +237,6 @@ class QueryRenderChild extends MarkdownRenderChild {
             const footnotes = listItem.querySelectorAll('[data-footnote-id]');
             footnotes.forEach((footnote) => footnote.remove());
 
-            const shortMode = this.query.layoutOptions.shortMode;
-
             const extrasSpan = listItem.createSpan('task-extras');
 
             if (!this.query.layoutOptions.hideUrgency) {
@@ -247,6 +244,7 @@ class QueryRenderChild extends MarkdownRenderChild {
             }
 
             if (!this.query.layoutOptions.hideBacklinks) {
+                const shortMode = this.query.layoutOptions.shortMode;
                 this.addBacklinks(extrasSpan, task, shortMode, isFilenameUnique);
             }
 
@@ -257,7 +255,7 @@ class QueryRenderChild extends MarkdownRenderChild {
             taskList.appendChild(listItem);
         }
 
-        return { taskList, tasksCount };
+        content.appendChild(taskList);
     }
 
     private addEditButton(listItem: HTMLElement, task: Task) {
@@ -295,11 +293,7 @@ class QueryRenderChild extends MarkdownRenderChild {
             // will be empty, and no headings will be added.
             this.addGroupHeadings(content, group.groupHeadings, group.describeTaskCount());
 
-            const { taskList } = await this.createTasksList({
-                tasks: group.tasks,
-                content: content,
-            });
-            content.appendChild(taskList);
+            await this.createTaskList(group.tasks, content);
         }
     }
 
