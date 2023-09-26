@@ -1228,6 +1228,9 @@ At most 8 tasks per group (if any "group by" options are supplied).
 - [ ] Task 4 - will be sorted to 2nd place, so should pass limit
 `;
             expect('\n' + soleTaskGroup.tasksAsStringOfLines()).toStrictEqual(expectedTasks);
+
+            expect(queryResult.taskGroups.totalTasksCount()).toEqual(2);
+            expect(queryResult.totalTasksCountBeforeLimit).toEqual(6);
         });
 
         it('should apply group limit correctly, after sorting tasks', () => {
@@ -1272,6 +1275,9 @@ At most 8 tasks per group (if any "group by" options are supplied).
                 - [ ] Task 5 - will be sorted to 3nd place in the second group and pass the limit
                 "
             `);
+
+            expect(queryResult.taskGroups.totalTasksCount()).toEqual(5);
+            expect(queryResult.totalTasksCountBeforeLimit).toEqual(6);
         });
     });
 
