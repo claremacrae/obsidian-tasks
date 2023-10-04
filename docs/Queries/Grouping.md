@@ -100,10 +100,14 @@ Since Tasks 4.0.0, **[[Custom Grouping|custom grouping]] by status names** is no
 
 Since Tasks 4.0.0, **[[Custom Grouping|custom grouping]] by status types** is now possible.
 
+`task.status.typeGroupText` was added in Tasks 4.9.0.
+
 <!-- placeholder to force blank line before included text --><!-- include: CustomGroupingExamples.test.statuses_task.status.type_docs.approved.md -->
 
 - ```group by function task.status.type```
   - Unlike "group by status.type", this sorts the status types in alphabetical order.
+- ```group by function task.status.typeGroupText```
+  - This sorts the status types in the same order as "group by status.type".
 
 <!-- placeholder to force blank line after included text --><!-- endInclude -->
 
@@ -146,12 +150,20 @@ Since Tasks 4.0.0, **[[Custom Grouping|custom grouping]] by next status symbol**
 
 Since Tasks 4.0.0, **[[Custom Grouping|custom grouping]] by due date** is now possible.
 
-These examples all use  `task.due` property, which is a `TasksDate` object. You can see the current [TasksDate source code](https://github.com/obsidian-tasks-group/obsidian-tasks/blob/main/src/Scripting/TasksDate.ts), to explore its capabilities.
+These examples all use  `task.due` property, which is a `TasksDate` object. See [[Task Properties#Values in TasksDate Properties|Values in TasksDate Properties]] to explore its capabilities.
 
 Some of these examples use the [moment.js format characters](https://momentjs.com/docs/#/displaying/format/).
 
 <!-- placeholder to force blank line before included text --><!-- include: CustomGroupingExamples.test.dates_task.due_docs.approved.md -->
 
+- ```group by function task.due.category.groupText```
+  - Group task due dates in to 4 broad categories: `Overdue`, `Today`, `Future` and `Undated`, displayed in that order.
+  - Try this on a line before `group by due` if there are a lot of due date headings, and you would like them to be broken down in to some kind of structure.
+  - The values `task.due.category.name` and `task.due.category.sortOrder` are also available.
+- ```group by function task.due.fromNow.groupText```
+  - Group by the [time from now](https://momentjs.com/docs/#/displaying/fromnow/), for example `8 days ago`, `in 11 hours`.
+  - It users an empty string (so no heading) if there is no due date.
+  - The values `task.due.fromNow.name` and `task.due.fromNow.sortOrder` are also available.
 - ```group by function task.due.format("YYYY-MM-DD dddd")```
   - Like "group by due", except it uses no heading, instead of a heading "No due date", if there is no due date.
 - ```group by function task.due.formatAsDate()```
@@ -179,10 +191,6 @@ DON'T PANIC! For users who are comfortable with JavaScript, these more complicat
 
 <!-- placeholder to force blank line before included text --><!-- include: CustomGroupingExamples.test.dates_task.due.advanced_docs.approved.md -->
 
-- ```group by function task.due.moment?.fromNow() || ""```
-  - Group by the time from now, for example "8 days ago".
-  - Because Moment.fromNow() is not provided by TasksDate, we need special code for when there is no date value.
-  - Whilst interesting, the alphabetical sort order makes the headings a little hard to read.
 - ```group by function task.due.format("dddd")```
   - Group by day of the week (Monday, Tuesday, etc).
   - The day names are sorted alphabetically.
@@ -197,6 +205,7 @@ DON'T PANIC! For users who are comfortable with JavaScript, these more complicat
   - The key technique is to say that if the day is Sunday (`0`), then force it to be displayed as date number `8`, so it comes after the other days of the week.
   - Note that because we use variables to avoid repetition of values, we need to add `return`
 - ```group by function const date = task.due.moment; return (!date) ? '%%4%% Undated' : date.isBefore(moment(), 'day') ? '%%1%% Overdue' : date.isSame(moment(), 'day') ? '%%2%% Today' : '%%3%% Future'```
+  - This gives exactly the same output as `group by function task.due.category.groupText`, and is shown here in case you want to customise the behaviour in some way.
   - Group task due dates in to 4 broad categories: `Overdue`, `Today`, `Future` and `Undated`, displayed in that order.
   - Try this on a line before `group by due` if there are a lot of due date headings, and you would like them to be broken down in to some kind of structure.
   - A limitation of Tasks expressions is that they each need to fit on a single line, so this uses nested ternary operators, making it powerful but very hard to read.
@@ -366,6 +375,8 @@ The value `task.descriptionWithoutTags` returns a copy of the description with a
 
 Since Tasks 4.0.0, **[[Custom Grouping|custom grouping]] by priority name and number** is now possible.
 
+`task.priorityNameGroupText` was added in Tasks 4.9.0.
+
 Using the priority name:
 
 <!-- placeholder to force blank line before included text --><!-- include: CustomGroupingExamples.test.other_properties_task.priorityName_docs.approved.md -->
@@ -374,9 +385,9 @@ Using the priority name:
   - Group by the task's priority name.
   - The priority names are displayed in alphabetical order.
   - Note that the default priority is called 'Normal', as opposed to with `group by priority` which calls the default 'None'.
-- ```group by function '%%' + task.priorityNumber.toString() + '%%' + task.priorityName +' priority'```
+- ```group by function task.priorityNameGroupText```
   - Group by the task's priority name.
-  - The hidden priority number ensures that the headings are written from highest to lowest priority.
+  - The priority names are displayed from highest to lowest priority.
   - Note that the default priority is called 'Normal', as opposed to with `group by priority` which calls the default 'None'.
 
 <!-- placeholder to force blank line after included text --><!-- endInclude -->
@@ -534,7 +545,7 @@ Since Tasks 4.7.0, the query's file path can be used in custom groups.
 
 - It must be quoted:
   - `'{{query.file.path}}'` or
-  - `'{{query.file.pathWithoutExtension}}'` (since Tasks X.Y.Z)
+  - `'{{query.file.pathWithoutExtension}}'` (since Tasks 4.8.0)
 - Beware if using placeholder text in regular expressions: Any special characters in filenames would need to be escaped.
 - Useful reading: [[Query Properties]] and [[Placeholders]].
 
@@ -606,7 +617,7 @@ Since Tasks 4.7.0, the query's file name can be used in custom groups.
 
 - It must be quoted:
   - `'{{query.file.filename}}'` or
-  - `'{{query.file.filenameWithoutExtension}}'` (since Tasks X.Y.Z)
+  - `'{{query.file.filenameWithoutExtension}}'` (since Tasks 4.8.0)
 - Beware if using placeholder text in regular expressions: Any special characters in filenames would need to be escaped.
 - Useful reading: [[Query Properties]] and [[Placeholders]].
 
