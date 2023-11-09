@@ -12,6 +12,8 @@ import type { Task } from '../src/Task';
 import { TaskRegularExpressions } from '../src/Task';
 import { DateParser } from '../src/Query/DateParser';
 import { fromLine } from './TestHelpers';
+import { verifyWithFileExtension } from './TestingTools/ApprovalTestHelpers';
+import { TaskBuilder } from './TestingTools/TaskBuilder';
 
 jest.mock('obsidian');
 window.moment = moment;
@@ -594,5 +596,69 @@ describe('task line rendering', () => {
             {},
             { task: '-', taskStatusName: 'Cancelled', taskStatusType: 'CANCELLED' },
         );
+    });
+});
+
+describe('Visualise HTML', () => {
+    async function renderAndVerifyHTML(task: Task, layoutOptions: LayoutOptions) {
+        const mockHTMLRenderer = async (text: string, element: HTMLSpanElement, _path: string) => {
+            // Contrary to the default mockTextRenderer() in createMockParentAndRender(),
+            // instead of the rendered HTMLSpanElement.innerText,
+            // we need the plain HTML here like in TaskLineRenderer.renderComponentText(),
+            // in order to ensure that any description and tags are retained.
+            element.innerHTML = text;
+        };
+
+        const parentRender = await createMockParentAndRender(task, layoutOptions, mockHTMLRenderer);
+        const taskAsMarkdown = `<!--
+${task.toFileLineString()}
+-->\n\n`;
+        const taskAsHTML = parentRender.innerHTML
+            .replace(/ data-/g, '\n    data-')
+            .replace(/<span/g, '\n        <span');
+
+        verifyWithFileExtension(taskAsMarkdown + taskAsHTML, 'html');
+    }
+
+    const fullTask = TaskBuilder.createFullyPopulatedTask();
+    const minimalTask = fromLine({ line: '- [-] empty' });
+
+    function layoutOptionsFullMode(): LayoutOptions {
+        const layoutOptions = new LayoutOptions();
+
+        // Show every Task field, disable short mode, do not explain the query
+        // Also note that urgency, backlinks and edit button are rendered in QueryRender.createTaskList(),
+        // so they won't be visible in this test it is using TaskLineRenderer.renderTaskLine().
+        // See also comments in TaskLayout.applyOptions().
+        Object.keys(layoutOptions).forEach((key) => {
+            const key2 = key as keyof LayoutOptions;
+            layoutOptions[key2] = false;
+        });
+
+        return layoutOptions;
+    }
+
+    function layoutOptionsShortMode(): LayoutOptions {
+        const layoutOptions = layoutOptionsFullMode();
+
+        layoutOptions.shortMode = true;
+
+        return layoutOptions;
+    }
+
+    it('Full task - full mode', async () => {
+        await renderAndVerifyHTML(fullTask, layoutOptionsFullMode());
+    });
+
+    it('Full task - short mode', async () => {
+        await renderAndVerifyHTML(fullTask, layoutOptionsShortMode());
+    });
+
+    it('Minimal task - full mode', async () => {
+        await renderAndVerifyHTML(minimalTask, layoutOptionsFullMode());
+    });
+
+    it('Minimal task - short mode', async () => {
+        await renderAndVerifyHTML(minimalTask, layoutOptionsShortMode());
     });
 });
