@@ -97,7 +97,7 @@ class QueryRenderChild extends MarkdownRenderChild {
         this.source = source;
         this.filePath = filePath;
 
-        // The engine is chosen on the basis of the code block language. Currently
+        // The engine is chosen on the basis of the code block language. Currently,
         // there is only the main engine for the plugin, this allows others to be
         // added later.
         switch (this.containerEl.className) {
@@ -174,7 +174,7 @@ class QueryRenderChild extends MarkdownRenderChild {
 
     private async renderQuerySearchResults(tasks: Task[], state: State.Warm, content: HTMLDivElement) {
         // See https://github.com/obsidian-tasks-group/obsidian-tasks/issues/2160
-        this.query.debug(`Render called: plugin state: ${state}; searching ${tasks.length} tasks`);
+        this.query.debug(`[render] Render called: plugin state: ${state}; searching ${tasks.length} tasks`);
 
         if (this.query.layoutOptions.explainQuery) {
             this.createExplanation(content);
@@ -192,7 +192,7 @@ class QueryRenderChild extends MarkdownRenderChild {
         const totalTasksCount = queryResult.totalTasksCount;
         this.addTaskCount(content, queryResult);
 
-        this.query.debug(`${totalTasksCount} tasks displayed`);
+        this.query.debug(`[render] ${totalTasksCount} tasks displayed`);
     }
 
     private renderErrorMessage(content: HTMLDivElement, errorMessage: string) {
@@ -280,8 +280,8 @@ class QueryRenderChild extends MarkdownRenderChild {
         editTaskPencil.onClickEvent((event: MouseEvent) => {
             event.preventDefault();
 
-            const onSubmit = (updatedTasks: Task[]): void => {
-                replaceTaskWithTasks({
+            const onSubmit = async (updatedTasks: Task[]): Promise<void> => {
+                await replaceTaskWithTasks({
                     originalTask: task,
                     newTasks: DateFallback.removeInferredStatusIfNeeded(task, updatedTasks),
                 });
@@ -306,7 +306,7 @@ class QueryRenderChild extends MarkdownRenderChild {
         for (const group of tasksSortedLimitedGrouped.groups) {
             // If there were no 'group by' instructions, group.groupHeadings
             // will be empty, and no headings will be added.
-            this.addGroupHeadings(content, group.groupHeadings, group.describeTaskCount());
+            await this.addGroupHeadings(content, group.groupHeadings, group.describeTaskCount());
 
             await this.createTaskList(group.tasks, content);
         }
@@ -319,14 +319,14 @@ class QueryRenderChild extends MarkdownRenderChild {
      *                        in which case no headings will be added.
      * @private
      */
-    private addGroupHeadings(
+    private async addGroupHeadings(
         content: HTMLDivElement,
         groupHeadings: GroupDisplayHeading[],
         taskCountDescription: string,
     ) {
         for (const heading of groupHeadings) {
             const isLastDisplayedHeading = heading === groupHeadings.at(-1);
-            this.addGroupHeading(content, heading, isLastDisplayedHeading ? `(${taskCountDescription})` : '');
+            await this.addGroupHeading(content, heading, isLastDisplayedHeading ? `(${taskCountDescription})` : '');
         }
     }
 
@@ -496,15 +496,17 @@ class QueryRenderChild extends MarkdownRenderChild {
 
         const { postponedDate, newTasks } = createPostponedTask(task, dateTypeToUpdate, timeUnit, amount);
 
+        this.query.debug('[postpone]: getOnClickCallback() - before call to replaceTaskWithTasks()');
         await replaceTaskWithTasks({
             originalTask: task,
             newTasks,
         });
-
+        this.query.debug('[postpone]: getOnClickCallback() - after  call to replaceTaskWithTasks()');
         this.onPostponeSuccessCallback(button, dateTypeToUpdate, postponedDate);
     }
 
     private onPostponeSuccessCallback(button: HTMLButtonElement, updatedDateType: HappensDate, postponedDate: Moment) {
+        this.query.debug('[postpone]: onPostponeSuccessCallback() entered');
         // Disable the button to prevent update error due to the task not being reloaded yet.
         button.disabled = true;
         button.setAttr('title', 'You can perform this action again after reloading the file.');
@@ -512,5 +514,6 @@ class QueryRenderChild extends MarkdownRenderChild {
         const successMessage = postponementSuccessMessage(postponedDate, updatedDateType);
         new Notice(successMessage, 5000);
         this.events.triggerRequestCacheUpdate(this.render.bind(this));
+        this.query.debug('[postpone]: onPostponeSuccessCallback() exiting');
     }
 }
