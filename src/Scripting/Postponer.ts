@@ -52,6 +52,11 @@ export function postponementSuccessMessage(postponedDate: Moment, updatedDateTyp
     return `Task's ${updatedDateType} postponed until ${postponedDateString}`;
 }
 
+export function postponeButtonTitle(task: Task, amount: number, timeUnit: unitOfTime.DurationConstructor) {
+    const buttonText = postponeMenuItemTitle(task, amount, timeUnit);
+    return `ℹ️ ${buttonText} (right-click for more options)`;
+}
+
 export function postponeMenuItemTitle(task: Task, amount: number, timeUnit: unitOfTime.DurationConstructor) {
     const updatedDateType = getDateFieldToPostpone(task)!;
 
