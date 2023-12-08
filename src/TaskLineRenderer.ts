@@ -1,8 +1,9 @@
 import type { Moment } from 'moment';
-import { Component, MarkdownRenderer } from 'obsidian';
+import { Component, MarkdownRenderer, Menu, MenuItem } from 'obsidian';
 import { GlobalFilter } from './Config/GlobalFilter';
 import { TASK_FORMATS, getSettings } from './Config/Settings';
 import { replaceTaskWithTasks } from './File';
+import { StatusRegistry } from './StatusRegistry';
 import type { Task } from './Task';
 import * as taskModule from './Task';
 import { TaskFieldRenderer } from './TaskFieldRenderer';
@@ -123,6 +124,32 @@ export class TaskLineRenderer {
             });
         });
 
+        checkbox.addEventListener('contextmenu', async (ev: MouseEvent) => {
+            const menu = new Menu();
+            const commonTitle = 'Change status to: ';
+
+            const getMenuItemCallback = (item: MenuItem, statusName: string, newStatusSymbol: string) => {
+                item.setTitle(`${commonTitle}  ${statusName}`).onClick(() => {
+                    const status = StatusRegistry.getInstance().bySymbol(newStatusSymbol);
+                    const newTask = task.handleStatusChangeFromContextMenuWithRecurrenceInUsersOrder(status);
+                    replaceTaskWithTasks({
+                        originalTask: task,
+                        newTasks: newTask,
+                    });
+                });
+            };
+
+            const { statusSettings } = getSettings();
+            for (const status of statusSettings.coreStatuses) {
+                menu.addItem((item) => getMenuItemCallback(item, status.name, status.symbol));
+            }
+            for (const status of statusSettings.customStatuses) {
+                menu.addItem((item) => getMenuItemCallback(item, status.name, status.symbol));
+            }
+
+            menu.showAtPosition({ x: ev.clientX, y: ev.clientY });
+        });
+
         li.prepend(checkbox);
 
         // Set these to be compatible with stock obsidian lists:
@@ -144,32 +171,28 @@ export class TaskLineRenderer {
         const emojiSerializer = TASK_FORMATS.tasksPluginEmoji.taskSerializer;
         // Render and build classes for all the task's visible components
         for (const component of taskLayout.shownTaskLayoutComponents) {
-            let componentString = emojiSerializer.componentToString(task, taskLayout, component);
+            const componentString = emojiSerializer.componentToString(task, taskLayout, component);
             if (componentString) {
-                if (component === 'description') {
-                    componentString = GlobalFilter.getInstance().removeAsWordFromDependingOnSettings(componentString);
-                }
                 // Create the text span that will hold the rendered component
                 const span = document.createElement('span');
                 parentElement.appendChild(span);
-                if (span) {
-                    // Inside that text span, we are creating another internal span, that will hold the text itself.
-                    // This may seem redundant, and by default it indeed does nothing, but we do it to allow the CSS
-                    // to differentiate between the container of the text and the text itself, so it will be possible
-                    // to do things like surrounding only the text (rather than its whole placeholder) with a highlight
-                    const internalSpan = document.createElement('span');
-                    span.appendChild(internalSpan);
-                    await this.renderComponentText(internalSpan, componentString, component, task);
-                    this.addInternalClasses(component, internalSpan);
 
-                    // Add the component's CSS class describing what this component is (priority, due date etc.)
-                    const componentClass = fieldRenderer.className(component);
-                    span.classList.add(...[componentClass]);
+                // Inside that text span, we are creating another internal span, that will hold the text itself.
+                // This may seem redundant, and by default it indeed does nothing, but we do it to allow the CSS
+                // to differentiate between the container of the text and the text itself, so it will be possible
+                // to do things like surrounding only the text (rather than its whole placeholder) with a highlight
+                const internalSpan = document.createElement('span');
+                span.appendChild(internalSpan);
+                await this.renderComponentText(internalSpan, componentString, component, task);
+                this.addInternalClasses(component, internalSpan);
 
-                    // Add the component's attribute ('priority-medium', 'due-past-1d' etc.)
-                    fieldRenderer.addDataAttribute(span, task, component);
-                    fieldRenderer.addDataAttribute(li, task, component);
-                }
+                // Add the component's CSS class describing what this component is (priority, due date etc.)
+                const componentClass = fieldRenderer.className(component);
+                span.classList.add(...[componentClass]);
+
+                // Add the component's attribute ('priority-medium', 'due-past-1d' etc.)
+                fieldRenderer.addDataAttribute(span, task, component);
+                fieldRenderer.addDataAttribute(li, task, component);
             }
         }
 
@@ -198,6 +221,8 @@ export class TaskLineRenderer {
         task: Task,
     ) {
         if (component === 'description') {
+            componentString = GlobalFilter.getInstance().removeAsWordFromDependingOnSettings(componentString);
+
             const { debugSettings } = getSettings();
             if (debugSettings.showTaskHiddenData) {
                 // Add some debug output to enable hidden information in the task to be inspected.
