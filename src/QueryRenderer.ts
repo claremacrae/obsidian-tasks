@@ -26,6 +26,7 @@ import { TaskLayout } from './TaskLayout';
 import { TaskLineRenderer } from './TaskLineRenderer';
 import { TaskModal } from './TaskModal';
 import type { TasksEvents } from './TasksEvents';
+import { PriorityMenu } from './ui/Menus/PriorityMenu';
 
 export class QueryRenderer {
     private readonly app: App;
@@ -297,6 +298,12 @@ class QueryRenderChild extends MarkdownRenderChild {
             });
             taskModal.open();
         });
+
+        editTaskPencil.addEventListener('contextmenu', (ev: MouseEvent) => {
+            const menu = new PriorityMenu(task);
+            menu.showAtPosition({ x: ev.clientX, y: ev.clientY });
+        });
+        editTaskPencil.setAttribute('title', 'Right-click for options');
     }
 
     private addUrgency(listItem: HTMLElement, task: Task) {
