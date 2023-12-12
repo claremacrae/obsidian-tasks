@@ -1,12 +1,11 @@
 import { StatusMenu } from '../../../src/ui/Menus/StatusMenu';
 import { TaskBuilder } from '../../TestingTools/TaskBuilder';
-import type { MenuItem } from '../../__mocks__/obsidian';
 import { StatusRegistry } from '../../../src/StatusRegistry';
 import { StatusSettings } from '../../../src/Config/StatusSettings';
 import { resetSettings, updateSettings } from '../../../src/Config/Settings';
 import { StatusConfiguration, StatusType } from '../../../src/StatusConfiguration';
 import { Status } from '../../../src/Status';
-import type { Task } from '../../../src/Task';
+import { TestableTaskSaver, menuToString } from './MenuTestingHelpers';
 
 export {};
 
@@ -14,24 +13,9 @@ afterEach(() => {
     resetSettings();
 });
 
-function menuToString(menu: StatusMenu) {
-    // @ts-expect-error TS2339: Property 'items' does not exist on type 'StatusMenu'.
-    const items: MenuItem[] = menu.items;
-    return '\n' + items.map((item) => `${item.checked ? 'x' : ' '} ${item.title}`).join('\n');
-}
-
 describe('StatusMenu', () => {
-    let taskBeingOverwritten: Task | undefined;
-    let tasksBeingSaved: Task[] | undefined;
-
-    async function testableTaskSaver(originalTask: Task, newTasks: Task | Task[]) {
-        taskBeingOverwritten = originalTask;
-        tasksBeingSaved = Array.isArray(newTasks) ? newTasks : [newTasks];
-    }
-
     beforeEach(() => {
-        taskBeingOverwritten = undefined;
-        tasksBeingSaved = undefined;
+        TestableTaskSaver.reset();
     });
 
     it('should show checkmark against the current task status', () => {
@@ -89,7 +73,7 @@ describe('StatusMenu', () => {
         onlyShowCancelled.add(Status.makeCancelled());
 
         const task = new TaskBuilder().status(Status.makeTodo()).build();
-        const menu = new StatusMenu(onlyShowCancelled, task, testableTaskSaver);
+        const menu = new StatusMenu(onlyShowCancelled, task, TestableTaskSaver.testableTaskSaver);
 
         // Act
         // @ts-expect-error TS2339: Property 'items' does not exist on type 'StatusMenu'.
@@ -97,13 +81,11 @@ describe('StatusMenu', () => {
         todoItem.callback();
 
         // Assert
-        expect(taskBeingOverwritten).not.toBeUndefined();
-        expect(Object.is(task, taskBeingOverwritten)).toEqual(true);
-        expect(taskBeingOverwritten!.status.symbol).toEqual(' ');
+        expect(Object.is(task, TestableTaskSaver.taskBeingOverwritten)).toEqual(true);
+        expect(TestableTaskSaver.taskBeingOverwritten!.status.symbol).toEqual(' ');
 
-        expect(tasksBeingSaved).not.toBeUndefined();
-        expect(tasksBeingSaved!.length).toEqual(1);
-        expect(tasksBeingSaved![0].status.symbol).toEqual('-');
+        expect(TestableTaskSaver.tasksBeingSaved!.length).toEqual(1);
+        expect(TestableTaskSaver.tasksBeingSaved![0].status.symbol).toEqual('-');
     });
 
     it('should not modify task, if current status selected', () => {
@@ -112,7 +94,7 @@ describe('StatusMenu', () => {
         const statusRegistry = new StatusRegistry();
 
         // Act
-        const menu = new StatusMenu(statusRegistry, task, testableTaskSaver);
+        const menu = new StatusMenu(statusRegistry, task, TestableTaskSaver.testableTaskSaver);
 
         // Act
         // @ts-expect-error TS2339: Property 'items' does not exist on type 'StatusMenu'.
@@ -121,9 +103,9 @@ describe('StatusMenu', () => {
         todoItem.callback();
 
         // Assert
-        // testableTaskSaver() should never have been called, so the values
+        // TestableTaskSaver.testableTaskSaver() should never have been called, so the values
         // it saves should still be undefined:
-        expect(taskBeingOverwritten).toBeUndefined();
-        expect(tasksBeingSaved).toBeUndefined();
+        expect(TestableTaskSaver.taskBeingOverwritten).toBeUndefined();
+        expect(TestableTaskSaver.tasksBeingSaved).toBeUndefined();
     });
 });
