@@ -7,6 +7,8 @@ import {
     type HappensDate,
     createPostponedTask,
     getDateFieldToPostpone,
+    postponeButtonTitle,
+    postponeMenuItemTitle,
     postponementSuccessMessage,
     shouldShowPostponeButton,
 } from '../../src/Scripting/Postponer';
@@ -15,6 +17,21 @@ import { StatusConfiguration, StatusType } from '../../src/StatusConfiguration';
 import { TaskBuilder } from '../TestingTools/TaskBuilder';
 
 window.moment = moment;
+
+const yesterday = '2023-12-02';
+const today = '2023-12-03';
+const tomorrow = '2023-12-04';
+
+const invalidDate = '2023-12-36';
+
+beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date(today));
+});
+
+afterEach(() => {
+    jest.useRealTimers();
+});
 
 describe('postpone - date field choice', () => {
     function checkPostponeField(taskBuilder: TaskBuilder, expected: HappensDate | null) {
@@ -116,7 +133,7 @@ describe('postpone - whether to show button', () => {
     });
 
     it('should not show button for a task with an invalid start date', () => {
-        const task = new TaskBuilder().startDate('2023-13-01').build();
+        const task = new TaskBuilder().startDate(invalidDate).build();
 
         expect(shouldShowPostponeButton(task)).toEqual(false);
     });
@@ -128,7 +145,7 @@ describe('postpone - whether to show button', () => {
     });
 
     it('should not show button for a task with an invalid scheduled date', () => {
-        const task = new TaskBuilder().scheduledDate('2023-12-36').build();
+        const task = new TaskBuilder().scheduledDate(invalidDate).build();
 
         expect(shouldShowPostponeButton(task)).toEqual(false);
     });
@@ -140,22 +157,52 @@ describe('postpone - whether to show button', () => {
     });
 
     it('should not show button for a task with an invalid due date', () => {
-        const task = new TaskBuilder().dueDate('20233-12-03').build();
+        const task = new TaskBuilder().dueDate(invalidDate).build();
+
+        expect(shouldShowPostponeButton(task)).toEqual(false);
+    });
+
+    it('should not show button for a task with an invalid created date', () => {
+        const task = new TaskBuilder().createdDate(invalidDate).scheduledDate(today).build();
 
         expect(shouldShowPostponeButton(task)).toEqual(false);
     });
 });
 
+describe('postpone - UI text', () => {
+    it('should include date type and new date in button tooltip', () => {
+        const task = new TaskBuilder().dueDate(today).build();
+        expect(postponeButtonTitle(task, 1, 'day')).toEqual(
+            'ℹ️ Due in a day, on Mon 4th Dec (right-click for more options)',
+        );
+        expect(postponeButtonTitle(task, 2, 'days')).toEqual(
+            'ℹ️ Due in 2 days, on Tue 5th Dec (right-click for more options)',
+        );
+    });
+
+    it('should include date type and new date in context menu labels when due today', () => {
+        const task = new TaskBuilder().dueDate(today).build();
+
+        expect(postponeMenuItemTitle(task, 1, 'day')).toEqual('Due in a day, on Mon 4th Dec');
+        expect(postponeMenuItemTitle(task, 2, 'days')).toEqual('Due in 2 days, on Tue 5th Dec');
+    });
+
+    it('should include date type and new date in context menu labels when overdue', () => {
+        const task = new TaskBuilder().scheduledDate(yesterday).build();
+
+        expect(postponeMenuItemTitle(task, 1, 'day')).toEqual('Scheduled in a day, on Mon 4th Dec');
+        expect(postponeMenuItemTitle(task, 2, 'days')).toEqual('Scheduled in 2 days, on Tue 5th Dec');
+    });
+
+    it('should include date type and new date in context menu labels when due in future', () => {
+        const task = new TaskBuilder().startDate(tomorrow).build();
+
+        expect(postponeMenuItemTitle(task, 1, 'day')).toEqual('Postpone start date by a day, to Tue 5th Dec');
+        expect(postponeMenuItemTitle(task, 2, 'days')).toEqual('Postpone start date by 2 days, to Wed 6th Dec');
+    });
+});
+
 describe('postpone - new task creation', () => {
-    beforeEach(() => {
-        jest.useFakeTimers();
-        jest.setSystemTime(new Date('2023-12-03'));
-    });
-
-    afterEach(() => {
-        jest.useRealTimers();
-    });
-
     function testPostponedTaskAndDate(task: Task, expectedDateField: HappensDate, expectedPostponedDate: string) {
         const { postponedDate, postponedTask } = createPostponedTask(task, expectedDateField, 'day', 1);
         expect(postponedDate.format('YYYY-MM-DD')).toEqual(expectedPostponedDate);
@@ -180,7 +227,7 @@ describe('postpone - new task creation', () => {
         testPostponedTaskAndDate(task, 'scheduledDate', '2023-12-04');
     });
 
-    it.failing('should postpone a task scheduled today to tomorrow, when the scheduled date is inferred', () => {
+    it('should postpone a task scheduled today to tomorrow, when the scheduled date is inferred', () => {
         const task = new TaskBuilder().scheduledDate('2023-12-03').scheduledDateIsInferred(true).build();
         testPostponedTaskAndDate(task, 'scheduledDate', '2023-12-04');
     });
@@ -198,7 +245,7 @@ describe('postpone - postponement success message', () => {
     });
 
     it('should generate a message for an invalid date', () => {
-        const message = postponementSuccessMessage(moment('2023-13-30'), 'dueDate');
+        const message = postponementSuccessMessage(moment(invalidDate), 'dueDate');
         expect(message).toEqual("Task's dueDate postponed until Invalid date");
     });
 });
