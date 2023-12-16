@@ -51,7 +51,7 @@ The Tasks plugin renders a task in the following structure (this refers to query
         - Task created date (span class="task-created" + data-task-created attribute)
           - Internal span
         - ... start date, scheduled date, due date and done date in this order
-      - Task extras (link, edit button) (span class="task-extras")
+      - Task extras (link, edit button, postpone button) (span class="task-extras")
   - Tasks count (div class="tasks-count")
 ```
 
@@ -146,14 +146,17 @@ The following additional components have the following classes:
 | Class                          | Usage                                                                                                           |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------- |
 | plugin-tasks-query-explanation | This is applied to the PRE showing the query's explanation when the `explain` instruction is used.              |
-| tasks-backlink                 | This is applied to the SPAN that wraps the [[Backlinks|backlink]] if displayed on the task.                                   |
+| tasks-backlink                 | This is applied to the SPAN that wraps the [[Backlinks\|backlink]] if displayed on the task.                    |
 | tasks-edit                     | This is applied to the SPAN that wraps the edit button/icon shown next to the task that opens the task edit UI. |
+| tasks-postpone                 | This is applied to the SPAN that wraps the postpone button/icon shown after the edit button/icon                |
 | tasks-urgency                  | This is applied to the SPAN that wraps the urgency score if displayed on the task.                              |
 | tasks-group-heading            | This is applied to H4, H5 and H6 group headings                                                                 |
 
 > [!released]
-`tasks-group-heading` was introduced in Tasks 1.6.0.<br>
-`plugin-tasks-query-explanation` was introduced in Tasks 1.19.0.
+>
+> - `tasks-group-heading` was introduced in Tasks 1.6.0.
+> - `plugin-tasks-query-explanation` was introduced in Tasks 1.19.0.
+> - `tasks-postpone` was added in Tasks 5.3.0.
 
 ## CSS Examples
 

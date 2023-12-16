@@ -429,7 +429,7 @@ class QueryRenderChild extends MarkdownRenderChild {
             },
         });
 
-        const classNames = shortMode ? ['internal-button', 'internal-button-short-mode'] : ['internal-button'];
+        const classNames = shortMode ? ['tasks-postpone', 'tasks-postpone-short-mode'] : ['tasks-postpone'];
         button.addClasses(classNames);
         button.setText(' ⏩');
 
@@ -522,6 +522,6 @@ class QueryRenderChild extends MarkdownRenderChild {
         button.disabled = true;
 
         const successMessage = postponementSuccessMessage(postponedDate, updatedDateType);
-        new Notice(successMessage, 1000);
+        new Notice(successMessage, 2000);
     }
 }
