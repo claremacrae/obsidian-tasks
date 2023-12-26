@@ -428,7 +428,8 @@ export class Task {
             if (setCreatedDate) {
                 createdDate = window.moment();
             }
-            const nextStatus = StatusRegistry.getInstance().getNextStatusOrCreate(newStatus);
+            const statusRegistry = StatusRegistry.getInstance();
+            const nextStatus = statusRegistry.getNextRecurrenceStatusOrCreate(newStatus);
             const nextTask = new Task({
                 ...this,
                 ...nextOccurrence,
@@ -467,7 +468,6 @@ export class Task {
      */
     public toggleWithRecurrenceInUsersOrder(): Task[] {
         const newTasks = this.toggle();
-
         const { recurrenceOnNextLine: recurrenceOnNextLine } = getSettings();
         return recurrenceOnNextLine ? newTasks.reverse() : newTasks;
     }
