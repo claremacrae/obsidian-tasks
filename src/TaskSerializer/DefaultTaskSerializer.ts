@@ -59,7 +59,7 @@ export const DEFAULT_SYMBOLS: DefaultTaskSerializerSymbols = {
     scheduledDateSymbol: '⏳',
     dueDateSymbol: '📅',
     doneDateSymbol: '✅',
-    cancelledDateSymbol: '❌', // Options considered: ❌ ❎ ✖️
+    cancelledDateSymbol: '❌',
     recurrenceSymbol: '🔁',
     TaskFormatRegularExpressions: {
         // The following regex's end with `$` because they will be matched and
@@ -87,8 +87,9 @@ export class DefaultTaskSerializer implements TaskSerializer {
     public serialize(task: Task): string {
         const taskLayout = new TaskLayout();
         let taskString = '';
-        for (const component of taskLayout.shownTaskLayoutComponents) {
-            taskString += this.componentToString(task, taskLayout.queryLayoutOptions.shortMode, component);
+        const shortMode = false;
+        for (const component of taskLayout.shownTaskLayoutComponents()) {
+            taskString += this.componentToString(task, shortMode, component);
         }
         return taskString;
     }
