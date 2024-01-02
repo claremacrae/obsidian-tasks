@@ -7,12 +7,10 @@ import type { QueryLayoutOptions } from './QueryLayoutOptions';
 import type { Task } from './Task';
 import * as taskModule from './Task';
 import { TaskFieldRenderer } from './TaskFieldRenderer';
-import type { LayoutOptions, TaskLayoutComponent } from './TaskLayout';
+import type { TaskLayoutComponent, TaskLayoutOptions } from './TaskLayout';
 import { TaskLayout } from './TaskLayout';
 import { StatusMenu } from './ui/Menus/StatusMenu';
 import { StatusRegistry } from './StatusRegistry';
-
-const fieldRenderer = new TaskFieldRenderer();
 
 /**
  * The function used to render a Markdown task line into an existing HTML element.
@@ -28,7 +26,7 @@ export class TaskLineRenderer {
     private readonly textRenderer: TextRenderer;
     private readonly obsidianComponent: Component | null;
     private readonly parentUlElement: HTMLElement;
-    private readonly layoutOptions: LayoutOptions;
+    private readonly taskLayoutOptions: TaskLayoutOptions;
     private readonly queryLayoutOptions: QueryLayoutOptions;
 
     private static async obsidianMarkdownRenderer(
@@ -52,7 +50,7 @@ export class TaskLineRenderer {
      *
      * @param parentUlElement HTML element where the task shall be rendered.
      *
-     * @param layoutOptions See {@link LayoutOptions}.
+     * @param layoutOptions See {@link TaskLayoutOptions}.
      *
      * @param queryLayoutOptions See {@link QueryLayoutOptions}.
      */
@@ -60,19 +58,19 @@ export class TaskLineRenderer {
         textRenderer = TaskLineRenderer.obsidianMarkdownRenderer,
         obsidianComponent,
         parentUlElement,
-        layoutOptions,
+        taskLayoutOptions,
         queryLayoutOptions,
     }: {
         textRenderer?: TextRenderer;
         obsidianComponent: Component | null;
         parentUlElement: HTMLElement;
-        layoutOptions: LayoutOptions;
+        taskLayoutOptions: TaskLayoutOptions;
         queryLayoutOptions: QueryLayoutOptions;
     }) {
         this.textRenderer = textRenderer;
         this.obsidianComponent = obsidianComponent;
         this.parentUlElement = parentUlElement;
-        this.layoutOptions = layoutOptions;
+        this.taskLayoutOptions = taskLayoutOptions;
         this.queryLayoutOptions = queryLayoutOptions;
     }
 
@@ -155,13 +153,14 @@ export class TaskLineRenderer {
     }
 
     private async taskToHtml(task: Task, parentElement: HTMLElement, li: HTMLLIElement): Promise<void> {
-        const taskLayout = new TaskLayout(this.layoutOptions, this.queryLayoutOptions);
+        const fieldRenderer = new TaskFieldRenderer();
+        const taskLayout = new TaskLayout(this.taskLayoutOptions, this.queryLayoutOptions);
         const emojiSerializer = TASK_FORMATS.tasksPluginEmoji.taskSerializer;
         // Render and build classes for all the task's visible components
-        for (const component of taskLayout.shownTaskLayoutComponents) {
+        for (const component of taskLayout.shownTaskLayoutComponents()) {
             const componentString = emojiSerializer.componentToString(
                 task,
-                taskLayout.queryLayoutOptions.shortMode,
+                this.queryLayoutOptions.shortMode,
                 component,
             );
             if (componentString) {
@@ -179,8 +178,7 @@ export class TaskLineRenderer {
                 this.addInternalClasses(component, internalSpan);
 
                 // Add the component's CSS class describing what this component is (priority, due date etc.)
-                const componentClass = fieldRenderer.className(component);
-                span.classList.add(...[componentClass]);
+                fieldRenderer.addClassName(span, component);
 
                 // Add the component's attribute ('priority-medium', 'due-past-1d' etc.)
                 fieldRenderer.addDataAttribute(span, task, component);
@@ -189,7 +187,7 @@ export class TaskLineRenderer {
         }
 
         // Now build classes for the hidden task components without rendering them
-        for (const component of taskLayout.hiddenTaskLayoutComponents) {
+        for (const component of taskLayout.hiddenTaskLayoutComponents()) {
             fieldRenderer.addDataAttribute(li, task, component);
         }
 
@@ -288,12 +286,14 @@ export class TaskLineRenderer {
     }
 
     private addTooltip(task: Task, element: HTMLSpanElement, isFilenameUnique: boolean | undefined) {
+        // NEW_TASK_FIELD_EDIT_REQUIRED
         const {
             recurrenceSymbol,
             startDateSymbol,
             createdDateSymbol,
             scheduledDateSymbol,
             dueDateSymbol,
+            cancelledDateSymbol,
             doneDateSymbol,
         } = TASK_FORMATS.tasksPluginEmoji.taskSerializer.symbols;
 
@@ -329,6 +329,7 @@ export class TaskLineRenderer {
             addDateToTooltip(tooltip, task.startDate, startDateSymbol);
             addDateToTooltip(tooltip, task.scheduledDate, scheduledDateSymbol);
             addDateToTooltip(tooltip, task.dueDate, dueDateSymbol);
+            addDateToTooltip(tooltip, task.cancelledDate, cancelledDateSymbol);
             addDateToTooltip(tooltip, task.doneDate, doneDateSymbol);
 
             const linkText = task.getLinkText({ isFilenameUnique });
