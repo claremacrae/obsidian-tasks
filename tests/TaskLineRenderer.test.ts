@@ -195,6 +195,8 @@ describe('task line rendering - layout options', () => {
                 ' 📅 2023-07-04',
                 ' ❌ 2023-07-06',
                 ' ✅ 2023-07-05',
+                ' ⛔️ 123456,abc123',
+                ' 🆔 abcdef',
                 ' ^dcf64c',
             ],
             {},
@@ -212,6 +214,8 @@ describe('task line rendering - layout options', () => {
                 ' 📅 2023-07-04',
                 ' ❌ 2023-07-06',
                 ' ✅ 2023-07-05',
+                ' ⛔️ 123456,abc123',
+                ' 🆔 abcdef',
                 ' ^dcf64c',
             ],
             { hidePriority: true },
@@ -229,6 +233,8 @@ describe('task line rendering - layout options', () => {
                 ' 📅 2023-07-04',
                 ' ❌ 2023-07-06',
                 ' ✅ 2023-07-05',
+                ' ⛔️ 123456,abc123',
+                ' 🆔 abcdef',
                 ' ^dcf64c',
             ],
             { hideRecurrenceRule: true },
@@ -246,6 +252,8 @@ describe('task line rendering - layout options', () => {
                 ' 📅 2023-07-04',
                 ' ❌ 2023-07-06',
                 ' ✅ 2023-07-05',
+                ' ⛔️ 123456,abc123',
+                ' 🆔 abcdef',
                 ' ^dcf64c',
             ],
             { hideCreatedDate: true },
@@ -263,6 +271,8 @@ describe('task line rendering - layout options', () => {
                 ' 📅 2023-07-04',
                 ' ❌ 2023-07-06',
                 ' ✅ 2023-07-05',
+                ' ⛔️ 123456,abc123',
+                ' 🆔 abcdef',
                 ' ^dcf64c',
             ],
             { hideStartDate: true },
@@ -280,6 +290,8 @@ describe('task line rendering - layout options', () => {
                 ' 📅 2023-07-04',
                 ' ❌ 2023-07-06',
                 ' ✅ 2023-07-05',
+                ' ⛔️ 123456,abc123',
+                ' 🆔 abcdef',
                 ' ^dcf64c',
             ],
             { hideScheduledDate: true },
@@ -297,6 +309,8 @@ describe('task line rendering - layout options', () => {
                 ' ⏳ 2023-07-03',
                 ' ❌ 2023-07-06',
                 ' ✅ 2023-07-05',
+                ' ⛔️ 123456,abc123',
+                ' 🆔 abcdef',
                 ' ^dcf64c',
             ],
             { hideDueDate: true },
@@ -315,6 +329,8 @@ describe('task line rendering - layout options', () => {
                 ' 📅 2023-07-04',
                 ' ❌ 2023-07-06',
                 ' ✅ 2023-07-05',
+                ' ⛔️ 123456,abc123',
+                ' 🆔 abcdef',
                 ' ^dcf64c',
             ],
             {},
@@ -332,6 +348,8 @@ describe('task line rendering - layout options', () => {
                 ' ⏳ 2023-07-03',
                 ' 📅 2023-07-04',
                 ' ❌ 2023-07-06',
+                ' ⛔️ 123456,abc123',
+                ' 🆔 abcdef',
                 ' ^dcf64c',
             ],
             { hideDoneDate: true },
@@ -349,9 +367,49 @@ describe('task line rendering - layout options', () => {
                 ' ⏳ 2023-07-03',
                 ' 📅 2023-07-04',
                 ' ✅ 2023-07-05',
+                ' ⛔️ 123456,abc123',
+                ' 🆔 abcdef',
                 ' ^dcf64c',
             ],
             { hideCancelledDate: true },
+        );
+    });
+
+    it('renders without id', async () => {
+        await testLayoutOptions(
+            [
+                'Do exercises #todo #health',
+                ' 🔼',
+                ' 🔁 every day when done',
+                ' ➕ 2023-07-01',
+                ' 🛫 2023-07-02',
+                ' ⏳ 2023-07-03',
+                ' 📅 2023-07-04',
+                ' ❌ 2023-07-06',
+                ' ✅ 2023-07-05',
+                ' ⛔️ 123456,abc123',
+                ' ^dcf64c',
+            ],
+            { hideId: true },
+        );
+    });
+
+    it('renders without depends on', async () => {
+        await testLayoutOptions(
+            [
+                'Do exercises #todo #health',
+                ' 🔼',
+                ' 🔁 every day when done',
+                ' ➕ 2023-07-01',
+                ' 🛫 2023-07-02',
+                ' ⏳ 2023-07-03',
+                ' 📅 2023-07-04',
+                ' ❌ 2023-07-06',
+                ' ✅ 2023-07-05',
+                ' 🆔 abcdef',
+                ' ^dcf64c',
+            ],
+            { hideBlockedBy: true },
         );
     });
 
@@ -431,6 +489,11 @@ describe('task line rendering - classes and data attributes', () => {
             'task-priority',
             'taskPriority: low',
         );
+    });
+
+    it('renders dependency fields with their correct classes', async () => {
+        await testComponentClasses('- [ ] Minimal task 🆔 g7317o', {}, 'task-id', '');
+        await testComponentClasses('- [ ] Minimal task ⛔️ ya44g5,hry475', {}, 'task-blockedBy', '');
     });
 
     it('should render recurrence component with its class and data attribute', async () => {

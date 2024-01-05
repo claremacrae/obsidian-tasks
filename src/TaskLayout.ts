@@ -17,6 +17,8 @@ export class TaskLayoutOptions {
     hideDueDate: boolean = false;
     hideRecurrenceRule: boolean = false;
     hideTags: boolean = false;
+    hideId: boolean = false;
+    hideBlockedBy: boolean = false;
 }
 
 export type TaskLayoutComponent =
@@ -30,6 +32,8 @@ export type TaskLayoutComponent =
     | 'dueDate'
     | 'doneDate'
     | 'cancelledDate'
+    | 'blockedBy'
+    | 'id'
     | 'blockLink';
 
 export class QueryLayout {
@@ -99,6 +103,8 @@ export class TaskLayout extends QueryLayout {
         'dueDate',
         'cancelledDate',
         'doneDate',
+        'blockedBy',
+        'id',
         'blockLink',
     ];
     private _shownTaskLayoutComponents: TaskLayoutComponent[];
@@ -137,6 +143,8 @@ export class TaskLayout extends QueryLayout {
             [this.taskLayoutOptions.hideDueDate, 'dueDate'],
             [this.taskLayoutOptions.hideCancelledDate, 'cancelledDate'],
             [this.taskLayoutOptions.hideDoneDate, 'doneDate'],
+            [this.taskLayoutOptions.hideBlockedBy, 'blockedBy'],
+            [this.taskLayoutOptions.hideId, 'id'],
         ];
         for (const [hide, component] of componentsToHideAndGenerateClasses) {
             this.hideComponent(hide, component);
