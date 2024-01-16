@@ -136,6 +136,11 @@ describe('file properties', () => {
             [
                 // comment to force line break
                 ['sort by function task.file.folder', 'Enable sorting by the folder containing the task'],
+                [
+                    'sort by function reverse task.file.path === query.file.path',
+                    'Sort tasks in the same file as the query before tasks in other files.',
+                    '**Note**: `false` sort keys sort first, so we `reverse` the result, to get the desired results.',
+                ],
             ],
             tasks,
         ],
@@ -149,7 +154,17 @@ describe('file properties', () => {
             tasks,
         ],
 
-        ['task.heading', [['sort by function task.heading', "Like 'sort by heading'"]], tasks],
+        [
+            'task.heading',
+            [
+                [
+                    'sort by function task.heading',
+                    "Like 'sort by heading'",
+                    'Any tasks with no preceding heading have `task.heading` values of `null`, and these tasks sort before any tasks with headings.',
+                ],
+            ],
+            tasks,
+        ],
     ];
 
     it.each(testData)('%s results', (_: string, groups: QueryInstructionLineAndDescription[], tasks: Task[]) => {
@@ -247,9 +262,17 @@ describe('other properties', () => {
                     'This might be useful for finding tasks that need more information, or could be made less verbose',
                 ],
                 [
-                    "sort by function task.description.replace('🟥', 1).replace('🟧', 2).replace('🟨', 3).replace('🟩', 4).replace('🟦', 5)",
-                    'A user has defined custom system for their task descriptions, with coloured squares at the **start** of task lines as a home-grown alternative priority system.',
+                    `sort by function \\
+    const priorities = [...'🟥🟧🟨🟩🟦'];  \\
+    for (let i = 0; i < priorities.length; i++) {  \\
+        if (task.description.includes(priorities[i])) return i;  \\
+    }  \\
+    return 999;`,
+                    'A user has defined a custom system for their task descriptions, with coloured squares as a home-grown alternative priority system.',
                     'This allows tasks to be sorted in the order of their coloured squares.',
+                    'The function returns 0 if the first square is found in the task description, 1 if the second square is found, and so on.',
+                    'And it returns `999` if none of the squares are found.',
+                    'It is important that we use a consistent value for all the tasks not containing any of the squares, to retain their original order, so that any later `sort by` instructions still work.',
                 ],
             ],
             SampleTasks.withAllRepresentativeDescriptions().concat(
