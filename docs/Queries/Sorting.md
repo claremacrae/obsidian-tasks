@@ -12,7 +12,7 @@ publish: true
 
 This page is long. Here are some links to the main sections:
 
-- [[#Basics]]
+- [[#Default sort order]]
 - [[#Sort by Task Statuses]]
 - [[#Sort by Dates in Tasks]]
 - [[#Sort by Other Task Properties]]
@@ -22,11 +22,32 @@ This page is long. Here are some links to the main sections:
 - [[#Reverse sorting]]
 - [[#Examples]]
 
-## Basics
+## Default sort order
 
-By default Tasks sorts tasks by [[Urgency|a calculated score we call "urgency"]].
+The following instructions are the default sort order, and they are **automatically appended to the end of *every* Tasks search**:
 
-To sort the results of a query different from the default, you must add at least one `sort by` line to the query.
+<!-- snippet: Sort.test.Sort_save_default_sort_order.approved.text -->
+```text
+sort by status.type
+sort by urgency
+sort by due
+sort by priority
+sort by path
+```
+<!-- endSnippet -->
+
+It first sorts tasks in the order `IN_PROGRESS`, `TODO`, `DONE`, `CANCELLED` then `NON_TASK` to ensure that actionable tasks appear first, which is important in searches without a filter like `not done`.
+
+Then it sorts by [[Urgency]], which is a calculated score derived from several Task properties.
+
+The above lines are *always* appended to the end of any `sort by` instructions supplied by the user. There is no way to disable this.
+
+However, any `sort by` instructions in queries take precedence over these default ones.
+
+> [!tip]
+> To sort the results of a query differently from the default, you must add at least one `sort by` line to the query. The sort instructions you supply will take priority over the appended defaults.
+>
+> Adding `sort by` lines to the [[Global Query]] provides a way override to the default sort order for **all** searches (except those that [[Global Query#Ignoring the global query|ignore the global query]]).
 
 ## Custom Sorting
 
@@ -45,10 +66,11 @@ Since Tasks X.Y.Z, **[[Custom Sorting|custom sorting]] by status** is now possib
 <!-- placeholder to force blank line before included text --><!-- include: CustomSortingExamples.test.other_properties_task.isDone_docs.approved.md -->
 
 ```javascript
-sort by function task.isDone
+sort by function !task.isDone
 ```
 
-- Tasks with [[Status Types|Status Type]] `TODO` and `IN_PROGRESS` tasks are sorted before those with types `DONE`, `CANCELLED` and `NON_TASK.
+- `sort by function` sorts `true` before `false`
+- Hence, we use `!` to negate `task.isDone`, so tasks with [[Status Types|Status Type]] `TODO` and `IN_PROGRESS` tasks are sorted **before** `DONE`, `CANCELLED` and `NON_TASK`.
 
 <!-- placeholder to force blank line after included text --><!-- endInclude -->
 
@@ -123,6 +145,17 @@ sort by function task.status.nextSymbol
 <!-- placeholder to force blank line after included text --><!-- endInclude -->
 
 ## Sort by Dates in Tasks
+
+### How dates are sorted
+
+When sorting tasks by date, such as with `sort by due`, tasks are sorted in this order:
+
+1. Tasks with **invalid** `due` dates come first
+2. Tasks with valid `due` dates, **earliest** to **latest**
+3. Tasks with **no due date** come last.
+
+> [!NOTE]
+> Prior to Tasks X.Y.Z, tasks with invalid dates were sorted **after** the tasks with valid dates.
 
 ### Done Date
 
@@ -357,7 +390,7 @@ Since Tasks X.Y.Z, **[[Custom Sorting|custom sorting]] by recurrence** is now po
 sort by function task.isRecurring
 ```
 
-- Sort by whether the task is recurring.
+- Sort by whether the task is recurring: recurring tasks will be listed before non-recurring ones.
 
 <!-- placeholder to force blank line after included text --><!-- endInclude -->
 
@@ -481,11 +514,11 @@ sort by function task.file.folder
 - Enable sorting by the folder containing the task.
 
 ```javascript
-sort by function reverse task.file.path === query.file.path
+sort by function task.file.path === query.file.path
 ```
 
 - Sort tasks in the same file as the query before tasks in other files.
-- **Note**: `false` sort keys sort first, so we `reverse` the result, to get the desired results.
+- **Note**: `true` sort keys sort before `false`.
 
 <!-- placeholder to force blank line after included text --><!-- endInclude -->
 
