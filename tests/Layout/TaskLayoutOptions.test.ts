@@ -7,6 +7,8 @@ describe('TaskLayoutOptions', () => {
 
         expect(options.shownComponents.join('\n')).toMatchInlineSnapshot(`
             "description
+            id
+            blockedBy
             priority
             recurrenceRule
             createdDate
@@ -60,6 +62,8 @@ describe('TaskLayoutOptions', () => {
         const options = new TaskLayoutOptions();
         expect(options.shownComponents.join('\n')).toMatchInlineSnapshot(`
             "description
+            id
+            blockedBy
             priority
             recurrenceRule
             createdDate
@@ -76,6 +80,8 @@ describe('TaskLayoutOptions', () => {
 
         expect(options.shownComponents.join('\n')).toMatchInlineSnapshot(`
             "description
+            id
+            blockedBy
             priority
             recurrenceRule
             createdDate
@@ -128,7 +134,9 @@ describe('TaskLayoutOptions', () => {
         const options = new TaskLayoutOptions();
 
         expect(options.toggleableComponents.join('\n')).toMatchInlineSnapshot(`
-            "priority
+            "id
+            blockedBy
+            priority
             recurrenceRule
             createdDate
             startDate
