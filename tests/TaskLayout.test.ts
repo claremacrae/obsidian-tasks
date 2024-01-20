@@ -26,7 +26,9 @@ describe('TaskLayout tests', () => {
         const taskLayout = new TaskLayout(taskLayoutOptions, queryLayoutOptions);
 
         expect(taskLayout.taskListHiddenClasses().join('\n')).toMatchInlineSnapshot(`
-            "tasks-layout-hide-priority
+            "tasks-layout-hide-id
+            tasks-layout-hide-blockedBy
+            tasks-layout-hide-priority
             tasks-layout-hide-recurrenceRule
             tasks-layout-hide-createdDate
             tasks-layout-hide-startDate
