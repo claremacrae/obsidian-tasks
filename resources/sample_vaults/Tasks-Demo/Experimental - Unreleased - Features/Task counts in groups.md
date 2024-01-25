@@ -4,6 +4,13 @@
 
 - [Optionally display the number of tasks in groups #1627](https://github.com/obsidian-tasks-group/obsidian-tasks/issues/1627)
 
+## Demo task counts in groups
+
+```tasks
+group by root
+limit groups 1
+```
+
 ## Features
 
 - The number of tasks in the group is appended to the end of each task group.
