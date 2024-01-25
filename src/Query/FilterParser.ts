@@ -22,13 +22,15 @@ import { StatusTypeField } from './Filter/StatusTypeField';
 
 import { RecurrenceField } from './Filter/RecurrenceField';
 import type { FilterOrErrorMessage } from './Filter/FilterOrErrorMessage';
-import type { Sorter } from './Sorter';
-import type { Grouper } from './Grouper';
+import type { Sorter } from './Sort/Sorter';
+import type { Grouper } from './Group/Grouper';
 import { FolderField } from './Filter/FolderField';
 import { RootField } from './Filter/RootField';
 import { BacklinkField } from './Filter/BacklinkField';
 import { CancelledDateField } from './Filter/CancelledDateField';
 import { BlockingField } from './Filter/BlockingField';
+import { IdField } from './Filter/IdField';
+import { BlockedByField } from './Filter/BlockedByField';
 
 // When parsing a query the fields are tested one by one according to this order.
 // Since BooleanField is a meta-field, which needs to aggregate a few fields together, it is intended to
@@ -61,6 +63,8 @@ export const fieldCreators: EndsWith<BooleanField> = [
     () => new UrgencyField(),
     () => new RecurrenceField(),
     () => new FunctionField(),
+    () => new IdField(),
+    () => new BlockedByField(),
     () => new BlockingField(),
     () => new BooleanField(), // --- Please make sure to keep BooleanField last (see comment above) ---
 ];

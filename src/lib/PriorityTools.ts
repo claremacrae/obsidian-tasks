@@ -1,4 +1,4 @@
-import { Priority } from '../Task';
+import { Priority } from '../Task/Priority';
 
 export class PriorityTools {
     /**

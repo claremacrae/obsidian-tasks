@@ -1,8 +1,9 @@
 import { Editor, type EditorPosition, type MarkdownFileInfo, MarkdownView } from 'obsidian';
-import { StatusRegistry } from '../StatusRegistry';
+import { StatusRegistry } from '../Statuses/StatusRegistry';
 
-import { Task, TaskRegularExpressions } from '../Task';
-import { TaskLocation } from '../TaskLocation';
+import { Task } from '../Task/Task';
+import { TaskLocation } from '../Task/TaskLocation';
+import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
 
 export const toggleDone = (checking: boolean, editor: Editor, view: MarkdownView | MarkdownFileInfo) => {
     if (checking) {

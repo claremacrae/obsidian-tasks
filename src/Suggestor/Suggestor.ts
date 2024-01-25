@@ -1,10 +1,11 @@
 import type { Settings } from '../Config/Settings';
 import { DateParser } from '../Query/DateParser';
-import { doAutocomplete } from '../DateAbbreviations';
-import { Recurrence } from '../Recurrence';
+import { doAutocomplete } from '../lib/DateAbbreviations';
+import { Recurrence } from '../Task/Recurrence';
 import type { DefaultTaskSerializerSymbols } from '../TaskSerializer/DefaultTaskSerializer';
-import { Task, TaskRegularExpressions } from '../Task';
+import { Task } from '../Task/Task';
 import { GlobalFilter } from '../Config/GlobalFilter';
+import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
 import type { SuggestInfo, SuggestionBuilder } from '.';
 
 /**
