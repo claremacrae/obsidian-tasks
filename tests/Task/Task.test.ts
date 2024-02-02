@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import moment from 'moment';
+import { verifyAll } from 'approvals/lib/Providers/Jest/JestApprovals';
 import { Status } from '../../src/Statuses/Status';
 import { Task } from '../../src/Task/Task';
 import { resetSettings, updateSettings } from '../../src/Config/Settings';
@@ -14,6 +15,8 @@ import { fromLine } from '../TestingTools/TestHelpers';
 import { TaskBuilder } from '../TestingTools/TaskBuilder';
 import { RecurrenceBuilder } from '../TestingTools/RecurrenceBuilder';
 import { Priority } from '../../src/Task/Priority';
+import { SampleTasks } from '../TestingTools/SampleTasks';
+import { booleanToEmoji } from '../TestingTools/FilterTestHelpers';
 
 window.moment = moment;
 
@@ -547,6 +550,28 @@ describe('properties for scripting', () => {
 
         expect(new TaskBuilder().build().hasHeading).toEqual(false);
         expect(new TaskBuilder().precedingHeader('my heading').build().hasHeading).toEqual(true);
+    });
+});
+
+describe('task dependencies', () => {
+    beforeEach(() => {
+        const nonTaskStatus = new StatusConfiguration('Q', 'Question', 'A', true, StatusType.NON_TASK);
+        StatusRegistry.getInstance().add(nonTaskStatus);
+    });
+
+    afterEach(() => {
+        StatusRegistry.getInstance().resetToDefaultStatuses();
+    });
+
+    it('blocking and blocked', () => {
+        const tasks = SampleTasks.withWideSelectionOfDependencyScenarios();
+
+        verifyAll('Visualise blocking methods on Task, for a collection of tasks', tasks, (task) => {
+            return `
+${task.toFileLineString()}
+    isBlocked():  ${booleanToEmoji(task.isBlocked(tasks))}
+    isBlocking(): ${booleanToEmoji(task.isBlocking(tasks))}`;
+        });
     });
 });
 
