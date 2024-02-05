@@ -301,7 +301,7 @@
 
         const blockedBy: Task[] = [];
 
-        for (const taskId of task.blockedBy) {
+        for (const taskId of task.dependsOn) {
             const depTask = allTasks.find(cacheTask => cacheTask.id === taskId);
 
             if (!depTask) continue;
@@ -309,7 +309,7 @@
             blockedBy.push(depTask);
         }
 
-        originalBlocking = allTasks.filter(cacheTask => cacheTask.blockedBy.includes(task.id));
+        originalBlocking = allTasks.filter(cacheTask => cacheTask.dependsOn.includes(task.id));
 
         editableTask = {
             // NEW_TASK_FIELD_EDIT_REQUIRED
@@ -443,7 +443,7 @@
             doneDate,
             createdDate,
             cancelledDate,
-            blockedBy: blockedByWithIds.map(task => task.id),
+            dependsOn: blockedByWithIds.map(task => task.id),
             id
         });
 
@@ -597,16 +597,16 @@
                 <!-- --------------------------------------------------------------------------- -->
                 <!--  Blocked By Tasks  -->
                 <!-- --------------------------------------------------------------------------- -->
-                <label for="start">Blocked B<span class="accesskey">y</span></label>
+                <label for="blockedBy">Blocked B<span class="accesskey">y</span></label>
                 <Dependency type="blockedBy" task={task} editableTask={editableTask} allTasks={allTasks}
-                            _onDescriptionKeyDown={_onDescriptionKeyDown} accesskey={accesskey} />
+                            _onDescriptionKeyDown={_onDescriptionKeyDown} accesskey={accesskey} accesskeyLetter="y" />
 
                 <!-- --------------------------------------------------------------------------- -->
                 <!--  Blocking Tasks  -->
                 <!-- --------------------------------------------------------------------------- -->
-                <label for="start" class="accesskey-first">Blocking</label>
+                <label for="blocking" class="accesskey-first">Blocking</label>
                 <Dependency type="blocking" task={task} editableTask={editableTask} allTasks={allTasks}
-                            _onDescriptionKeyDown={_onDescriptionKeyDown} accesskey={accesskey} />
+                            _onDescriptionKeyDown={_onDescriptionKeyDown} accesskey={accesskey} accesskeyLetter="B" />
             {:else}
                 <div><i>Blocking and blocked by fields are disabled when vault tasks is empty</i></div>
             {/if}

@@ -1,6 +1,6 @@
-import type { TaskLayoutComponent } from '../Layout/TaskLayoutOptions';
-import type { Task } from '../Task/Task';
+import { TaskLayoutComponent } from '../Layout/TaskLayoutOptions';
 import { Priority } from '../Task/Priority';
+import type { Task } from '../Task/Task';
 import { DefaultTaskSerializer } from './DefaultTaskSerializer';
 
 /**
@@ -76,7 +76,7 @@ export const DATAVIEW_SYMBOLS = {
     cancelledDateSymbol: 'cancelled::',
     recurrenceSymbol: 'repeat::',
     idSymbol: 'id::',
-    blockedBySymbol: 'blockedBy::',
+    dependsOnSymbol: 'dependsOn::',
     TaskFormatRegularExpressions: {
         priorityRegex: toInlineFieldRegex(/priority:: *(highest|high|medium|low|lowest)/),
         startDateRegex: toInlineFieldRegex(/start:: *(\d{4}-\d{2}-\d{2})/),
@@ -86,7 +86,7 @@ export const DATAVIEW_SYMBOLS = {
         doneDateRegex: toInlineFieldRegex(/completion:: *(\d{4}-\d{2}-\d{2})/),
         cancelledDateRegex: toInlineFieldRegex(/cancelled:: *(\d{4}-\d{2}-\d{2})/),
         recurrenceRegex: toInlineFieldRegex(/repeat:: *([a-zA-Z0-9, !]+)/),
-        blockedByRegex: toInlineFieldRegex(/blockedBy:: *([a-z0-9]+( *, *[a-z0-9]+ *)*)$/),
+        dependsOnRegex: toInlineFieldRegex(/dependsOn:: *([a-z0-9]+( *, *[a-z0-9]+ *)*)$/),
         idRegex: toInlineFieldRegex(/id:: *([a-z0-9]+)/),
     },
 } as const;
@@ -119,7 +119,10 @@ export class DataviewTaskSerializer extends DefaultTaskSerializer {
 
     public componentToString(task: Task, shortMode: boolean, component: TaskLayoutComponent) {
         const stringComponent = super.componentToString(task, shortMode, component);
-        const notInlineFieldComponents: TaskLayoutComponent[] = ['blockLink', 'description'];
+        const notInlineFieldComponents: TaskLayoutComponent[] = [
+            TaskLayoutComponent.BlockLink,
+            TaskLayoutComponent.Description,
+        ];
         const shouldMakeInlineField = stringComponent !== '' && !notInlineFieldComponents.includes(component);
         return shouldMakeInlineField
             ? // Having 2 (TWO) leading spaces avoids a rendering issues that makes every other
