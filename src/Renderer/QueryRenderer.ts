@@ -291,6 +291,7 @@ class QueryRenderChild extends MarkdownRenderChild {
         });
         editTaskPencil.onClickEvent((event: MouseEvent) => {
             event.preventDefault();
+            event.stopPropagation(); // suppress further event propagation
 
             const onSubmit = async (updatedTasks: Task[]): Promise<void> => {
                 await replaceTaskWithTasks({
@@ -310,6 +311,8 @@ class QueryRenderChild extends MarkdownRenderChild {
         });
 
         editTaskPencil.addEventListener('contextmenu', (ev: MouseEvent) => {
+            ev.preventDefault(); // suppress the default context menu
+            ev.stopPropagation(); // suppress further event propagation
             const menu = new PriorityMenu(task);
             menu.showAtPosition({ x: ev.clientX, y: ev.clientY });
         });
