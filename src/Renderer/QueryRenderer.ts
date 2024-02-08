@@ -20,6 +20,7 @@ import { TaskModal } from '../Obsidian/TaskModal';
 import type { TasksEvents } from '../Obsidian/TasksEvents';
 import { State } from '../Obsidian/Cache';
 import { PriorityMenu } from '../ui/Menus/PriorityMenu';
+import { defaultTaskSaver } from '../ui/Menus/TaskEditingMenu';
 import { TaskLineRenderer } from './TaskLineRenderer';
 
 export class QueryRenderer {
@@ -313,7 +314,7 @@ class QueryRenderChild extends MarkdownRenderChild {
         editTaskPencil.addEventListener('contextmenu', (ev: MouseEvent) => {
             ev.preventDefault(); // suppress the default context menu
             ev.stopPropagation(); // suppress further event propagation
-            const menu = new PriorityMenu(task);
+            const menu = new PriorityMenu(task, defaultTaskSaver, editTaskPencil);
             menu.showAtPosition({ x: ev.clientX, y: ev.clientY });
         });
         editTaskPencil.setAttribute('title', 'Right-click for options');

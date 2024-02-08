@@ -30,15 +30,18 @@ export async function defaultTaskSaver(originalTask: Task, newTasks: Task | Task
  */
 export class TaskEditingMenu extends Menu {
     protected readonly taskSaver: TaskSaver;
+    private button?: HTMLAnchorElement;
 
     /**
      * Constructor, which sets up the menu items.
      * @param taskSaver - a {@link TaskSaver} function, for saving any edits.
+     * @param button
      */
-    constructor(taskSaver: TaskSaver) {
+    constructor(taskSaver: TaskSaver, button?: HTMLAnchorElement) {
         super();
 
         this.taskSaver = taskSaver;
+        this.button = button;
     }
 
     protected addItemsForInstructions(instructions: TaskEditingInstruction[], task: Task) {
@@ -58,6 +61,9 @@ export class TaskEditingMenu extends Menu {
                 const newTask = instruction.apply(task);
                 const hasEdits = newTask.length !== 1 || !Object.is(newTask[0], task);
                 if (hasEdits) {
+                    if (this.button) {
+                        this.button.style.pointerEvents = 'none';
+                    }
                     await this.taskSaver(task, newTask);
                 }
             });

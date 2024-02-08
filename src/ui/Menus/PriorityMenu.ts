@@ -1,6 +1,6 @@
 import type { Task } from '../../Task/Task';
 import { allPriorityInstructions } from '../EditInstructions/PriorityInstructions';
-import { TaskEditingMenu, type TaskSaver, defaultTaskSaver } from './TaskEditingMenu';
+import { TaskEditingMenu, type TaskSaver } from './TaskEditingMenu';
 
 /**
  * A Menu of options for editing the status of a Task object.
@@ -17,9 +17,10 @@ export class PriorityMenu extends TaskEditingMenu {
      * Constructor, which sets up the menu items.
      * @param task - the Task to be edited.
      * @param taskSaver - an optional {@link TaskSaver} function. For details, see {@link TaskEditingMenu}.
+     * @param button
      */
-    constructor(task: Task, taskSaver: TaskSaver = defaultTaskSaver) {
-        super(taskSaver);
+    constructor(task: Task, taskSaver: TaskSaver, button?: HTMLAnchorElement) {
+        super(taskSaver, button);
 
         this.addItemsForInstructions(allPriorityInstructions(), task);
     }

@@ -1,4 +1,5 @@
 import { PriorityMenu } from '../../../src/ui/Menus/PriorityMenu';
+import { defaultTaskSaver } from '../../../src/ui/Menus/TaskEditingMenu';
 import { TaskBuilder } from '../../TestingTools/TaskBuilder';
 import { Priority } from '../../../src/Task/Priority';
 import { TestableTaskSaver, menuToString } from './MenuTestingHelpers';
@@ -15,7 +16,7 @@ describe('PriorityMenu', () => {
         const task = new TaskBuilder().build();
 
         // Act
-        const menu = new PriorityMenu(task);
+        const menu = new PriorityMenu(task, defaultTaskSaver);
 
         // Assert
         const itemsAsText = menuToString(menu);

@@ -26,7 +26,7 @@ type PostponingFunction = (
 
 export class PostponeMenu extends TaskEditingMenu {
     constructor(button: HTMLAnchorElement, task: Task, taskSaver: TaskSaver = defaultTaskSaver) {
-        super(taskSaver);
+        super(taskSaver, button);
 
         const postponeMenuItemCallback = (
             button: HTMLAnchorElement,
