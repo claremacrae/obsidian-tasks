@@ -20,7 +20,9 @@ This section provides some more advanced material - content which is typically t
   - Calculate an urgency score, based on your task data
 - [[Notifications]]
   - About the Reminders plugin, in conjunction with Tasks
-- [[Quickadd]]
-  - Using the Quickadd plugin to help create tasks
 - [[Tasks Api]]
   - Integrate Tasks in to other Plugins, scripts or dynamic code blocks.
+
+## Related pages
+
+See also [[About Other Plugins]] for some information about plugins that may be useful with Tasks.
