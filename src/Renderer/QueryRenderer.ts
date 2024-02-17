@@ -340,6 +340,7 @@ class QueryRenderChild extends MarkdownRenderChild {
      * @param content
      * @param groupHeadings - The headings to display. This can be an empty array,
      *                        in which case no headings will be added.
+     * @param taskCountDescription
      * @private
      */
     private async addGroupHeadings(
