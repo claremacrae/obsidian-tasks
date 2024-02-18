@@ -92,8 +92,8 @@ export default class TasksPlugin extends Plugin {
         await this.saveData(getSettings());
     }
 
-    public getTasks(): Task[] | undefined {
-        return this.cache?.getTasks();
+    public getTasks(): Task[] {
+        return this.cache ? this.cache.getTasks() : [];
     }
 
     public search(source: string, path: string | undefined = undefined): QueryResult | undefined {

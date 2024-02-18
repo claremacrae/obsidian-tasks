@@ -1,5 +1,5 @@
 import type { EventRef, MarkdownPostProcessorContext } from 'obsidian';
-import { App, Keymap, MarkdownRenderChild, MarkdownRenderer, TFile } from 'obsidian';
+import { App, MarkdownRenderChild, MarkdownRenderer, TFile } from 'obsidian';
 import { GlobalFilter } from '../Config/GlobalFilter';
 import { GlobalQuery } from '../Config/GlobalQuery';
 import { QueryLayout } from '../Layout/QueryLayout';
@@ -17,11 +17,12 @@ import { PostponeMenu } from '../ui/Menus/PostponeMenu';
 import type TasksPlugin from '../main';
 import { TaskModal } from '../Obsidian/TaskModal';
 import type { TasksEvents } from '../Obsidian/TasksEvents';
-import { getTaskLineAndFile, replaceTaskWithTasks } from '../Obsidian/File';
+import { replaceTaskWithTasks } from '../Obsidian/File';
 import { State } from '../Obsidian/Cache';
 import { PriorityMenu } from '../ui/Menus/PriorityMenu';
 import { defaultTaskSaver } from '../ui/Menus/TaskEditingMenu';
 import { TaskLineRenderer, createAndAppendElement } from './TaskLineRenderer';
+import { linkToTaskLine } from './LinkToTaskLine';
 
 export class QueryRenderer {
     private readonly app: App;
@@ -240,6 +241,7 @@ class QueryRenderChild extends MarkdownRenderChild {
             parentUlElement: taskList,
             taskLayoutOptions: this.query.taskLayoutOptions,
             queryLayoutOptions: this.query.queryLayoutOptions,
+            allTasks: this.plugin.getTasks(),
         });
 
         for (const [taskIndex, task] of tasks.entries()) {
@@ -370,21 +372,6 @@ class QueryRenderChild extends MarkdownRenderChild {
     }
 
     private addBacklinks(listItem: HTMLElement, task: Task, shortMode: boolean, isFilenameUnique: boolean | undefined) {
-        const backLink = listItem.createSpan({ cls: 'tasks-backlink' });
-
-        if (!shortMode) {
-            backLink.append(' (');
-        }
-
-        const link = createAndAppendElement('a', backLink);
-
-        link.rel = 'noopener';
-        link.target = '_blank';
-        link.addClass('internal-link');
-        if (shortMode) {
-            link.addClass('internal-link-short-mode');
-        }
-
         let linkText: string;
         if (shortMode) {
             linkText = ' 🔗';
@@ -392,44 +379,7 @@ class QueryRenderChild extends MarkdownRenderChild {
             linkText = task.getLinkText({ isFilenameUnique }) ?? '';
         }
 
-        link.setText(linkText);
-
-        // Go to the line the task is defined at
-        const vault = this.app.vault;
-        link.addEventListener('click', async (ev: MouseEvent) => {
-            const result = await getTaskLineAndFile(task, vault);
-            if (result) {
-                const [line, file] = result;
-                const leaf = this.app.workspace.getLeaf(Keymap.isModEvent(ev));
-                // When the corresponding task has been found,
-                // suppress the default behavior of the mouse click event
-                // (which would interfere e.g. if the query is rendered inside a callout).
-                ev.preventDefault();
-                // Instead of the default behavior, open the file with the required line highlighted.
-                await leaf.openFile(file, { eState: { line: line } });
-            }
-        });
-
-        link.addEventListener('mousedown', async (ev: MouseEvent) => {
-            // Open in a new tab on middle-click.
-            // This distinction is not available in the 'click' event, so we handle the 'mousedown' event
-            // solely for this.
-            // (for regular left-click we prefer the 'click' event, and not to just do everything here, because
-            // the 'click' event is more generic for touch devices etc.)
-            if (ev.button === 1) {
-                const result = await getTaskLineAndFile(task, vault);
-                if (result) {
-                    const [line, file] = result;
-                    const leaf = this.app.workspace.getLeaf('tab');
-                    ev.preventDefault();
-                    await leaf.openFile(file, { eState: { line: line } });
-                }
-            }
-        });
-
-        if (!shortMode) {
-            backLink.append(')');
-        }
+        linkToTaskLine(task, linkText, listItem, shortMode, !shortMode, this.app);
     }
 
     private addPostponeButton(listItem: HTMLElement, task: Task, shortMode: boolean) {

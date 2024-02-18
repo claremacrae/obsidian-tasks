@@ -9,7 +9,9 @@ import { StatusRegistry } from '../Statuses/StatusRegistry';
 import type { Task } from '../Task/Task';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
 import { StatusMenu } from '../ui/Menus/StatusMenu';
+import { firstTaskDependingOnThisIDWithAnyStatus, firstTaskThisDependsOnWithAnyStatus } from '../Task/TaskDependency';
 import { TaskFieldRenderer } from './TaskFieldRenderer';
+import { linkToTaskLine } from './LinkToTaskLine';
 
 /**
  * The function used to render a Markdown task line into an existing HTML element.
@@ -54,6 +56,7 @@ export class TaskLineRenderer {
     private readonly parentUlElement: HTMLElement;
     private readonly taskLayoutOptions: TaskLayoutOptions;
     private readonly queryLayoutOptions: QueryLayoutOptions;
+    private readonly allTasks: Readonly<Task[]>;
 
     private static async obsidianMarkdownRenderer(
         text: string,
@@ -86,18 +89,21 @@ export class TaskLineRenderer {
         parentUlElement,
         taskLayoutOptions,
         queryLayoutOptions,
+        allTasks,
     }: {
         textRenderer?: TextRenderer;
         obsidianComponent: Component | null;
         parentUlElement: HTMLElement;
         taskLayoutOptions: TaskLayoutOptions;
         queryLayoutOptions: QueryLayoutOptions;
+        allTasks: Readonly<Task[]>;
     }) {
         this.textRenderer = textRenderer;
         this.obsidianComponent = obsidianComponent;
         this.parentUlElement = parentUlElement;
         this.taskLayoutOptions = taskLayoutOptions;
         this.queryLayoutOptions = queryLayoutOptions;
+        this.allTasks = allTasks;
     }
 
     /**
@@ -261,6 +267,47 @@ export class TaskLineRenderer {
             span.querySelectorAll('.footnotes').forEach((footnoteElement) => {
                 footnoteElement.remove();
             });
+        } else if (component === TaskLayoutComponent.Id) {
+            const firstDependentTask = firstTaskDependingOnThisIDWithAnyStatus(task.id, this.allTasks);
+            if (firstDependentTask) {
+                // Link to first task that depends on this ID, regardless of status of either task.
+                // The Emoji is included in the link, which means that this works in Short mode.
+                // It works in Reading mode for Tasks format, but does not add a link in Dataview format in Reading mode.
+                // TODO Provide a way to link to all tasks that depend on this ID
+                // TODO Make this add a link in dataview format.
+                // TODO Use CSS different from that of backlink
+                // TODO Use styling to indicate if no tasks depend on this one.
+                // TODO Really want to show some kind of preview when hovering over the link,
+                //      to see the task without needing to jump to it.
+                // TODO In Reading mode, updating a task's ID or dependsOn values does not redraw
+                //      any of the tasks that link to it. This can break the linking via id or dependsOn.
+                //      Does this mean that the callback now needs to be dynamic, rather than jumping
+                //      to a location that was fixed at the point that a task with id or dependsOn was rendered?
+                // TODO In query results mode, need to record in the code that the query results can now be unchanged,
+                //      but can still need redrawing, if linked-to tasks have been changed.
+                //      This invalidates one of on my assumptions about a possible performance improvement.
+                //      See https://github.com/obsidian-tasks-group/obsidian-tasks/issues/1186.
+                // Use global app for now.
+                linkToTaskLine(
+                    firstDependentTask,
+                    componentString,
+                    span,
+                    this.queryLayoutOptions.shortMode,
+                    false,
+                    app,
+                );
+            } else {
+                span.innerHTML = componentString;
+            }
+        } else if (component === TaskLayoutComponent.DependsOn) {
+            const firstDependee = firstTaskThisDependsOnWithAnyStatus(task, this.allTasks);
+            if (firstDependee) {
+                // TODO This only links to the first referenced task, instead of all of them.
+                // Also, See also the TODOS for Id above.
+                linkToTaskLine(firstDependee, componentString, span, this.queryLayoutOptions.shortMode, false, app);
+            } else {
+                span.innerHTML = componentString;
+            }
         } else {
             span.innerHTML = componentString;
         }
