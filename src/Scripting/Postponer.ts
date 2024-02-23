@@ -53,6 +53,7 @@ export function getDateFieldToPostpone(task: Task): HappensDate | null {
  * @param amount - the number of timeUnits to increment by.
  *
  * @see createFixedDateTask
+ * @see createTaskWithDateRemoved
  */
 export function createPostponedTask(
     task: Task,
@@ -72,6 +73,7 @@ export function createPostponedTask(
  * @param amount - the number of timeUnits to increment by.
  *
  * @see createPostponedTask
+ * @see createTaskWithDateRemoved
  */
 export function createFixedDateTask(
     task: Task,
@@ -83,14 +85,37 @@ export function createFixedDateTask(
     return createPostponedTaskFromDate(dateToPostpone, task, dateFieldToPostpone, timeUnit, amount);
 }
 
+/**
+ * Remove a date value from a task.
+ * @param task
+ * @param dateFieldToPostpone - The field whose value is to be removed
+ * @param _timeUnit - unused
+ * @param _amount - unused
+ *
+ * @see createPostponedTask
+ * @see createFixedDateTask
+ */
+export function createTaskWithDateRemoved(
+    task: Task,
+    dateFieldToPostpone: HappensDate,
+    _timeUnit: unitOfTime.DurationConstructor,
+    _amount: number,
+) {
+    return createTaskFromDate(task, dateFieldToPostpone, null);
+}
+
 function createPostponedTaskFromDate(
     dateToPostpone: moment.Moment | null,
     task: Task,
     dateFieldToPostpone: HappensDate,
     timeUnit: unitOfTime.DurationConstructor,
     amount: number,
-) {
+): { postponedDate: moment.Moment | null; postponedTask: Task } {
     const postponedDate = new TasksDate(dateToPostpone).postpone(timeUnit, amount);
+    return createTaskFromDate(task, dateFieldToPostpone, postponedDate);
+}
+
+function createTaskFromDate(task: Task, dateFieldToPostpone: HappensDate, postponedDate: moment.Moment | null) {
     const postponedTask = DateFallback.removeInferredStatusIfNeeded(task, [
         new Task({
             ...task,
@@ -100,10 +125,14 @@ function createPostponedTaskFromDate(
     return { postponedDate, postponedTask };
 }
 
-export function postponementSuccessMessage(postponedDate: Moment, dateFieldToPostpone: HappensDate) {
+export function postponementSuccessMessage(postponedDate: Moment | null, dateFieldToPostpone: HappensDate) {
     // TODO all logic for invalid dates
-    const postponedDateString = postponedDate?.format('DD MMM YYYY');
-    return `Task's ${dateFieldToPostpone} changed to ${postponedDateString}`;
+    if (postponedDate) {
+        const postponedDateString = postponedDate?.format('DD MMM YYYY');
+        return `Task's ${dateFieldToPostpone} changed to ${postponedDateString}`;
+    } else {
+        return `Task's ${dateFieldToPostpone} removed`;
+    }
 }
 
 export function postponeButtonTitle(task: Task, amount: number, timeUnit: unitOfTime.DurationConstructor) {
@@ -143,6 +172,31 @@ export function fixedDateMenuItemTitle(task: Task, amount: number, timeUnit: uni
     return postponeMenuItemTitleFromDate(updatedDateType, dateToUpdate, amount, timeUnit);
 }
 
+/**
+ * Get the menu text to use when changing a task date relative to today's date.
+ * @param task
+ * @param _amount - the number of timeUnits to increment by.
+ * @param _timeUnit - the increment to postpone by (day, week, month....)
+ *
+ * @see postponeMenuItemTitle
+ */
+export function removeDateMenuItemTitle(task: Task, _amount: number, _timeUnit: unitOfTime.DurationConstructor) {
+    const updatedDateType = getDateFieldToPostpone(task)!;
+    if (updatedDateType === 'scheduledDate' && task.scheduledDateIsInferred) {
+        return 'Cannot remove inferred scheduled date';
+    } else {
+        return `Remove ${splitDateText(updatedDateType)}`;
+    }
+}
+
+function prettyPrintDateFieldName(updatedDateType: HappensDate) {
+    return capitalizeFirstLetter(updatedDateType.replace('Date', ''));
+}
+
+function splitDateText(updatedDateType: HappensDate) {
+    return updatedDateType.replace('Date', ' date');
+}
+
 function postponeMenuItemTitleFromDate(
     updatedDateType: HappensDate,
     dateToUpdate: moment.Moment,
@@ -154,12 +208,12 @@ function postponeMenuItemTitleFromDate(
 
     const amountOrArticle = amount != 1 ? amount : 'a';
     if (dateToUpdate.isSameOrBefore(window.moment(), 'day')) {
-        const updatedDateDisplayText = capitalizeFirstLetter(updatedDateType.replace('Date', ''));
+        const updatedDateDisplayText = prettyPrintDateFieldName(updatedDateType);
         return `${updatedDateDisplayText} in ${amountOrArticle} ${timeUnit}, on ${formattedNewDate}`
             .replace(' in 0 days', ' today')
             .replace('in a day', 'tomorrow');
     } else {
-        const updatedDateDisplayText = updatedDateType.replace('Date', ' date');
+        const updatedDateDisplayText = splitDateText(updatedDateType);
         return `Postpone ${updatedDateDisplayText} by ${amountOrArticle} ${timeUnit}, to ${formattedNewDate}`;
     }
 }
