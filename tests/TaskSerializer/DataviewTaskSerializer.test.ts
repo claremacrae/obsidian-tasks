@@ -52,6 +52,64 @@ describe('DataviewTaskSerializer', () => {
             });
         });
 
+        describe('should parse depends on', () => {
+            it('should parse depends on one task', () => {
+                const id = '[dependsOn:: F12345]';
+                const taskDetails = deserialize(id);
+                expect(taskDetails).toMatchTaskDetails({ dependsOn: ['F12345'] });
+            });
+
+            it('should parse depends on two tasks', () => {
+                const id = '[dependsOn:: 123456,abC123]';
+                const taskDetails = deserialize(id);
+                expect(taskDetails).toMatchTaskDetails({ dependsOn: ['123456', 'abC123'] });
+            });
+
+            it('should parse depends on multiple tasks with varying spaces tasks', () => {
+                const id = '[dependsOn::  ab , CD ,  EF  ,    GK]';
+                const taskDetails = deserialize(id);
+                expect(taskDetails).toMatchTaskDetails({ dependsOn: ['ab', 'CD', 'EF', 'GK'] });
+            });
+
+            it('should treat dependsOn as case-sensitive, so dependson remains in the description', () => {
+                const id = '[dependson:: F12345]';
+                const taskDetails = deserialize(id);
+                expect(taskDetails).toMatchTaskDetails({ description: id, dependsOn: [] });
+            });
+        });
+
+        describe('should parse id', () => {
+            it('should parse id with lower-case and numbers', () => {
+                const id = '[id:: pqrd0f]';
+                const taskDetails = deserialize(id);
+                expect(taskDetails).toMatchTaskDetails({ id: 'pqrd0f' });
+            });
+
+            it('should parse id with capitals', () => {
+                const id = '[id:: Abcd0f]';
+                const taskDetails = deserialize(id);
+                expect(taskDetails).toMatchTaskDetails({ id: 'Abcd0f' });
+            });
+
+            it('should parse id with hyphen', () => {
+                const id = '[id:: Abcd0f-]';
+                const taskDetails = deserialize(id);
+                expect(taskDetails).toMatchTaskDetails({ id: 'Abcd0f-' });
+            });
+
+            it('should parse id with underscore', () => {
+                const id = '[id:: Ab_cd0f]';
+                const taskDetails = deserialize(id);
+                expect(taskDetails).toMatchTaskDetails({ id: 'Ab_cd0f' });
+            });
+
+            it('should not parse id with asterisk, so id is left in description', () => {
+                const id = '[id:: A*bcd0f]';
+                const taskDetails = deserialize(id);
+                expect(taskDetails).toMatchTaskDetails({ description: id, id: '' });
+            });
+        });
+
         it('should parse a task with multiple fields and tags', () => {
             const taskDetails = deserialize(
                 'Wobble [priority::high] #tag1 [completion:: 2024-09-04] #tag2  [due::2025-10-05] #tag3 [scheduled::2022-07-02] #tag4 [start::2023-08-03] #tag5  [repeat::every day]  #tag6 #tag7 #tag8 #tag9 #tag10',
@@ -263,6 +321,18 @@ describe('DataviewTaskSerializer', () => {
             const task = new TaskBuilder().description('').tags(['#hello', '#world', '#task']).build();
             const serialized = serialize(task);
             expect(serialized).toEqual(' #hello #world #task');
+        });
+
+        it('should serialize depends on', () => {
+            const task = new TaskBuilder().description('').dependsOn(['123456', 'abc123']).build();
+            const serialized = serialize(task);
+            expect(serialized).toEqual('  [dependsOn:: 123456,abc123]');
+        });
+
+        it('should serialize id', () => {
+            const task = new TaskBuilder().description('').id('abcdef').build();
+            const serialized = serialize(task);
+            expect(serialized).toEqual('  [id:: abcdef]');
         });
 
         it('should serialize a fully populated task', () => {
