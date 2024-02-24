@@ -17,6 +17,7 @@ export const DEFAULT_MAX_GENERIC_SUGGESTIONS = 5;
 export function makeDefaultSuggestionBuilder(
     symbols: DefaultTaskSerializerSymbols,
     maxGenericSuggestions: number /** See {@link DEFAULT_MAX_GENERIC_SUGGESTIONS} */,
+    dataviewMode: boolean,
 ): SuggestionBuilder {
     // NEW_TASK_FIELD_EDIT_REQUIRED
     const datePrefixRegex = [symbols.startDateSymbol, symbols.scheduledDateSymbol, symbols.dueDateSymbol].join('|');
@@ -28,25 +29,29 @@ export function makeDefaultSuggestionBuilder(
 
         // Step 1: add date suggestions if relevant
         suggestions = suggestions.concat(
-            addDatesSuggestions(line, cursorPos, settings, datePrefixRegex, maxGenericSuggestions),
+            addDatesSuggestions(line, cursorPos, settings, datePrefixRegex, maxGenericSuggestions, dataviewMode),
         );
 
         // Step 2: add recurrence suggestions if relevant
-        suggestions = suggestions.concat(addRecurrenceSuggestions(line, cursorPos, settings, symbols.recurrenceSymbol));
+        suggestions = suggestions.concat(
+            addRecurrenceSuggestions(line, cursorPos, settings, symbols.recurrenceSymbol, dataviewMode),
+        );
 
         // Step 3: add task property suggestions ('due', 'recurrence' etc)
-        suggestions = suggestions.concat(addTaskPropertySuggestions(line, cursorPos, settings, symbols));
+        suggestions = suggestions.concat(addTaskPropertySuggestions(line, cursorPos, settings, symbols, dataviewMode));
 
         // Unless we have a suggestion that is a match for something the user is currently typing, add
         // an 'Enter' entry in the beginning of the menu, so an Enter press will move to the next line
         // rather than insert a suggestion
         if (suggestions.length > 0 && !suggestions.some((value) => value.suggestionType === 'match')) {
             // No actual match, only default ones
-            suggestions.unshift({
-                suggestionType: 'empty',
-                displayText: '⏎',
-                appendText: '\n',
-            });
+            if (!dataviewMode) {
+                suggestions.unshift({
+                    suggestionType: 'empty',
+                    displayText: '⏎',
+                    appendText: '\n',
+                });
+            }
         }
 
         // Either way, after all the aggregations above, never suggest more than the max items
@@ -54,6 +59,20 @@ export function makeDefaultSuggestionBuilder(
 
         return suggestions;
     };
+}
+
+function getAdjusters(dataviewMode: boolean, line: string, cursorPos: number) {
+    const closingBracket =
+        lastOpenBracket(line.substring(0, cursorPos), [
+            // TODO this array duplicates code in Settings.ts. Can we introduce an abstraction for this?
+            ['(', ')'],
+            ['[', ']'],
+        ]) == '('
+            ? ')'
+            : ']';
+    const postfix = dataviewMode ? closingBracket + ' ' : ' ';
+    const insertSkip = dataviewMode && line.length > cursorPos && line.charAt(cursorPos) === closingBracket ? 1 : 0;
+    return { postfix, insertSkip };
 }
 
 /*
@@ -64,11 +83,13 @@ function addTaskPropertySuggestions(
     cursorPos: number,
     _settings: Settings,
     symbols: DefaultTaskSerializerSymbols,
+    dataviewMode: boolean,
 ): SuggestInfo[] {
     const hasPriority = (line: string) =>
         Object.values(symbols.prioritySymbols).some((value) => value.length > 0 && line.includes(value));
 
     const genericSuggestions: SuggestInfo[] = [];
+    const { postfix, insertSkip } = getAdjusters(dataviewMode, line, cursorPos);
 
     // NEW_TASK_FIELD_EDIT_REQUIRED
     if (!line.includes(symbols.dueDateSymbol))
@@ -87,27 +108,23 @@ function addTaskPropertySuggestions(
             appendText: `${symbols.scheduledDateSymbol} `,
         });
     if (!hasPriority(line)) {
-        genericSuggestions.push({
-            displayText: `${symbols.prioritySymbols.High} high priority`,
-            appendText: `${symbols.prioritySymbols.High} `,
-        });
-        genericSuggestions.push({
-            displayText: `${symbols.prioritySymbols.Medium} medium priority`,
-            appendText: `${symbols.prioritySymbols.Medium} `,
-        });
-        genericSuggestions.push({
-            displayText: `${symbols.prioritySymbols.Low} low priority`,
-            appendText: `${symbols.prioritySymbols.Low} `,
-        });
-        genericSuggestions.push({
-            displayText: `${symbols.prioritySymbols.Highest} highest priority`,
-            appendText: `${symbols.prioritySymbols.Highest} `,
-        });
-        genericSuggestions.push({
-            displayText: `${symbols.prioritySymbols.Lowest} lowest priority`,
-            appendText: `${symbols.prioritySymbols.Lowest} `,
-        });
+        const prioritySymbols: { [key: string]: string } = symbols.prioritySymbols;
+        const priorityTexts = ['High', 'Medium', 'Low', 'Highest', 'Lowest'];
+
+        for (let i = 0; i < priorityTexts.length; i++) {
+            const priorityText = priorityTexts[i];
+            const prioritySymbol = prioritySymbols[priorityText];
+
+            genericSuggestions.push({
+                displayText: dataviewMode
+                    ? `${prioritySymbol} priority`
+                    : `${prioritySymbol} ${priorityText.toLowerCase()} priority`,
+                appendText: `${prioritySymbol}${postfix}`,
+                insertSkip: dataviewMode ? insertSkip : undefined,
+            });
+        }
     }
+
     if (!line.includes(symbols.recurrenceSymbol))
         genericSuggestions.push({
             displayText: `${symbols.recurrenceSymbol} recurring (repeat)`,
@@ -120,7 +137,8 @@ function addTaskPropertySuggestions(
             // We don't want this to match when the user types "today"
             textToMatch: `${symbols.createdDateSymbol} created`,
             displayText: `${symbols.createdDateSymbol} created today (${formattedDate})`,
-            appendText: `${symbols.createdDateSymbol} ${formattedDate} `,
+            appendText: `${symbols.createdDateSymbol} ${formattedDate}` + postfix,
+            insertSkip: dataviewMode ? insertSkip : undefined,
         });
     }
 
@@ -138,12 +156,17 @@ function addTaskPropertySuggestions(
                 return textToMatch.toLowerCase().includes(wordUnderCursor.toLowerCase());
             });
             for (const filtered of filteredSuggestions) {
+                const insertSkipValue =
+                    dataviewMode &&
+                    (filtered.displayText.includes('priority') || filtered.displayText.includes('created'))
+                        ? wordUnderCursor.length + insertSkip
+                        : wordUnderCursor.length;
                 matchingSuggestions.push({
                     suggestionType: 'match',
                     displayText: filtered.displayText,
                     appendText: filtered.appendText,
                     insertAt: wordMatch.index,
-                    insertSkip: wordUnderCursor.length,
+                    insertSkip: insertSkipValue,
                 });
             }
         }
@@ -169,6 +192,7 @@ function addDatesSuggestions(
     settings: Settings,
     datePrefixRegex: string,
     maxGenericSuggestions: number,
+    dataviewMode: boolean,
 ): SuggestInfo[] {
     const genericSuggestions = [
         'today',
@@ -184,6 +208,8 @@ function addDatesSuggestions(
         'next month',
         'next year',
     ];
+
+    const { postfix, insertSkip } = getAdjusters(dataviewMode, line, cursorPos);
 
     const results: SuggestInfo[] = [];
     const dateRegex = new RegExp(`(${datePrefixRegex})\\s*([0-9a-zA-Z ]*)`, 'ug');
@@ -233,12 +259,13 @@ function addDatesSuggestions(
         for (const match of genericMatches) {
             const parsedDate = DateParser.parseDate(match, true);
             const formattedDate = `${parsedDate.format(TaskRegularExpressions.dateFormat)}`;
+            const insertSkipValue = dataviewMode ? dateMatch[0].length + insertSkip : dateMatch[0].length;
             results.push({
                 suggestionType: 'match',
                 displayText: `${match} (${formattedDate})`,
-                appendText: `${datePrefix} ${formattedDate} `,
+                appendText: `${datePrefix} ${formattedDate}` + postfix,
                 insertAt: dateMatch.index,
-                insertSkip: dateMatch[0].length,
+                insertSkip: insertSkipValue,
             });
         }
     }
@@ -253,7 +280,13 @@ function addDatesSuggestions(
  * Generic predefined suggestions, in turn, also have two options: either filtered (if the user started typing
  * something where a recurrence is expected) or unfiltered
  */
-function addRecurrenceSuggestions(line: string, cursorPos: number, settings: Settings, recurrenceSymbol: string) {
+function addRecurrenceSuggestions(
+    line: string,
+    cursorPos: number,
+    settings: Settings,
+    recurrenceSymbol: string,
+    dataviewMode: boolean,
+) {
     const genericSuggestions = [
         'every',
         'every day',
@@ -269,6 +302,8 @@ function addRecurrenceSuggestions(line: string, cursorPos: number, settings: Set
         'every week on Friday',
         'every week on Saturday',
     ];
+
+    const { postfix, insertSkip } = getAdjusters(dataviewMode, line, cursorPos);
 
     const results: SuggestInfo[] = [];
     const recurrenceRegex = new RegExp(`(${recurrenceSymbol})\\s*([0-9a-zA-Z ]*)`, 'ug');
@@ -287,13 +322,16 @@ function addRecurrenceSuggestions(line: string, cursorPos: number, settings: Set
                 dueDate: null,
             })?.toText();
             if (parsedRecurrence) {
-                const appendedText = `${recurrencePrefix} ${parsedRecurrence} `;
+                const appendedText = `${recurrencePrefix} ${parsedRecurrence}` + postfix;
+                const insertSkipValue = dataviewMode
+                    ? recurrenceMatch[0].length + insertSkip
+                    : recurrenceMatch[0].length;
                 results.push({
                     suggestionType: 'match',
                     displayText: `✅ ${parsedRecurrence}`,
                     appendText: appendedText,
                     insertAt: recurrenceMatch.index,
-                    insertSkip: recurrenceMatch[0].length,
+                    insertSkip: insertSkipValue,
                 });
                 // If the full match includes a complete valid suggestion *ending with space*,
                 // don't suggest anything. The user is trying to continue to type something that is likely
@@ -325,6 +363,7 @@ function addRecurrenceSuggestions(line: string, cursorPos: number, settings: Set
             // there *was* a text to match (because it means the user is actually typing something else)
             genericMatches = genericSuggestions.slice(0, maxGenericDateSuggestions);
         }
+
         for (const match of genericMatches) {
             results.push({
                 suggestionType: 'match',
@@ -384,6 +423,53 @@ function isAnyBracketOpen(line: string, brackets: [opening_bracket: string, clos
     }
 
     return Object.values(numOpeningBrackets).some((n) => n > 0);
+}
+
+/**
+ * Checks whether _any_ of the bracket pairs in {@link brackets} is open at the end of the string {@link line}
+ * If there are any open brackets, returns the last one. Else, returns null.
+ *
+ * @example
+ *     lastOpenBracket("(hello world",   [['(', ')']]);             // '('
+ *     lastOpenBracket("[hello world",   [['[', ']']]);             // '['
+ *     lastOpenBracket("[hello world",   [['(', ')'], ['[', ']']]); // '['
+ *     lastOpenBracket("([hello world)", [['(', ')'], ['[', ']']])  // '['
+ *     lastOpenBracket("))))(",          [['(', ')']])              // '('
+ *     lastOpenBracket("(hello world)",  [['(', ')']]);             // null
+ *     lastOpenBracket("(hello world)",  []);                       // null
+ *
+ * @param line - The line of text to scan
+ * @param brackets - A listed of tuples that defines bracket pairs.
+ * @returns The last open bracket in line among the given bracket pairs. If no such bracket exists, return null.
+ */
+export function lastOpenBracket(
+    line: string,
+    brackets: [opening_bracket: string, closing_bracket: string][],
+): string | null {
+    if (brackets.length === 0) {
+        return null;
+    }
+    const numOpeningBrackets = Object.fromEntries(brackets.map(([open, _]) => [open, 0]));
+    const openingOf = Object.fromEntries(brackets.map(([open, close]) => [close, open]));
+    const openBracketsStack = [];
+    for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (c in numOpeningBrackets) {
+            numOpeningBrackets[c]++;
+            openBracketsStack.push({ bracket: c, idx: i });
+        } else if (c in openingOf) {
+            if (numOpeningBrackets[openingOf[c]] >= 1) {
+                for (let idx = openBracketsStack.length - 1; idx >= 0; idx--) {
+                    if (openBracketsStack[idx].bracket == openingOf[c]) {
+                        openBracketsStack.splice(idx, 1);
+                        break;
+                    }
+                }
+            }
+            numOpeningBrackets[openingOf[c]] = Math.max(0, numOpeningBrackets[openingOf[c]] - 1);
+        }
+    }
+    return openBracketsStack.length > 0 ? openBracketsStack[openBracketsStack.length - 1].bracket : null;
 }
 
 /**
