@@ -461,6 +461,36 @@
     };
 </script>
 
+<!--
+Availability of access keys:
+- A: Start
+- B: Before this
+- C:
+- D: Due
+- E: After this
+- F: Only future dates
+- G:
+- H: High
+- I: Highest
+- J:
+- K:
+- L: Low
+- M: Medium
+- N: Normal
+- O: Lowest
+- P:
+- Q:
+- R: Recurs
+- S: Scheduled
+- T: Description
+- U: Status
+- V:
+- W:
+- X:
+- Y:
+- Z:
+-->
+
 <div class="tasks-modal">
     <form on:submit|preventDefault={_onSubmit} class:with-accesskeys="{withAccessKeys}">
         <!-- NEW_TASK_FIELD_EDIT_REQUIRED -->
@@ -510,7 +540,7 @@
         </div>
 
         <!-- --------------------------------------------------------------------------- -->
-        <!--  Recurrence and Dates  -->
+        <!--  Recurrence  -->
         <!-- --------------------------------------------------------------------------- -->
         <div class="tasks-modal-section tasks-modal-dates">
             <!-- --------------------------------------------------------------------------- -->
@@ -528,7 +558,13 @@
                 accesskey={accesskey("r")}
             />
             <code class="results">{recurrenceSymbol} {@html parsedRecurrence}</code>
+        </div>
 
+        <!-- --------------------------------------------------------------------------- -->
+        <!--  Dates  -->
+        <!-- --------------------------------------------------------------------------- -->
+        <hr>
+        <div class="tasks-modal-section tasks-modal-dates">
             <!-- --------------------------------------------------------------------------- -->
             <!--  Due Date  -->
             <!-- --------------------------------------------------------------------------- -->
@@ -592,21 +628,27 @@
                     accesskey={accesskey("f")}
                 />
             </div>
+        </div>
 
+        <!-- --------------------------------------------------------------------------- -->
+        <!--  Dependencies  -->
+        <!-- --------------------------------------------------------------------------- -->
+        <hr>
+        <div class="tasks-modal-section tasks-modal-dates">
             {#if allTasks.length > 0 && mountComplete}
                 <!-- --------------------------------------------------------------------------- -->
                 <!--  Blocked By Tasks  -->
                 <!-- --------------------------------------------------------------------------- -->
-                <label for="blockedBy">Blocked B<span class="accesskey">y</span></label>
+                <label for="blockedBy" class="accesskey-first">Before this</label>
                 <Dependency type="blockedBy" task={task} editableTask={editableTask} allTasks={allTasks}
-                            _onDescriptionKeyDown={_onDescriptionKeyDown} accesskey={accesskey} accesskeyLetter="y" />
+                            _onDescriptionKeyDown={_onDescriptionKeyDown} accesskey={accesskey} accesskeyLetter="b" placeholder='Search for tasks that the task being edited depends on...' />
 
                 <!-- --------------------------------------------------------------------------- -->
                 <!--  Blocking Tasks  -->
                 <!-- --------------------------------------------------------------------------- -->
-                <label for="blocking" class="accesskey-first">Blocking</label>
+                <label for="blocking">Aft<span class="accesskey">e</span>r this</label>
                 <Dependency type="blocking" task={task} editableTask={editableTask} allTasks={allTasks}
-                            _onDescriptionKeyDown={_onDescriptionKeyDown} accesskey={accesskey} accesskeyLetter="B" />
+                            _onDescriptionKeyDown={_onDescriptionKeyDown} accesskey={accesskey} accesskeyLetter="e" placeholder='Search for tasks that depend on this task being done...' />
             {:else}
                 <div><i>Blocking and blocked by fields are disabled when vault tasks is empty</i></div>
             {/if}
@@ -615,6 +657,7 @@
         <!-- --------------------------------------------------------------------------- -->
         <!--  Status  -->
         <!-- --------------------------------------------------------------------------- -->
+        <hr>
         <div class="tasks-modal-section">
             <label for="status">Stat<span class="accesskey">u</span>s</label>
             <!-- svelte-ignore a11y-accesskey -->
