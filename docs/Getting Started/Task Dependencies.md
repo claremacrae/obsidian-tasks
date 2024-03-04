@@ -7,14 +7,14 @@ publish: true
 ## Introduction
 
 > [!released]
-> Task Dependencies were introduced in Tasks X.Y.Z.
+> Task Dependencies were introduced in Tasks 6.1.0.
 
 At a high level, task dependencies define the order in which you want to work on a set of tasks.
 This can be useful for mapping out projects, where one part needs to be completed before the other.
 By specifying these dependencies, Obsidian Tasks can streamline your workflow by displaying only the tasks that are actionable at any given moment.
 
 > [!NOTE]
-> Obsidian tasks exclusively allows for 'Finish to start (FS)' dependencies, meaning Task A needs to be finished before you start on Task B. You can learn more about this concept [on Wikipedia](https://en.wikipedia.org/wiki/Dependency_(project_management)).
+> The Tasks plugin exclusively allows for 'Finish to start (FS)' dependencies, meaning Task A needs to be finished before you start on Task B. You can learn more about this concept [on Wikipedia](https://en.wikipedia.org/wiki/Dependency_(project_management)).
 
 > [!Tip]
 > This page explains the dependencies facility and how to use it.

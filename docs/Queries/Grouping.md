@@ -165,6 +165,11 @@ group by function "Next status symbol: " + task.status.nextSymbol.replace(" ", "
 
 ## Group by Task Dependencies
 
+At a high level, task dependencies define the order in which you want to work on a set of tasks. You can read more about them in [[Task Dependencies]].
+
+> [!released]
+> Task Dependencies were introduced in Tasks 6.1.0.
+
 ### Id
 
 - `group by id`
@@ -173,9 +178,9 @@ For more information, see [[Task Dependencies]].
 
 > [!released]
 >
-> - Task Id was introduced in Tasks X.Y.Z.
+> - Task Id was introduced in Tasks 6.1.0.
 
-Since Tasks X.Y.Z, **[[Custom Grouping|custom grouping]] by Id** is now possible, using `task.id`.
+Since Tasks 6.1.0, **[[Custom Grouping|custom grouping]] by Id** is now possible, using `task.id`.
 
 <!-- placeholder to force blank line before included text --><!-- include: CustomGroupingExamples.test.dependencies_task.id_docs.approved.md -->
 
@@ -196,9 +201,9 @@ For more information, see [[Task Dependencies]].
 
 > [!released]
 >
-> - Task Depends On was introduced in Tasks X.Y.Z.
+> - Task Depends On was introduced in Tasks 6.1.0.
 
-Since Tasks X.Y.Z, **[[Custom Grouping|custom grouping]] by Depends On** is now possible, using `task.dependsOn`.
+Since Tasks 6.1.0, **[[Custom Grouping|custom grouping]] by Depends On** is now possible, using `task.dependsOn`.
 
 <!-- placeholder to force blank line before included text --><!-- include: CustomGroupingExamples.test.dependencies_task.dependsOn_docs.approved.md -->
 
