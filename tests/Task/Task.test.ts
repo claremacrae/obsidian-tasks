@@ -1323,9 +1323,9 @@ describe('handle new status', () => {
         const newTasks = originalTask.handleNewStatus(newStatus, completionDate);
 
         // Assert
-        // 'Created' date of new task is based on today, ignoring the manually set completion date.
+        // 'Created' date of new task is based on done date, ignoring the manually set completion date.
         expect(toMarkdown(newTasks)).toMatchInlineSnapshot(`
-            "- [ ] Annual task 🔁 every year when done ➕ 2023-06-26 📅 2024-01-23
+            "- [ ] Annual task 🔁 every year when done ➕ 2023-01-23 📅 2024-01-23
             - [x] Annual task 🔁 every year when done 📅 1989-12-23 ✅ 2023-01-23"
         `);
     });

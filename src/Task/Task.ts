@@ -379,7 +379,7 @@ export class Task {
         const newTasks: Task[] = [];
 
         if (nextOccurrence !== null) {
-            const nextTask = this.createNextOccurrence(newStatus, nextOccurrence);
+            const nextTask = this.createNextOccurrence(newStatus, nextOccurrence, today);
             newTasks.push(nextTask);
         }
 
@@ -424,11 +424,12 @@ export class Task {
             scheduledDate: moment.Moment | null;
             dueDate: moment.Moment | null;
         },
+        today: moment.Moment,
     ) {
         const { setCreatedDate } = getSettings();
         let createdDate: moment.Moment | null = null;
         if (setCreatedDate) {
-            createdDate = window.moment();
+            createdDate = today;
         }
         // In case the task being toggled was previously cancelled, ensure the new task has no cancelled date:
         const cancelledDate = null;

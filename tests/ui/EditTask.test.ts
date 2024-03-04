@@ -416,7 +416,7 @@ describe('Task editing', () => {
 
             submit.click();
             expect(await waitForClose).toMatchInlineSnapshot(`
-                "- [ ] Recurring 🔁 every day when done ➕ 2024-02-29 📅 2024-02-24
+                "- [ ] Recurring 🔁 every day when done ➕ 2024-02-23 📅 2024-02-24
                 - [x] Recurring 🔁 every day when done 📅 2024-02-17 ✅ 2024-02-23"
             `);
         });
