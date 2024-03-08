@@ -36,7 +36,7 @@ flowchart BT
 classDef TASK        stroke-width:3px,font-family:monospace;
 
 2["- [ ] do this first 🆔 abcdef"]:::TASK
-1["- [ ] do this after first ⛔️ abcdef"]:::TASK
+1["- [ ] do this after first ⛔ abcdef"]:::TASK
 1-- depends on --> 2
 
 linkStyle default stroke:gray
@@ -130,7 +130,7 @@ By implementing either of these methods, the task list is updated to reflect the
 
 ```text
 - [ ] Build a first draft 🆔 4ijuhy
-- [ ] Test with users ⛔️ 4ijuhy
+- [ ] Test with users ⛔ 4ijuhy
 ```
 
 Then, if the query `is not blocked` is used
@@ -149,7 +149,7 @@ Until this task is marked as complete, at which time Obsidian Tasks sees that 'T
 
 ```text
 - [x] Build a first draft 🆔 4ijuhy
-- [ ] Test with users ⛔️ 4ijuhyz
+- [ ] Test with users ⛔ 4ijuhyz
 ```
 
 ## Search concepts
@@ -236,7 +236,7 @@ is not blocked
 > classDef TASK        stroke-width:3px,font-family:monospace;
 >
 > 2["- [ ] this is blocking  🆔 abcdef"]:::TASK
-> 1["- [ ] this is blocked&nbsp ⛔️ abcdef"]:::TASK
+> 1["- [ ] this is blocked&nbsp ⛔ abcdef"]:::TASK
 > 1-- depends on --> 2
 >
 > linkStyle default stroke:gray
@@ -251,7 +251,7 @@ is not blocked
 > classDef TASK        stroke-width:3px,font-family:monospace;
 >
 > 4["- [ ] not blocking  🆔 abcdef"]:::TASK
-> 3["- [x] not blocked&nbsp ⛔️ abcdef"]:::TASK
+> 3["- [x] not blocked&nbsp ⛔ abcdef"]:::TASK
 > 3-- depends on --> 4
 >
 > linkStyle default stroke:gray
@@ -267,7 +267,7 @@ is not blocked
 >
 > 5["- [x] not blocking  🆔 abcdef"]:::TASK
 > 4["- [ ] blocking 🆔 ghijkl"]:::TASK
-> 3["- [ ] blocked ⛔️ abcdef,ghijkl"]:::TASK
+> 3["- [ ] blocked ⛔ abcdef,ghijkl"]:::TASK
 > 3-- depends on --> 5
 > 3-- depends on --> 4
 >
@@ -326,4 +326,5 @@ See [[Task Properties#Values for Task Dependencies|Task property values for Task
 - It's not yet possible to directly navigate from a task to the tasks it depends on.
 - Outside of the edit task modal, it is not possible to see the descriptions of the blocking tasks.
 - It is not yet possible to visualise the relationships in any kind of graphical view.
+- The [[Auto-Suggest]] mechanism does not yet support task dependencies. We are tracking this in [issue #2681](https://github.com/obsidian-tasks-group/obsidian-tasks/issues/2681).
 - The [[Urgency]] score does not account for task dependencies. We are tracking this in [issue #2655](https://github.com/obsidian-tasks-group/obsidian-tasks/issues/2655).
