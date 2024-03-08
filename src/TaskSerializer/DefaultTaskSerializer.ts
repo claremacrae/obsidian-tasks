@@ -69,12 +69,13 @@ export const DEFAULT_SYMBOLS: DefaultTaskSerializerSymbols = {
     doneDateSymbol: '✅',
     cancelledDateSymbol: '❌',
     recurrenceSymbol: '🔁',
-    dependsOnSymbol: '⛔️',
+    dependsOnSymbol: '⛔',
     idSymbol: '🆔',
     TaskFormatRegularExpressions: {
         // The following regex's end with `$` because they will be matched and
         // removed from the end until none are left.
-        priorityRegex: /([🔺⏫🔼🔽⏬])$/u,
+        // \uFE0F? allows an optional Variant Selector 16 on emojis.
+        priorityRegex: /([🔺⏫🔼🔽⏬])\uFE0F?$/u,
         startDateRegex: /🛫 *(\d{4}-\d{2}-\d{2})$/u,
         createdDateRegex: /➕ *(\d{4}-\d{2}-\d{2})$/u,
         scheduledDateRegex: /[⏳⌛] *(\d{4}-\d{2}-\d{2})$/u,
@@ -82,7 +83,10 @@ export const DEFAULT_SYMBOLS: DefaultTaskSerializerSymbols = {
         doneDateRegex: /✅ *(\d{4}-\d{2}-\d{2})$/u,
         cancelledDateRegex: /❌ *(\d{4}-\d{2}-\d{2})$/u,
         recurrenceRegex: /🔁 ?([a-zA-Z0-9, !]+)$/iu,
-        dependsOnRegex: new RegExp('⛔️ *(' + taskIdRegex.source + '( *, *' + taskIdRegex.source + ' *)*)$', 'iu'),
+        dependsOnRegex: new RegExp(
+            '⛔\uFE0F? *(' + taskIdRegex.source + '( *, *' + taskIdRegex.source + ' *)*)$',
+            'iu',
+        ),
         idRegex: new RegExp('🆔 *(' + taskIdRegex.source + ')$', 'iu'),
     },
 } as const;
@@ -98,6 +102,25 @@ function symbolAndDateValue(shortMode: boolean, symbol: string, date: moment.Mom
     // but doing so would do some wasted date-formatting when in 'short mode',
     // so instead we repeat the check on shortMode value.
     return shortMode ? ' ' + symbol : ` ${symbol} ${date.format(TaskRegularExpressions.dateFormat)}`;
+}
+
+export function allTaskPluginEmojis() {
+    const allEmojis: string[] = [];
+
+    // All the priority emojis:
+    Object.values(DEFAULT_SYMBOLS.prioritySymbols).forEach((value) => {
+        if (value.length > 0) {
+            allEmojis.push(value);
+        }
+    });
+
+    // All the other field emojis:
+    Object.values(DEFAULT_SYMBOLS).forEach((value) => {
+        if (typeof value === 'string') {
+            allEmojis.push(value);
+        }
+    });
+    return allEmojis;
 }
 
 export class DefaultTaskSerializer implements TaskSerializer {

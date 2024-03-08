@@ -5,7 +5,11 @@ import moment from 'moment';
 import type { Settings } from '../../src/Config/Settings';
 import { DefaultTaskSerializer } from '../../src/TaskSerializer';
 import { RecurrenceBuilder } from '../TestingTools/RecurrenceBuilder';
-import { DEFAULT_SYMBOLS, type DefaultTaskSerializerSymbols } from '../../src/TaskSerializer/DefaultTaskSerializer';
+import {
+    DEFAULT_SYMBOLS,
+    type DefaultTaskSerializerSymbols,
+    allTaskPluginEmojis,
+} from '../../src/TaskSerializer/DefaultTaskSerializer';
 import { TaskBuilder } from '../TestingTools/TaskBuilder';
 import { Priority } from '../../src/Task/Priority';
 
@@ -18,6 +22,24 @@ type DefaultTaskSerializeSymbolMap = readonly {
 }[];
 // A map that facilitates parameterizing the tests over symbols
 const symbolMap: DefaultTaskSerializeSymbolMap = [{ taskFormat: 'tasksPluginEmoji', symbols: DEFAULT_SYMBOLS }];
+
+/**
+ * Since Variant Selectors are invisible, any tests whose behaviour is dependent on the
+ * presence or absence of one MUST 'expect' on the result of this function,
+ * to confirm that the test is doing what it claims to be doing.
+ * @param text
+ */
+function hasVariantSelector16(text: string) {
+    const vs16Regex = /\uFE0F/u;
+    return text.match(vs16Regex) !== null;
+}
+
+describe('validate emojis', () => {
+    // If these tests fail, paste the problem emoji in to https://apps.timwhitlock.info/unicode/inspect
+    it.each(allTaskPluginEmojis())('emoji does not contain Variant Selector 16: "%s"', (emoji: string) => {
+        expect(hasVariantSelector16(emoji)).toBe(false);
+    });
+});
 
 // NEW_TASK_FIELD_EDIT_REQUIRED
 
@@ -42,27 +64,48 @@ describe.each(symbolMap)("DefaultTaskSerializer with '$taskFormat' symbols", ({ 
             expect(taskDetails).toMatchTaskDetails({});
         });
 
-        it.each([
-            { what: 'startDate', symbol: startDateSymbol },
-            { what: 'createdDate', symbol: createdDateSymbol },
-            { what: 'scheduledDate', symbol: scheduledDateSymbol },
-            { what: 'dueDate', symbol: dueDateSymbol },
-            { what: 'doneDate', symbol: doneDateSymbol },
-        ] as const)('should parse a $what', ({ what, symbol }) => {
-            const taskDetails = deserialize(`${symbol} 2021-06-20`);
-            expect(taskDetails).toMatchTaskDetails({ [what]: moment('2021-06-20', 'YYYY-MM-DD') });
+        describe('should parse dates', () => {
+            it.each([
+                { what: 'startDate', symbol: startDateSymbol },
+                { what: 'createdDate', symbol: createdDateSymbol },
+                { what: 'scheduledDate', symbol: scheduledDateSymbol },
+                { what: 'dueDate', symbol: dueDateSymbol },
+                { what: 'doneDate', symbol: doneDateSymbol },
+            ] as const)('should parse a $what', ({ what, symbol }) => {
+                const taskDetails = deserialize(`${symbol} 2021-06-20`);
+                expect(taskDetails).toMatchTaskDetails({ [what]: moment('2021-06-20', 'YYYY-MM-DD') });
+            });
         });
 
-        it('should parse a priority', () => {
-            const priorities = ['Highest', 'High', 'None', 'Medium', 'Low', 'Lowest'] as const;
-            for (const p of priorities) {
-                const prioritySymbol = symbols.prioritySymbols[p];
-                const priority = Priority[p];
+        describe('should parse priorities', () => {
+            it('should parse a priority', () => {
+                const priorities = ['Highest', 'High', 'None', 'Medium', 'Low', 'Lowest'] as const;
+                for (const p of priorities) {
+                    const prioritySymbol = symbols.prioritySymbols[p];
+                    const priority = Priority[p];
 
-                const taskDetails = deserialize(`${prioritySymbol}`);
+                    const taskDetails = deserialize(`${prioritySymbol}`);
 
-                expect(taskDetails).toMatchTaskDetails({ priority });
-            }
+                    expect(taskDetails).toMatchTaskDetails({ priority });
+                }
+            });
+
+            it('should parse a high priority without Variant Selector 16', () => {
+                const line = '⏫';
+                expect(hasVariantSelector16(line)).toBe(false);
+
+                const taskDetails = deserialize(line);
+                expect(taskDetails).toMatchTaskDetails({ priority: Priority.High });
+            });
+
+            it('should parse a high priority with Variant Selector 16', () => {
+                // This test showed the existence of https://github.com/obsidian-tasks-group/obsidian-tasks/issues/2273
+                const line = '⏫️'; // There is a hidden Variant Selector 16 character at the end of this string
+                expect(hasVariantSelector16(line)).toBe(true);
+
+                const taskDetails = deserialize(line);
+                expect(taskDetails).toMatchTaskDetails({ priority: Priority.High });
+            });
         });
 
         it('should parse a recurrence', () => {
@@ -75,6 +118,23 @@ describe.each(symbolMap)("DefaultTaskSerializer with '$taskFormat' symbols", ({ 
         describe('should parse depends on', () => {
             it('should parse depends on one task', () => {
                 const id = `${dependsOnSymbol} F12345`;
+                const taskDetails = deserialize(id);
+                expect(taskDetails).toMatchTaskDetails({ dependsOn: ['F12345'] });
+            });
+
+            it('should parse depends on one task - without Variant Selector 16', () => {
+                // This test showed the existence of https://github.com/obsidian-tasks-group/obsidian-tasks/issues/2693
+                const id = '⛔ F12345';
+                expect(hasVariantSelector16(id)).toBe(false);
+
+                const taskDetails = deserialize(id);
+                expect(taskDetails).toMatchTaskDetails({ dependsOn: ['F12345'] });
+            });
+
+            it('should parse depends on one task - with Variant Selector 16', () => {
+                const id = '⛔️ F12345'; // There is a hidden Variant Selector 16 character at the end of this string
+                expect(hasVariantSelector16(id)).toBe(true);
+
                 const taskDetails = deserialize(id);
                 expect(taskDetails).toMatchTaskDetails({ dependsOn: ['F12345'] });
             });
