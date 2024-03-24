@@ -1,5 +1,6 @@
 import { parse as boonParse } from 'boon-js';
 import type { PostfixExpression } from 'boon-js';
+import type { Token } from 'boon-js/lib/types';
 
 import { parseFilter } from '../FilterParser';
 import type { Task } from '../../Task/Task';
@@ -55,7 +56,16 @@ export class BooleanField extends Field {
         if (line.length === 0) {
             return FilterOrErrorMessage.fromError(line, 'empty line');
         }
-        const preprocessed = BooleanField.preprocessExpression(line);
+        return this.parseLineV1(line);
+    }
+
+    /**
+     * Legacy Boolean filter parser
+     * @param line
+     * @private
+     */
+    private parseLineV1(line: string) {
+        const preprocessed = BooleanField.preprocessExpressionV1(line);
         try {
             // Convert the (preprocessed) line into a postfix logical expression
             const postfixExpression = boonParse(preprocessed);
@@ -63,22 +73,19 @@ export class BooleanField extends Field {
             // final token in the expression
             for (const token of postfixExpression) {
                 if (token.name === 'IDENTIFIER' && token.value) {
-                    const identifier = token.value.trim();
-                    if (!(identifier in this.subFields)) {
-                        const parsedField = parseFilter(identifier);
+                    const filter = token.value.trim();
+                    if (!(filter in this.subFields)) {
+                        const parsedField = parseFilter(filter);
                         if (parsedField === null) {
-                            return FilterOrErrorMessage.fromError(
-                                line,
-                                `couldn't parse sub-expression '${identifier}'`,
-                            );
+                            return FilterOrErrorMessage.fromError(line, `couldn't parse sub-expression '${filter}'`);
                         }
                         if (parsedField.error) {
                             return FilterOrErrorMessage.fromError(
                                 line,
-                                `couldn't parse sub-expression '${identifier}': ${parsedField.error}`,
+                                `couldn't parse sub-expression '${filter}': ${parsedField.error}`,
                             );
                         } else if (parsedField.filter) {
-                            this.subFields[identifier] = parsedField.filter;
+                            this.subFields[filter] = parsedField.filter;
                         }
                     }
                 } else if (token.name === 'OPERATOR') {
@@ -109,7 +116,7 @@ export class BooleanField extends Field {
         }
     }
 
-    public static preprocessExpression(line: string): string {
+    public static preprocessExpressionV1(line: string): string {
         // Prepare the query to be processed by boon-js.
         // Boon doesn't process expression with spaces unless they are surrounded by quotes, so replace
         // (due today) by ("due today").
@@ -183,35 +190,53 @@ export class BooleanField extends Field {
         const explanationStack: Explanation[] = [];
         for (const token of postfixExpression) {
             if (token.name === 'IDENTIFIER') {
-                if (token.value == null) throw Error('null token value'); // This should not happen
-                const filter = this.subFields[token.value.trim()];
-                explanationStack.push(filter.explanation);
+                this.explainExpression(token, explanationStack);
             } else if (token.name === 'OPERATOR') {
-                // To evaluate an operator we need to pop the required number of items from the boolean stack,
-                // do the logical evaluation and push back the result
-                if (token.value === 'NOT') {
-                    const arg1 = explanationStack.pop();
-                    explanationStack.push(Explanation.booleanNot([arg1!]));
-                } else if (token.value === 'OR') {
-                    const arg2 = explanationStack.pop();
-                    const arg1 = explanationStack.pop();
-                    explanationStack.push(Explanation.booleanOr([arg1!, arg2!]));
-                } else if (token.value === 'AND') {
-                    const arg2 = explanationStack.pop();
-                    const arg1 = explanationStack.pop();
-                    explanationStack.push(Explanation.booleanAnd([arg1!, arg2!]));
-                } else if (token.value === 'XOR') {
-                    const arg2 = explanationStack.pop();
-                    const arg1 = explanationStack.pop();
-                    explanationStack.push(Explanation.booleanXor([arg1!, arg2!]));
-                } else {
-                    throw Error('Unsupported operator: ' + token.value);
-                }
+                this.explainOperator(token, explanationStack);
             } else {
                 throw Error('Unsupported token type: ' + token.name);
             }
         }
         // Eventually the Explanation is the only item left in the boolean stack
         return explanationStack[0];
+    }
+
+    private explainExpression(token: Token, explanationStack: Explanation[]) {
+        if (token.value == null) {
+            throw Error('null token value'); // This should not happen
+        }
+        const filter = this.subFields[token.value.trim()];
+        const explanation = this.simulateExplainFilter(filter);
+        explanationStack.push(explanation);
+    }
+
+    private simulateExplainFilter(filter: Filter) {
+        // In our caller, the explanationStack keeps the explanations but not the instruction lines.
+        // So to replicate the logic in Filter.explainFilterIndented(), we may need to add the
+        // instruction to the explanation.
+        return filter.simulateExplainFilter();
+    }
+
+    private explainOperator(token: Token, explanationStack: Explanation[]) {
+        // To evaluate an operator we need to pop the required number of items from the boolean stack,
+        // do the logical evaluation and push back the result
+        if (token.value === 'NOT') {
+            const arg1 = explanationStack.pop();
+            explanationStack.push(Explanation.booleanNot([arg1!]));
+        } else if (token.value === 'OR') {
+            const arg2 = explanationStack.pop();
+            const arg1 = explanationStack.pop();
+            explanationStack.push(Explanation.booleanOr([arg1!, arg2!]));
+        } else if (token.value === 'AND') {
+            const arg2 = explanationStack.pop();
+            const arg1 = explanationStack.pop();
+            explanationStack.push(Explanation.booleanAnd([arg1!, arg2!]));
+        } else if (token.value === 'XOR') {
+            const arg2 = explanationStack.pop();
+            const arg1 = explanationStack.pop();
+            explanationStack.push(Explanation.booleanXor([arg1!, arg2!]));
+        } else {
+            throw Error('Unsupported operator: ' + token.value);
+        }
     }
 }
