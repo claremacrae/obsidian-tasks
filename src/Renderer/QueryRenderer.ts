@@ -313,6 +313,11 @@ class QueryRenderChild extends MarkdownRenderChild {
         editTaskPencil.href = '#';
 
         editTaskPencil.onClickEvent((event: MouseEvent) => {
+            // Only show Edit Task modal if main menu button pressed.
+            // This is required to allow the contextmenu event to work.
+            if (event.button !== 0) {
+                return;
+            }
             event.preventDefault();
             event.stopPropagation(); // suppress further event propagation
 
