@@ -55,10 +55,11 @@ export class DateMenu extends Menu {
         input.style.zIndex = '1000'; // Make sure it's on top
 
         // Position the input element at the button's location
-        const rect = this.button.getBoundingClientRect();
-        // Positions below and to the right of the button location
-        input.style.left = `${window.scrollX + rect.left}px`;
-        input.style.top = `${window.scrollY + rect.top}px`;
+        // const rect = this.button.getBoundingClientRect();
+        // Positions to right of the checkbox, and scrolls - at least the location is predictable now.
+        input.style.position = 'absolute';
+        input.style.left = '0px'; // Start from the exact position of the parent
+        input.style.top = '0px';
 
         // Append to the parentElement to keep relative positioning
         parentElement.appendChild(input);
