@@ -31,6 +31,9 @@ export class DateMenu extends Menu {
         const input = document.createElement('input');
         input.setAttribute('type', 'date');
 
+        // Set initial date
+        input.value = task.dueDate ? task.dueDate.format('YYYY-MM-DD') : window.moment().format('YYYY-MM-DD');
+
         // Attach event listener before appending to ensure it captures the first interaction.
         input.onchange = async (_ev) => {
             console.log('in onchange');
