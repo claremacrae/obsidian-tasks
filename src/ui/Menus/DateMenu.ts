@@ -48,15 +48,14 @@ export class DateMenu extends Menu {
         };
 
         // Temporarily make the input visible and larger
-        input.style.position = 'fixed'; // Position absolutely within the parent
+        // input.style.position = 'fixed'; // Position absolutely within the parent
         input.style.opacity = '1';
         input.style.height = 'auto'; // Allow default height
         input.style.width = 'auto'; // Allow default width
         input.style.zIndex = '1000'; // Make sure it's on top
 
-        // Position the input element at the button's location
-        // const rect = this.button.getBoundingClientRect();
-        // Positions to right of the checkbox, and scrolls - at least the location is predictable now.
+        // Position to right of the checkbox, and scrolls - at least the location is predictable,
+        // although it would be nice if it was where the Context Menu had popped up.
         input.style.position = 'absolute';
         input.style.left = '0px'; // Start from the exact position of the parent
         input.style.top = '0px';
