@@ -56,8 +56,9 @@ export class DateMenu extends Menu {
 
         // Position the input element at the button's location
         const rect = this.button.getBoundingClientRect();
-        input.style.left = `${rect.left}px`;
-        input.style.top = `${rect.top}px`;
+        // Positions below and to the right of the button location
+        input.style.left = `${window.scrollX + rect.left}px`;
+        input.style.top = `${window.scrollY + rect.top}px`;
 
         // Append to the parentElement to keep relative positioning
         parentElement.appendChild(input);
