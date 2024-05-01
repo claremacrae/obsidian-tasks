@@ -6,9 +6,9 @@ import type { TaskSaver } from './TaskEditingMenu';
 // export class DateMenu extends TaskEditingMenu {
 export class DateMenu extends Menu {
     protected readonly taskSaver: TaskSaver;
-    private button: HTMLAnchorElement;
+    private button: HTMLElement;
 
-    constructor(task: Task, taskSaver: TaskSaver, button: HTMLAnchorElement) {
+    constructor(task: Task, taskSaver: TaskSaver, button: HTMLElement) {
         super();
         this.taskSaver = taskSaver;
         this.button = button;
