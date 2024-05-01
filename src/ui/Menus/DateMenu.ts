@@ -41,7 +41,7 @@ export class DateMenu extends Menu {
         setTimeout(() => {
             const fp = flatpickr(input, {
                 defaultDate: task.dueDate ? task.dueDate.format('YYYY-MM-DD') : new Date(),
-                enableTime: true, // Optional: Enable time picker
+                enableTime: false, // Optional: Enable time picker
                 dateFormat: 'Y-m-d', // Adjust the date and time format as needed
                 onClose: async (selectedDates, _dateStr, instance) => {
                     if (selectedDates.length > 0) {
