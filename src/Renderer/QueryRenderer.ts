@@ -13,7 +13,6 @@ import type { TaskGroups } from '../Query/Group/TaskGroups';
 import { postponeButtonTitle, shouldShowPostponeButton } from '../Scripting/Postponer';
 import type { Task } from '../Task/Task';
 import { TaskLayout } from '../Layout/TaskLayout';
-import { DateMenu } from '../ui/Menus/DateMenu';
 import { PostponeMenu } from '../ui/Menus/PostponeMenu';
 import type TasksPlugin from '../main';
 import { TaskModal } from '../Obsidian/TaskModal';
@@ -21,6 +20,7 @@ import type { TasksEvents } from '../Obsidian/TasksEvents';
 import { getTaskLineAndFile, replaceTaskWithTasks } from '../Obsidian/File';
 import { State } from '../Obsidian/Cache';
 import { PerformanceTracker } from '../lib/PerformanceTracker';
+import { PriorityMenu } from '../ui/Menus/PriorityMenu';
 import { defaultTaskSaver } from '../ui/Menus/TaskEditingMenu';
 import { TaskLineRenderer, createAndAppendElement } from './TaskLineRenderer';
 
@@ -341,7 +341,7 @@ class QueryRenderChild extends MarkdownRenderChild {
         editTaskPencil.addEventListener('contextmenu', (ev: MouseEvent) => {
             ev.preventDefault(); // suppress the default context menu
             ev.stopPropagation(); // suppress further event propagation
-            const menu = new DateMenu(task, defaultTaskSaver, editTaskPencil);
+            const menu = new PriorityMenu(task, defaultTaskSaver, editTaskPencil);
             menu.showAtPosition({ x: ev.clientX, y: ev.clientY });
         });
         editTaskPencil.setAttribute('title', 'Right-click for options');
