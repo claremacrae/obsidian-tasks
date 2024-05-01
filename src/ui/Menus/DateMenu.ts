@@ -51,9 +51,33 @@ export class DateMenu extends Menu {
                         await this.taskSaver(task, newTask);
                     }
                     instance.destroy(); // Proper cleanup
-                    input.remove(); // Remove the input element
+                    input.remove(); // Remove the elements after selection
+                    todayButton.remove();
+                    clearButton.remove();
                 },
             });
+
+            // Create "Today" button
+            const todayButton = document.createElement('button');
+            todayButton.textContent = 'Today';
+            todayButton.onclick = () => {
+                fp.setDate(new Date(), true); // Set date to today and trigger change
+            };
+
+            // Create "Clear" button
+            const clearButton = document.createElement('button');
+            clearButton.textContent = 'Clear';
+            clearButton.onclick = () => {
+                fp.clear();
+            };
+
+            // Styling for buttons to align them next to the input
+            todayButton.style.marginLeft = '5px';
+            clearButton.style.marginLeft = '5px';
+
+            // Append buttons next to the input
+            parentElement.appendChild(todayButton);
+            parentElement.appendChild(clearButton);
 
             // Open the calendar programmatically
             fp.open();
