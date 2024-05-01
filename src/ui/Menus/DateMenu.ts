@@ -15,7 +15,6 @@ export class DateMenu extends Menu {
 
         this.addItem((item) => {
             item.setTitle('Set Date').onClick(() => {
-                console.log('in Set Date handler');
                 this.promptForDate(task);
             });
         });
@@ -27,7 +26,6 @@ export class DateMenu extends Menu {
             return;
         }
 
-        console.log('hello 1');
         const input = document.createElement('input');
         input.setAttribute('type', 'date');
 
@@ -36,7 +34,6 @@ export class DateMenu extends Menu {
 
         // Attach event listener before appending to ensure it captures the first interaction.
         input.onchange = async (_ev) => {
-            console.log('in onchange');
             if (input.value) {
                 // Check if a date was actually picked
                 const date = new Date(input.value);
@@ -62,8 +59,6 @@ export class DateMenu extends Menu {
 
         // Append to the parentElement to keep relative positioning
         parentElement.appendChild(input);
-
-        console.log('hello 2');
 
         // Programmatically click the input.
         input.click();
