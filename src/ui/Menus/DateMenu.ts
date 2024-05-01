@@ -3,7 +3,8 @@ import type { Task } from '../../Task/Task';
 import { SetTaskDate } from '../EditInstructions/DateInstructions';
 import type { TaskSaver } from './TaskEditingMenu';
 
-// export class DateMenu extends TaskEditingMenu {
+// TODO Maybe change this interaction from a context Menu to a left-click on the emoji that just opens the date picker.
+// TODO Make this work for the other date types too.
 export class DateMenu extends Menu {
     protected readonly taskSaver: TaskSaver;
     private button: HTMLElement;
@@ -21,6 +22,7 @@ export class DateMenu extends Menu {
     }
 
     private promptForDate(task: Task) {
+        // Look at https://github.com/simonknittel/obsidian-create-task
         const parentElement = this.button.parentElement;
         if (!parentElement) {
             return;
@@ -62,6 +64,15 @@ export class DateMenu extends Menu {
 
         // Programmatically click the input.
         input.click();
+
+        // TODO It's annoying that the user has to clock on the calendar icon to open up the date picker.
+        //      Ideas: Implement a custom date picker using JavaScript libraries that can be programmatically
+        //             controlled more reliably than native HTML inputs.
+        //             Pikaday:
+        //                  https://github.com/Pikaday/Pikaday
+        //             Flatpickr:
+        //                  https://github.com/flatpickr/flatpickr
+        //                  https://github.com/jacobmischka/svelte-flatpickr
 
         // Listen for blur event to handle if user clicks away without selecting a date.
         input.onblur = () => {
