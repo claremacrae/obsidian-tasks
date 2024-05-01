@@ -23,14 +23,48 @@ export class DateMenu extends Menu {
     }
 
     private promptForDate(task: Task) {
+        console.log('hello 1');
         const input = document.createElement('input');
-        input.type = 'date';
+        // input.type = 'date';
+        input.setAttribute('type', 'date');
+
+        // Attach event listener before appending to ensure it captures the first interaction.
         input.onchange = async (_ev) => {
-            const date = new Date(input.value);
-            const newTask = new SetTaskDate(date).apply(task);
-            await this.taskSaver(task, newTask);
-            input.remove(); // Clean up the input after saving
+            console.log('in onchange');
+            if (input.value) {
+                // Check if a date was actually picked
+                const date = new Date(input.value);
+                const newTask = new SetTaskDate(date).apply(task);
+                await this.taskSaver(task, newTask);
+            }
+            // Remove the input after use to clean up.
+            input.remove();
         };
-        input.click(); // Open the date picker immediately
+
+        // Append to the body to ensure it's part of the document.
+        document.body.appendChild(input);
+
+        console.log('hello 2');
+
+        // Use CSS to make the input effectively invisible but still functional.
+        input.style.position = 'absolute';
+        input.style.opacity = '0';
+        input.style.height = '1px';
+        input.style.width = '1px';
+        input.style.zIndex = '-1'; // Send to back if needed
+
+        // Programmatically click the input.
+        input.click();
+
+        // Listen for blur event to handle if user clicks away without selecting a date.
+        input.onblur = () => {
+            // Use a timeout to delay the check, allows for detection of actual blur.
+            setTimeout(() => {
+                if (!input.value) {
+                    // If no date has been selected
+                    input.remove(); // Clean up if user clicks away without selecting
+                }
+            }, 100); // Increase timeout if needed to ensure it does not conflict with onclick.
+        };
     }
 }
