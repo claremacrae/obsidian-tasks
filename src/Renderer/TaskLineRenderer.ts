@@ -8,7 +8,9 @@ import { replaceTaskWithTasks } from '../Obsidian/File';
 import { StatusRegistry } from '../Statuses/StatusRegistry';
 import type { Task } from '../Task/Task';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
+import { DateMenu } from '../ui/Menus/DateMenu';
 import { StatusMenu } from '../ui/Menus/StatusMenu';
+import { defaultTaskSaver } from '../ui/Menus/TaskEditingMenu';
 import { TaskFieldRenderer } from './TaskFieldRenderer';
 
 /**
@@ -204,6 +206,16 @@ export class TaskLineRenderer {
                 // Add the component's attribute ('priority-medium', 'due-past-1d' etc.)
                 fieldRenderer.addDataAttribute(span, task, component);
                 fieldRenderer.addDataAttribute(li, task, component);
+
+                if (component === 'dueDate') {
+                    internalSpan.addEventListener('contextmenu', (ev: MouseEvent) => {
+                        ev.preventDefault(); // suppress the default context menu
+                        ev.stopPropagation(); // suppress further event propagation
+                        const menu = new DateMenu(task, defaultTaskSaver, internalSpan);
+                        menu.showAtPosition({ x: ev.clientX, y: ev.clientY });
+                    });
+                    internalSpan.setAttribute('title', 'Right-click for options');
+                }
             }
         }
 
