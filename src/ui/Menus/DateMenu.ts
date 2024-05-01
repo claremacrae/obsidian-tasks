@@ -1,5 +1,6 @@
 import flatpickr from 'flatpickr';
 import { Menu } from 'obsidian';
+import { createTaskWithDateRemoved } from '../../Scripting/Postponer';
 import type { Task } from '../../Task/Task';
 import { SetTaskDate } from '../EditInstructions/DateInstructions';
 import type { TaskSaver } from './TaskEditingMenu';
@@ -25,7 +26,7 @@ export class DateMenu extends Menu {
 
     private promptForDate(task: Task) {
         // Look at https://github.com/simonknittel/obsidian-create-task
-        const parentElement = this.button.parentElement;
+        const parentElement = this.button;
         if (!parentElement) {
             console.log('Parent element not found.');
             return;
@@ -60,16 +61,33 @@ export class DateMenu extends Menu {
             // Create "Today" button
             const todayButton = document.createElement('button');
             todayButton.textContent = 'Today';
-            todayButton.onclick = () => {
-                fp.setDate(new Date(), true); // Set date to today and trigger change
-            };
+            todayButton.style.marginLeft = '5px';
+            parentElement.appendChild(todayButton); // Make sure button is appended before adding event listener
+
+            // Add event listener for 'Today' button
+            todayButton.addEventListener('click', async () => {
+                console.log('Today button clicked'); // Debug: Log to console
+                const today = new Date();
+                fp.setDate(today, true); // Set date to today and trigger change
+                const newTask = new SetTaskDate(today).apply(task); // Apply the new date
+                await this.taskSaver(task, newTask); // Save the task
+                // TODO Clean up
+            });
 
             // Create "Clear" button
             const clearButton = document.createElement('button');
             clearButton.textContent = 'Clear';
-            clearButton.onclick = () => {
-                fp.clear();
-            };
+            clearButton.style.marginLeft = '5px';
+            parentElement.appendChild(clearButton); // Make sure button is appended before adding event listener
+
+            // Add event listener for 'Clear' button
+            clearButton.addEventListener('click', async () => {
+                console.log('Clear button clicked'); // Debug: Log to console
+                fp.clear(); // Clears the input
+                const { postponedTask } = createTaskWithDateRemoved(task, 'dueDate', 'days', 0);
+                await this.taskSaver(task, postponedTask);
+                // TODO Clean up
+            });
 
             // Styling for buttons to align them next to the input
             todayButton.style.marginLeft = '5px';
