@@ -6,7 +6,6 @@ import type { TaskSaver } from './TaskEditingMenu';
 // export class DateMenu extends TaskEditingMenu {
 export class DateMenu extends Menu {
     protected readonly taskSaver: TaskSaver;
-    // @ts-expect-error Unused
     private button: HTMLAnchorElement;
 
     constructor(task: Task, taskSaver: TaskSaver, button: HTMLAnchorElement) {
@@ -23,9 +22,13 @@ export class DateMenu extends Menu {
     }
 
     private promptForDate(task: Task) {
+        const parentElement = this.button.parentElement;
+        if (!parentElement) {
+            return;
+        }
+
         console.log('hello 1');
         const input = document.createElement('input');
-        // input.type = 'date';
         input.setAttribute('type', 'date');
 
         // Attach event listener before appending to ensure it captures the first interaction.
@@ -41,17 +44,16 @@ export class DateMenu extends Menu {
             input.remove();
         };
 
-        // Append to the body to ensure it's part of the document.
-        document.body.appendChild(input);
+        parentElement.appendChild(input);
 
         console.log('hello 2');
 
-        // Use CSS to make the input effectively invisible but still functional.
-        input.style.position = 'absolute';
-        input.style.opacity = '0';
-        input.style.height = '1px';
-        input.style.width = '1px';
-        input.style.zIndex = '-1'; // Send to back if needed
+        // Temporarily make the input visible and larger
+        input.style.position = 'fixed'; // Use 'fixed' to make it appear on the screen
+        input.style.opacity = '1';
+        input.style.height = '20px'; // Size it so it's easily clickable
+        input.style.width = '140px';
+        input.style.zIndex = '1000'; // Make sure it's on top
 
         // Programmatically click the input.
         input.click();
