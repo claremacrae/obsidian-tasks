@@ -44,16 +44,22 @@ export class DateMenu extends Menu {
             input.remove();
         };
 
+        // Temporarily make the input visible and larger
+        input.style.position = 'fixed'; // Position absolutely within the parent
+        input.style.opacity = '1';
+        input.style.height = 'auto'; // Allow default height
+        input.style.width = 'auto'; // Allow default width
+        input.style.zIndex = '1000'; // Make sure it's on top
+
+        // Position the input element at the button's location
+        const rect = this.button.getBoundingClientRect();
+        input.style.left = `${rect.left}px`;
+        input.style.top = `${rect.top}px`;
+
+        // Append to the parentElement to keep relative positioning
         parentElement.appendChild(input);
 
         console.log('hello 2');
-
-        // Temporarily make the input visible and larger
-        input.style.position = 'fixed'; // Use 'fixed' to make it appear on the screen
-        input.style.opacity = '1';
-        input.style.height = '20px'; // Size it so it's easily clickable
-        input.style.width = '140px';
-        input.style.zIndex = '1000'; // Make sure it's on top
 
         // Programmatically click the input.
         input.click();
