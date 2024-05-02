@@ -3,17 +3,17 @@ import type { TaskEditingInstruction } from './TaskEditingInstruction';
 
 export class SetTaskDate implements TaskEditingInstruction {
     private readonly newDate: Date;
+    private dateFieldToEdit = 'dueDate';
 
     constructor(date: Date) {
         this.newDate = date;
     }
 
     public apply(task: Task): Task[] {
-        const dateFieldToEdit = 'dueDate';
         return [
             new Task({
                 ...task,
-                [dateFieldToEdit]: window.moment(this.newDate),
+                [this.dateFieldToEdit]: window.moment(this.newDate),
             }),
         ];
     }
