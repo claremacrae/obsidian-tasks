@@ -46,6 +46,7 @@ export class DateMenu extends Menu {
                 enableTime: false, // Optional: Enable time picker
                 dateFormat: 'Y-m-d', // Adjust the date and time format as needed
                 onClose: async (selectedDates, _dateStr, instance) => {
+                    console.log('A date button clicked');
                     if (selectedDates.length > 0) {
                         const date = selectedDates[0];
                         const newTask = new SetTaskDate(date).apply(task);
@@ -66,6 +67,7 @@ export class DateMenu extends Menu {
 
             // Add event listener for 'Today' button
             todayButton.addEventListener('click', async () => {
+                // TODO This does not get triggered - the onClear above is acted on instead
                 console.log('Today button clicked'); // Debug: Log to console
                 const today = new Date();
                 fp.setDate(today, true); // Set date to today and trigger change
@@ -82,6 +84,7 @@ export class DateMenu extends Menu {
 
             // Add event listener for 'Clear' button
             clearButton.addEventListener('click', async () => {
+                // TODO This does not get triggered - the onClear above is acted on instead
                 console.log('Clear button clicked'); // Debug: Log to console
                 fp.clear(); // Clears the input
                 const { postponedTask } = createTaskWithDateRemoved(task, 'dueDate', 'days', 0);
