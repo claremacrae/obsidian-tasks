@@ -9,10 +9,11 @@ export class SetTaskDate implements TaskEditingInstruction {
     }
 
     public apply(task: Task): Task[] {
+        const dateFieldToEdit = 'dueDate';
         return [
             new Task({
                 ...task,
-                dueDate: window.moment(this.newDate),
+                [dateFieldToEdit]: window.moment(this.newDate),
             }),
         ];
     }
