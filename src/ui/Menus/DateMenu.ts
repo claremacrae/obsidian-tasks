@@ -41,6 +41,7 @@ export class DateMenu extends Menu {
 
         // Delay the initialization of Flatpickr to ensure DOM is ready
         setTimeout(() => {
+            const dateFieldToEdit = 'dueDate';
             const fp = flatpickr(input, {
                 defaultDate: task.dueDate ? task.dueDate.format('YYYY-MM-DD') : new Date(),
                 enableTime: false, // Optional: Enable time picker
@@ -49,7 +50,7 @@ export class DateMenu extends Menu {
                     console.log('A date button clicked');
                     if (selectedDates.length > 0) {
                         const date = selectedDates[0];
-                        const newTask = new SetTaskDate('dueDate', date).apply(task);
+                        const newTask = new SetTaskDate(dateFieldToEdit, date).apply(task);
                         await this.taskSaver(task, newTask);
                     }
                     instance.destroy(); // Proper cleanup
@@ -72,7 +73,7 @@ export class DateMenu extends Menu {
                 console.log('Today button clicked'); // Debug: Log to console
                 const today = new Date();
                 fp.setDate(today, true); // Set date to today and trigger change
-                const newTask = new SetTaskDate('dueDate', today).apply(task); // Apply the new date
+                const newTask = new SetTaskDate(dateFieldToEdit, today).apply(task); // Apply the new date
                 await this.taskSaver(task, newTask); // Save the task
                 // TODO Clean up
             });
@@ -89,7 +90,7 @@ export class DateMenu extends Menu {
                 // TODO This does not get triggered - the onClear above is acted on instead
                 console.log('Clear button clicked'); // Debug: Log to console
                 fp.clear(); // Clears the input
-                const { postponedTask } = createTaskWithDateRemoved(task, 'dueDate', 'days', 0);
+                const { postponedTask } = createTaskWithDateRemoved(task, dateFieldToEdit, 'days', 0);
                 await this.taskSaver(task, postponedTask);
                 // TODO Clean up
             });
