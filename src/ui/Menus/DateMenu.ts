@@ -43,7 +43,7 @@ export class DateMenu extends Menu {
         setTimeout(() => {
             const dateFieldToEdit = 'dueDate';
             const fp = flatpickr(input, {
-                defaultDate: task.dueDate ? task.dueDate.format('YYYY-MM-DD') : new Date(),
+                defaultDate: task[dateFieldToEdit] ? task[dateFieldToEdit].format('YYYY-MM-DD') : new Date(),
                 enableTime: false, // Optional: Enable time picker
                 dateFormat: 'Y-m-d', // Adjust the date and time format as needed
                 onClose: async (selectedDates, _dateStr, instance) => {
