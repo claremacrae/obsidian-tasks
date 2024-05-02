@@ -10,7 +10,7 @@ import type { TaskSaver } from './TaskEditingMenu';
 // TODO Allow it to remove the date.
 export class DateMenu extends Menu {
     protected readonly taskSaver: TaskSaver;
-    private button: HTMLElement;
+    private readonly button: HTMLElement;
 
     constructor(task: Task, taskSaver: TaskSaver, button: HTMLElement) {
         super();
