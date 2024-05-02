@@ -207,11 +207,11 @@ export class TaskLineRenderer {
                 fieldRenderer.addDataAttribute(span, task, component);
                 fieldRenderer.addDataAttribute(li, task, component);
 
-                if (component === 'dueDate') {
+                if (component === 'dueDate' || component === 'scheduledDate' || component === 'startDate') {
                     internalSpan.addEventListener('contextmenu', (ev: MouseEvent) => {
                         ev.preventDefault(); // suppress the default context menu
                         ev.stopPropagation(); // suppress further event propagation
-                        const menu = new DateMenu(task, 'dueDate', defaultTaskSaver, li);
+                        const menu = new DateMenu(task, component, defaultTaskSaver, li);
                         menu.showAtPosition({ x: ev.clientX, y: ev.clientY });
                     });
                     internalSpan.setAttribute('title', 'Right-click for options');
