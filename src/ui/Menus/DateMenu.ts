@@ -6,6 +6,7 @@ import type { TaskSaver } from './TaskEditingMenu';
 
 // TODO Maybe change this interaction from a context Menu to a left-click on the emoji that just opens the date picker.
 // TODO Allow it to remove the date.
+// TODO Improve positioning of the date picker, so that it is closer to the field being edited
 export class DateMenu extends Menu {
     private readonly dateFieldToEdit;
     protected readonly taskSaver: TaskSaver;

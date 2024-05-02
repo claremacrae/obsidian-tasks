@@ -212,6 +212,7 @@ export class TaskLineRenderer {
                         ev.preventDefault(); // suppress the default context menu
                         ev.stopPropagation(); // suppress further event propagation
                         const menu = new DateMenu(task, component as AllTaskDateFields, defaultTaskSaver, li);
+                        // TODO Set cursor to pointer
                         menu.showAtPosition({ x: ev.clientX, y: ev.clientY });
                     });
                     internalSpan.setAttribute('title', 'Right-click for options');
