@@ -49,7 +49,7 @@ export class DateMenu extends Menu {
                     console.log('A date button clicked');
                     if (selectedDates.length > 0) {
                         const date = selectedDates[0];
-                        const newTask = new SetTaskDate(date).apply(task);
+                        const newTask = new SetTaskDate('dueDate', date).apply(task);
                         await this.taskSaver(task, newTask);
                     }
                     instance.destroy(); // Proper cleanup
@@ -72,7 +72,7 @@ export class DateMenu extends Menu {
                 console.log('Today button clicked'); // Debug: Log to console
                 const today = new Date();
                 fp.setDate(today, true); // Set date to today and trigger change
-                const newTask = new SetTaskDate(today).apply(task); // Apply the new date
+                const newTask = new SetTaskDate('dueDate', today).apply(task); // Apply the new date
                 await this.taskSaver(task, newTask); // Save the task
                 // TODO Clean up
             });
