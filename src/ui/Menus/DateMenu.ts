@@ -9,6 +9,7 @@ import type { TaskSaver } from './TaskEditingMenu';
 // TODO Make this work for the other date types too.
 // TODO Allow it to remove the date.
 export class DateMenu extends Menu {
+    private readonly dateFieldToEdit = 'dueDate';
     protected readonly taskSaver: TaskSaver;
     private readonly button: HTMLElement;
 
@@ -41,7 +42,7 @@ export class DateMenu extends Menu {
 
         // Delay the initialization of Flatpickr to ensure DOM is ready
         setTimeout(() => {
-            const dateFieldToEdit = 'dueDate';
+            const dateFieldToEdit = this.dateFieldToEdit;
             const fp = flatpickr(input, {
                 defaultDate: task[dateFieldToEdit] ? task[dateFieldToEdit].format('YYYY-MM-DD') : new Date(),
                 enableTime: false, // Optional: Enable time picker
