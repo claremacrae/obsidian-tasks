@@ -66,6 +66,9 @@ Can be added in later releases
 ## Extra steps for fields storing dates
 
 - [ ] Add to [recurrence](https://publish.obsidian.md/tasks/Getting+Started/Recurring+Tasks), if appropriate
+- [ ] Update `AllTaskDateFields` in `Task.ts`
+- [ ] Update `Task.allDateFields()`
+- [ ] Potentially update `HappensDate` in `Postponer.ts`
 - Documentation
   - [ ] Update `dates.md`
 - Handling invalid dates
