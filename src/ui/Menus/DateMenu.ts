@@ -61,6 +61,7 @@ export class DateMenu extends Menu {
 
             // Create "Today" button
             const todayButton = document.createElement('button');
+            todayButton.disabled = true; // TODO Disabled until I can fix the callback below
             todayButton.textContent = 'Today';
             todayButton.style.marginLeft = '5px';
             parentElement.appendChild(todayButton); // Make sure button is appended before adding event listener
@@ -78,6 +79,7 @@ export class DateMenu extends Menu {
 
             // Create "Clear" button
             const clearButton = document.createElement('button');
+            clearButton.disabled = true; // TODO Disabled until I can fix the callback below
             clearButton.textContent = 'Clear';
             clearButton.style.marginLeft = '5px';
             parentElement.appendChild(clearButton); // Make sure button is appended before adding event listener
