@@ -30,6 +30,12 @@ interface TaskComponents {
     blockLink: string;
 }
 
+// NEW_TASK_FIELD_EDIT_REQUIRED - see also AllTaskDateFields above.
+export type AllTaskDateFields = keyof Pick<
+    Task,
+    'createdDate' | 'startDate' | 'scheduledDate' | 'dueDate' | 'doneDate' | 'cancelledDate'
+>;
+
 /**
  * Task encapsulates the properties of the MarkDown task along with
  * the extensions provided by this plugin. This is used to parse and

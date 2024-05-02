@@ -21,6 +21,7 @@ export function shouldShowPostponeButton(task: Task) {
     return !task.isDone && hasAValidHappensDate;
 }
 
+// NEW_TASK_FIELD_EDIT_REQUIRED - if new field is included in 'happens' searches.
 export type HappensDate = keyof Pick<Task, 'startDate' | 'scheduledDate' | 'dueDate'>;
 
 /**

@@ -1,19 +1,17 @@
 import flatpickr from 'flatpickr';
 import { Menu } from 'obsidian';
-import { type HappensDate, createTaskWithDateRemoved } from '../../Scripting/Postponer';
-import type { Task } from '../../Task/Task';
+import type { AllTaskDateFields, Task } from '../../Task/Task';
 import { SetTaskDate } from '../EditInstructions/DateInstructions';
 import type { TaskSaver } from './TaskEditingMenu';
 
 // TODO Maybe change this interaction from a context Menu to a left-click on the emoji that just opens the date picker.
-// TODO Make this work for the other date types too than HappensDate.
 // TODO Allow it to remove the date.
 export class DateMenu extends Menu {
     private readonly dateFieldToEdit;
     protected readonly taskSaver: TaskSaver;
     private readonly button: HTMLElement;
 
-    constructor(task: Task, dateFieldToEdit: HappensDate, taskSaver: TaskSaver, button: HTMLElement) {
+    constructor(task: Task, dateFieldToEdit: AllTaskDateFields, taskSaver: TaskSaver, button: HTMLElement) {
         super();
         this.dateFieldToEdit = dateFieldToEdit;
         this.taskSaver = taskSaver;
@@ -93,8 +91,11 @@ export class DateMenu extends Menu {
                 // TODO This does not get triggered - the onClear above is acted on instead
                 console.log('Clear button clicked'); // Debug: Log to console
                 fp.clear(); // Clears the input
-                const { postponedTask } = createTaskWithDateRemoved(task, dateFieldToEdit, 'days', 0);
-                await this.taskSaver(task, postponedTask);
+
+                // TODO Generalise createTaskWithDateRemoved() to work withAllTaskDateFields, not just HappensDate
+                // const { postponedTask } = createTaskWithDateRemoved(task, dateFieldToEdit, 'days', 0);
+                // await this.taskSaver(task, postponedTask);
+
                 // TODO Clean up
             });
 

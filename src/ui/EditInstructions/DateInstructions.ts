@@ -1,13 +1,11 @@
-import type { HappensDate } from '../../Scripting/Postponer';
-import { Task } from '../../Task/Task';
+import { type AllTaskDateFields, Task } from '../../Task/Task';
 import type { TaskEditingInstruction } from './TaskEditingInstruction';
 
 export class SetTaskDate implements TaskEditingInstruction {
     private readonly newDate: Date;
     private readonly dateFieldToEdit;
 
-    // TODO Support all dates, not just HappensDates
-    constructor(dateFieldToEdit: HappensDate, date: Date) {
+    constructor(dateFieldToEdit: AllTaskDateFields, date: Date) {
         this.newDate = date;
         this.dateFieldToEdit = dateFieldToEdit;
     }

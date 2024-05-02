@@ -6,7 +6,7 @@ import type { QueryLayoutOptions } from '../Layout/QueryLayoutOptions';
 import { TaskLayoutComponent, type TaskLayoutOptions } from '../Layout/TaskLayoutOptions';
 import { replaceTaskWithTasks } from '../Obsidian/File';
 import { StatusRegistry } from '../Statuses/StatusRegistry';
-import type { Task } from '../Task/Task';
+import { type AllTaskDateFields, Task } from '../Task/Task';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
 import { DateMenu } from '../ui/Menus/DateMenu';
 import { StatusMenu } from '../ui/Menus/StatusMenu';
@@ -207,11 +207,11 @@ export class TaskLineRenderer {
                 fieldRenderer.addDataAttribute(span, task, component);
                 fieldRenderer.addDataAttribute(li, task, component);
 
-                if (component === 'dueDate' || component === 'scheduledDate' || component === 'startDate') {
+                if (Task.allDateFields().includes(component)) {
                     internalSpan.addEventListener('contextmenu', (ev: MouseEvent) => {
                         ev.preventDefault(); // suppress the default context menu
                         ev.stopPropagation(); // suppress further event propagation
-                        const menu = new DateMenu(task, component, defaultTaskSaver, li);
+                        const menu = new DateMenu(task, component as AllTaskDateFields, defaultTaskSaver, li);
                         menu.showAtPosition({ x: ev.clientX, y: ev.clientY });
                     });
                     internalSpan.setAttribute('title', 'Right-click for options');
