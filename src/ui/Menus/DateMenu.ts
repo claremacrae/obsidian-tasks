@@ -1,6 +1,6 @@
 import flatpickr from 'flatpickr';
 import { Menu } from 'obsidian';
-import { createTaskWithDateRemoved } from '../../Scripting/Postponer';
+import { type HappensDate, createTaskWithDateRemoved } from '../../Scripting/Postponer';
 import type { Task } from '../../Task/Task';
 import { SetTaskDate } from '../EditInstructions/DateInstructions';
 import type { TaskSaver } from './TaskEditingMenu';
@@ -9,12 +9,13 @@ import type { TaskSaver } from './TaskEditingMenu';
 // TODO Make this work for the other date types too.
 // TODO Allow it to remove the date.
 export class DateMenu extends Menu {
-    private readonly dateFieldToEdit = 'dueDate';
+    private readonly dateFieldToEdit;
     protected readonly taskSaver: TaskSaver;
     private readonly button: HTMLElement;
 
-    constructor(task: Task, taskSaver: TaskSaver, button: HTMLElement) {
+    constructor(task: Task, taskSaver: TaskSaver, button: HTMLElement, dateFieldToEdit: HappensDate) {
         super();
+        this.dateFieldToEdit = dateFieldToEdit;
         this.taskSaver = taskSaver;
         this.button = button;
 
