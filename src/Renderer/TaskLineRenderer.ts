@@ -211,7 +211,7 @@ export class TaskLineRenderer {
                     internalSpan.addEventListener('contextmenu', (ev: MouseEvent) => {
                         ev.preventDefault(); // suppress the default context menu
                         ev.stopPropagation(); // suppress further event propagation
-                        const menu = new DateMenu(task, defaultTaskSaver, li, 'dueDate');
+                        const menu = new DateMenu(task, 'dueDate', defaultTaskSaver, li);
                         menu.showAtPosition({ x: ev.clientX, y: ev.clientY });
                     });
                     internalSpan.setAttribute('title', 'Right-click for options');

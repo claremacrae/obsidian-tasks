@@ -6,14 +6,14 @@ import { SetTaskDate } from '../EditInstructions/DateInstructions';
 import type { TaskSaver } from './TaskEditingMenu';
 
 // TODO Maybe change this interaction from a context Menu to a left-click on the emoji that just opens the date picker.
-// TODO Make this work for the other date types too.
+// TODO Make this work for the other date types too than HappensDate.
 // TODO Allow it to remove the date.
 export class DateMenu extends Menu {
     private readonly dateFieldToEdit;
     protected readonly taskSaver: TaskSaver;
     private readonly button: HTMLElement;
 
-    constructor(task: Task, taskSaver: TaskSaver, button: HTMLElement, dateFieldToEdit: HappensDate) {
+    constructor(task: Task, dateFieldToEdit: HappensDate, taskSaver: TaskSaver, button: HTMLElement) {
         super();
         this.dateFieldToEdit = dateFieldToEdit;
         this.taskSaver = taskSaver;
