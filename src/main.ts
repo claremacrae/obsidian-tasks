@@ -1,5 +1,6 @@
 import { Plugin } from 'obsidian';
 
+import type { Task } from 'Task/Task';
 import type { QueryResult } from 'Query/QueryResult';
 import { getQueryForQueryRenderer } from 'lib/QueryRendererHelper';
 import { Cache, State } from './Obsidian/Cache';
@@ -16,7 +17,6 @@ import { StatusRegistry } from './Statuses/StatusRegistry';
 import { log, logging } from './lib/logging';
 import { EditorSuggestor } from './Suggestor/EditorSuggestorPopup';
 import { StatusSettings } from './Config/StatusSettings';
-import type { Task } from './Task/Task';
 import { tasksApiV1 } from './Api';
 import { GlobalFilter } from './Config/GlobalFilter';
 
@@ -60,7 +60,7 @@ export default class TasksPlugin extends Plugin {
         this.queryRenderer = new QueryRenderer({ plugin: this, events });
 
         this.registerEditorExtension(newLivePreviewExtension());
-        this.registerEditorSuggest(new EditorSuggestor(this.app, getSettings()));
+        this.registerEditorSuggest(new EditorSuggestor(this.app, getSettings(), this));
         new Commands({ plugin: this });
     }
 
@@ -92,8 +92,12 @@ export default class TasksPlugin extends Plugin {
         await this.saveData(getSettings());
     }
 
-    public getTasks(): Task[] | undefined {
-        return this.cache?.getTasks();
+    public getTasks(): Task[] {
+        if (this.cache === undefined) {
+            return [] as Task[];
+        } else {
+            return this.cache.getTasks();
+        }
     }
 
     public search(source: string, path: string | undefined = undefined): QueryResult | undefined {
