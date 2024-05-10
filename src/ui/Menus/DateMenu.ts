@@ -29,6 +29,8 @@ export class DateMenu extends Menu {
     private promptForDate(task: Task) {
         // Look at https://github.com/simonknittel/obsidian-create-task
         const parentElement = this.button;
+        const dateFieldToEdit = this.dateFieldToEdit;
+
         if (!parentElement) {
             console.log('Parent element not found.');
             return;
@@ -43,7 +45,6 @@ export class DateMenu extends Menu {
 
         // Delay the initialization of Flatpickr to ensure DOM is ready
         setTimeout(() => {
-            const dateFieldToEdit = this.dateFieldToEdit;
             const currentValue = task[dateFieldToEdit];
             const fp = flatpickr(input, {
                 defaultDate: currentValue ? currentValue.format('YYYY-MM-DD') : new Date(),
