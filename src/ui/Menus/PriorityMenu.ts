@@ -19,7 +19,7 @@ export class PriorityMenu extends TaskEditingMenu {
      * @param taskSaver - an optional {@link TaskSaver} function. For details, see {@link TaskEditingMenu}.
      * @param button
      */
-    constructor(task: Task, taskSaver: TaskSaver, button?: HTMLAnchorElement) {
+    constructor(task: Task, taskSaver: TaskSaver, button?: HTMLElement) {
         super(taskSaver, button);
 
         this.addItemsForInstructions(allPriorityInstructions(), task);

@@ -27,11 +27,11 @@ export type PostponingFunction = (
 };
 
 export class PostponeMenu extends TaskEditingMenu {
-    constructor(button: HTMLAnchorElement, task: Task, taskSaver: TaskSaver = defaultTaskSaver) {
+    constructor(button: HTMLElement, task: Task, taskSaver: TaskSaver = defaultTaskSaver) {
         super(taskSaver, button);
 
         const postponeMenuItemCallback = (
-            button: HTMLAnchorElement,
+            button: HTMLElement,
             item: MenuItem,
             timeUnit: unitOfTime.DurationConstructor,
             amount: number,
@@ -75,7 +75,7 @@ export class PostponeMenu extends TaskEditingMenu {
     }
 
     public static async postponeOnClickCallback(
-        button: HTMLAnchorElement,
+        button: HTMLElement,
         task: Task,
         amount: number,
         timeUnit: unitOfTime.DurationConstructor,
@@ -95,7 +95,7 @@ export class PostponeMenu extends TaskEditingMenu {
     }
 
     private static postponeSuccessCallback(
-        button: HTMLAnchorElement,
+        button: HTMLElement,
         updatedDateType: HappensDate,
         postponedDate: Moment | null,
     ) {

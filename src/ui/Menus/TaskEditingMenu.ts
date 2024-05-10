@@ -30,14 +30,14 @@ export async function defaultTaskSaver(originalTask: Task, newTasks: Task | Task
  */
 export class TaskEditingMenu extends Menu {
     protected readonly taskSaver: TaskSaver;
-    private button?: HTMLAnchorElement;
+    private button?: HTMLElement;
 
     /**
      * Constructor, which sets up the menu items.
      * @param taskSaver - a {@link TaskSaver} function, for saving any edits.
      * @param button
      */
-    constructor(taskSaver: TaskSaver, button?: HTMLAnchorElement) {
+    constructor(taskSaver: TaskSaver, button?: HTMLElement) {
         super();
 
         this.taskSaver = taskSaver;
