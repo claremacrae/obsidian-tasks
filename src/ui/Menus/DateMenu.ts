@@ -117,9 +117,6 @@ export class DateMenu extends Menu {
     }
 
     private promptForDate(task: Task) {
-        const parentElement = this.button;
-        const dateFieldToEdit = this.dateFieldToEdit;
-        const taskSaver = this.taskSaver;
-        promptForDate(parentElement, task, dateFieldToEdit, taskSaver);
+        promptForDate(this.button, task, this.dateFieldToEdit, this.taskSaver);
     }
 }
