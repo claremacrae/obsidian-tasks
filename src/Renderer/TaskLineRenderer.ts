@@ -208,7 +208,7 @@ export class TaskLineRenderer {
                 fieldRenderer.addDataAttribute(li, task, component);
 
                 if (Task.allDateFields().includes(component)) {
-                    internalSpan.addEventListener('contextmenu', (ev: MouseEvent) => {
+                    span.addEventListener('contextmenu', (ev: MouseEvent) => {
                         ev.preventDefault(); // suppress the default context menu
                         ev.stopPropagation(); // suppress further event propagation
                         const menu = new DateMenu(task, component as AllTaskDateFields, defaultTaskSaver, li);
