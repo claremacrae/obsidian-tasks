@@ -8,7 +8,8 @@ import { replaceTaskWithTasks } from '../Obsidian/File';
 import { StatusRegistry } from '../Statuses/StatusRegistry';
 import { type AllTaskDateFields, Task } from '../Task/Task';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
-import { DateMenu, promptForDate } from '../ui/Menus/DateMenu';
+import { promptForDate } from '../ui/Menus/DateMenu';
+import { PostponeMenu } from '../ui/Menus/PostponeMenu';
 import { StatusMenu } from '../ui/Menus/StatusMenu';
 import { defaultTaskSaver } from '../ui/Menus/TaskEditingMenu';
 import { TaskFieldRenderer } from './TaskFieldRenderer';
@@ -218,7 +219,7 @@ export class TaskLineRenderer {
                     span.addEventListener('contextmenu', (ev: MouseEvent) => {
                         ev.preventDefault(); // suppress the default context menu
                         ev.stopPropagation(); // suppress further event propagation
-                        const menu = new DateMenu(task, component as AllTaskDateFields, defaultTaskSaver, li);
+                        const menu = new PostponeMenu(parentElement, task);
                         // TODO Set cursor to pointer
                         menu.showAtPosition({ x: ev.clientX, y: ev.clientY });
                     });
