@@ -222,6 +222,9 @@ export class TaskLineRenderer {
                     span.addEventListener('contextmenu', (ev: MouseEvent) => {
                         ev.preventDefault(); // suppress the default context menu
                         ev.stopPropagation(); // suppress further event propagation
+                        // TODO Change this to specify the field to edit. It works by luck in my vault because I use:
+                        //      Either Due date
+                        //      Or     Scheduled date
                         const menu = new PostponeMenu(parentElement, task);
                         // TODO Set cursor to pointer
                         menu.showAtPosition({ x: ev.clientX, y: ev.clientY });
