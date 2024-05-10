@@ -8,7 +8,7 @@ import { replaceTaskWithTasks } from '../Obsidian/File';
 import { StatusRegistry } from '../Statuses/StatusRegistry';
 import { type AllTaskDateFields, Task } from '../Task/Task';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
-import { DateMenu } from '../ui/Menus/DateMenu';
+import { DateMenu, promptForDate } from '../ui/Menus/DateMenu';
 import { StatusMenu } from '../ui/Menus/StatusMenu';
 import { defaultTaskSaver } from '../ui/Menus/TaskEditingMenu';
 import { TaskFieldRenderer } from './TaskFieldRenderer';
@@ -208,6 +208,13 @@ export class TaskLineRenderer {
                 fieldRenderer.addDataAttribute(li, task, component);
 
                 if (Task.allDateFields().includes(component)) {
+                    // Note: The more convenient span.onClickEvent() doesn't work here, as it is not available when tests are run.
+                    span.addEventListener('click', (ev: MouseEvent) => {
+                        ev.preventDefault(); // suppress the default click behavior
+                        ev.stopPropagation(); // suppress further event propagation
+                        promptForDate(li, task, component as AllTaskDateFields, defaultTaskSaver);
+                    });
+
                     span.addEventListener('contextmenu', (ev: MouseEvent) => {
                         ev.preventDefault(); // suppress the default context menu
                         ev.stopPropagation(); // suppress further event propagation
