@@ -222,7 +222,7 @@ export class TaskLineRenderer {
                         // TODO Set cursor to pointer
                         menu.showAtPosition({ x: ev.clientX, y: ev.clientY });
                     });
-                    internalSpan.setAttribute('title', 'Right-click for options');
+                    span.setAttribute('title', 'Right-click for options');
                 }
             }
         }
