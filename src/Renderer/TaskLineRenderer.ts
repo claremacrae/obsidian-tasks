@@ -5,6 +5,7 @@ import { TASK_FORMATS, getSettings } from '../Config/Settings';
 import type { QueryLayoutOptions } from '../Layout/QueryLayoutOptions';
 import { TaskLayoutComponent, type TaskLayoutOptions } from '../Layout/TaskLayoutOptions';
 import { replaceTaskWithTasks } from '../Obsidian/File';
+import { splitDateText } from '../Scripting/Postponer';
 import { StatusRegistry } from '../Statuses/StatusRegistry';
 import { type AllTaskDateFields, Task } from '../Task/Task';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
@@ -209,11 +210,13 @@ export class TaskLineRenderer {
                 fieldRenderer.addDataAttribute(li, task, component);
 
                 if (Task.allDateFields().includes(component)) {
+                    const componentDateField = component as AllTaskDateFields;
+
                     // Note: The more convenient span.onClickEvent() doesn't work here, as it is not available when tests are run.
                     span.addEventListener('click', (ev: MouseEvent) => {
                         ev.preventDefault(); // suppress the default click behavior
                         ev.stopPropagation(); // suppress further event propagation
-                        promptForDate(li, task, component as AllTaskDateFields, defaultTaskSaver);
+                        promptForDate(li, task, componentDateField, defaultTaskSaver);
                     });
 
                     span.addEventListener('contextmenu', (ev: MouseEvent) => {
@@ -223,7 +226,10 @@ export class TaskLineRenderer {
                         // TODO Set cursor to pointer
                         menu.showAtPosition({ x: ev.clientX, y: ev.clientY });
                     });
-                    span.setAttribute('title', 'Right-click for options');
+                    span.setAttribute(
+                        'title',
+                        `Click to edit ${splitDateText(componentDateField)}, Right-click for more options`,
+                    );
                 }
             }
         }
