@@ -30,6 +30,7 @@ export class DateMenu extends Menu {
         // Look at https://github.com/simonknittel/obsidian-create-task
         const parentElement = this.button;
         const dateFieldToEdit = this.dateFieldToEdit;
+        const taskSaver = this.taskSaver;
 
         if (!parentElement) {
             console.log('Parent element not found.');
@@ -55,7 +56,7 @@ export class DateMenu extends Menu {
                     if (selectedDates.length > 0) {
                         const date = selectedDates[0];
                         const newTask = new SetTaskDate(dateFieldToEdit, date).apply(task);
-                        await this.taskSaver(task, newTask);
+                        await taskSaver(task, newTask);
                     }
                     instance.destroy(); // Proper cleanup
                     input.remove(); // Remove the elements after selection
@@ -78,7 +79,7 @@ export class DateMenu extends Menu {
                 const today = new Date();
                 fp.setDate(today, true); // Set date to today and trigger change
                 const newTask = new SetTaskDate(dateFieldToEdit, today).apply(task); // Apply the new date
-                await this.taskSaver(task, newTask); // Save the task
+                await taskSaver(task, newTask); // Save the task
                 // TODO Clean up
             });
 
