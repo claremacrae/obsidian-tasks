@@ -470,9 +470,13 @@ Availability of access keys:
     </section>
 
     <!-- --------------------------------------------------------------------------- -->
-    <!--  Recurrence  -->
+    <!--  Dates  -->
     <!-- --------------------------------------------------------------------------- -->
+    <hr />
     <section class="tasks-modal-dates-section">
+        <!-- --------------------------------------------------------------------------- -->
+        <!--  Recurrence  -->
+        <!-- --------------------------------------------------------------------------- -->
         <label for="recurrence" class="accesskey-first">Recurs</label>
         <!-- svelte-ignore a11y-accesskey -->
         <input
@@ -480,18 +484,11 @@ Availability of access keys:
             id="recurrence"
             type="text"
             class:tasks-modal-error={!isRecurrenceValid}
-            class="input"
+            class="tasks-modal-date-input"
             placeholder="Try 'every day when done'"
             accesskey={accesskey('r')}
         />
-        <code class="results">{recurrenceSymbol} {@html parsedRecurrence}</code>
-    </section>
-
-    <!-- --------------------------------------------------------------------------- -->
-    <!--  Dates  -->
-    <!-- --------------------------------------------------------------------------- -->
-    <hr />
-    <section class="tasks-modal-dates-section">
+        <code class="tasks-modal-parsed-date">{recurrenceSymbol} {@html parsedRecurrence}</code>
         <!-- --------------------------------------------------------------------------- -->
         <!--  Due Date  -->
         <!-- --------------------------------------------------------------------------- -->
@@ -544,7 +541,7 @@ Availability of access keys:
                 bind:checked={editableTask.forwardOnly}
                 id="forwardOnly"
                 type="checkbox"
-                class="input task-list-item-checkbox tasks-modal-checkbox"
+                class="task-list-item-checkbox tasks-modal-checkbox"
                 accesskey={accesskey('f')}
             />
         </div>
@@ -601,7 +598,7 @@ Availability of access keys:
             bind:value={statusSymbol}
             on:change={_onStatusChange}
             id="status-type"
-            class="dropdown"
+            class="tasks-modal-status-selector"
             accesskey={accesskey('u')}
         >
             {#each statusOptions as status}
