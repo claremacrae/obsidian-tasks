@@ -117,7 +117,6 @@ export class DateMenu extends Menu {
     }
 
     private promptForDate(task: Task) {
-        // Look at https://github.com/simonknittel/obsidian-create-task
         const parentElement = this.button;
         const dateFieldToEdit = this.dateFieldToEdit;
         const taskSaver = this.taskSaver;
