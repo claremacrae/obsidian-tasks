@@ -1,6 +1,6 @@
 import type { Moment, unitOfTime } from 'moment';
 import { DateFallback } from '../Task/DateFallback';
-import { Task } from '../Task/Task';
+import { type AllTaskDateFields, Task } from '../Task/Task';
 import { TasksDate } from './TasksDate';
 
 export function shouldShowPostponeButton(task: Task) {
@@ -194,7 +194,7 @@ function prettyPrintDateFieldName(updatedDateType: HappensDate) {
     return capitalizeFirstLetter(updatedDateType.replace('Date', ''));
 }
 
-function splitDateText(updatedDateType: HappensDate) {
+export function splitDateText(updatedDateType: AllTaskDateFields) {
     return updatedDateType.replace('Date', ' date');
 }
 

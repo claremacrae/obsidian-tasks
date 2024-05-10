@@ -1,5 +1,6 @@
 import flatpickr from 'flatpickr';
 import { Menu } from 'obsidian';
+import { splitDateText } from '../../Scripting/Postponer';
 import type { AllTaskDateFields, Task } from '../../Task/Task';
 import { SetTaskDate } from '../EditInstructions/DateInstructions';
 import type { TaskSaver } from './TaskEditingMenu';
@@ -19,7 +20,7 @@ export class DateMenu extends Menu {
         this.button = button;
 
         this.addItem((item) => {
-            item.setTitle('Set Date').onClick(() => {
+            item.setTitle(`Set ${splitDateText(dateFieldToEdit)}`).onClick(() => {
                 this.promptForDate(task);
             });
         });
