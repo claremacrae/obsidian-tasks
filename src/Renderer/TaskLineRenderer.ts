@@ -9,7 +9,7 @@ import { splitDateText } from '../Scripting/Postponer';
 import { StatusRegistry } from '../Statuses/StatusRegistry';
 import { type AllTaskDateFields, Task } from '../Task/Task';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
-import { promptForDate } from '../ui/Menus/DateMenu';
+import { promptForDate } from '../ui/Menus/DatePicker';
 import { PostponeMenu } from '../ui/Menus/PostponeMenu';
 import { StatusMenu } from '../ui/Menus/StatusMenu';
 import { defaultTaskSaver } from '../ui/Menus/TaskEditingMenu';
