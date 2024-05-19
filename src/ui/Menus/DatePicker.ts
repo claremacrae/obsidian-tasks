@@ -27,6 +27,9 @@ export function promptForDate(
             defaultDate: currentValue ? currentValue.format('YYYY-MM-DD') : new Date(),
             enableTime: false, // Optional: Enable time picker
             dateFormat: 'Y-m-d', // Adjust the date and time format as needed
+            locale: {
+                firstDayOfWeek: 1, // Sets Monday as the first day of the week
+            },
             onClose: async (selectedDates, _dateStr, instance) => {
                 console.log('A date button clicked');
                 if (selectedDates.length > 0) {
