@@ -23,7 +23,7 @@ declare global {
 }
 
 // Set default value for production to off, temporarily. It will be turned on in tests.
-export const showDependencySuggestionsDefault = false;
+export const showDependencySuggestionsDefault = true; // Turn on in Clare's fork only, for continued testing.
 globalThis.SHOW_DEPENDENCY_SUGGESTIONS = showDependencySuggestionsDefault;
 
 export function makeDefaultSuggestionBuilder(
