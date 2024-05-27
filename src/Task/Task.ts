@@ -68,12 +68,6 @@ export class Task extends ListItem {
      * Any non-empty value must begin with ' ^'. */
     public readonly blockLink: string;
 
-    /** The original line read from file.
-     *
-     * Will be empty if Task was created programmatically
-     * (for example, by Create or Edit Task, or in tests, including via {@link TaskBuilder}). */
-    public readonly originalMarkdown: string;
-
     public readonly scheduledDateIsInferred: boolean;
 
     private _urgency: number | null = null;
@@ -99,6 +93,7 @@ export class Task extends ListItem {
         tags,
         originalMarkdown,
         scheduledDateIsInferred,
+        parent = null,
     }: {
         // NEW_TASK_FIELD_EDIT_REQUIRED
         status: Status;
@@ -120,8 +115,9 @@ export class Task extends ListItem {
         tags: string[] | [];
         originalMarkdown: string;
         scheduledDateIsInferred: boolean;
+        parent?: ListItem | null;
     }) {
-        super(null, []);
+        super(originalMarkdown, parent, []);
         // NEW_TASK_FIELD_EDIT_REQUIRED
         this.status = status;
         this.description = description;
@@ -146,7 +142,6 @@ export class Task extends ListItem {
         this.id = id;
 
         this.blockLink = blockLink;
-        this.originalMarkdown = originalMarkdown;
 
         this.scheduledDateIsInferred = scheduledDateIsInferred;
     }
