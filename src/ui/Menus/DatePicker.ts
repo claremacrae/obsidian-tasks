@@ -23,6 +23,8 @@ export function promptForDate(
     // Delay the initialization of Flatpickr to ensure DOM is ready
     setTimeout(() => {
         const currentValue = task[dateFieldToEdit];
+        // TODO figure out how Today's date is determined: if Obsidian is left
+        //      running overnight, the flatpickr modal shows the previous day as Today.
         const fp = flatpickr(input, {
             defaultDate: currentValue ? currentValue.format('YYYY-MM-DD') : new Date(),
             enableTime: false, // Optional: Enable time picker
