@@ -33,7 +33,7 @@ export function promptForDate(
                 firstDayOfWeek: 1, // Sets Monday as the first day of the week
             },
             onClose: async (selectedDates, _dateStr, instance) => {
-                console.log('A date button clicked');
+                // console.log('A date button clicked');
                 if (selectedDates.length > 0) {
                     const date = selectedDates[0];
                     const newTask = new SetTaskDate(dateFieldToEdit, date).apply(task);
