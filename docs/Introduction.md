@@ -8,24 +8,8 @@ publish: true
 
 <!-- force a blank line --><!-- include: snippet-callout-titles-bug.md -->
 
-> [!Warning] Warning: Obsidian 1.6.x bug causing some tasks not to be found
-> If **all** the following apply to **any** of your vaults...
->
-> - You are using one of these versions of Obsidian:
->   - Obsidian 1.6.3 - public release
->   - Obsidian 1.6.4 - [early access version](https://help.obsidian.md/Obsidian/Early+access+versions)
-> - You use a plugin like Tasks or dataview to find or edit tasks in your Obsidian vault
-> - Your vault has [any tasks inside callouts](https://help.obsidian.md/Editing+and+formatting/Callouts)
-> - And any of these [callouts have titles](https://help.obsidian.md/Editing+and+formatting/Callouts#Change+the+title)
->
-> ... ==please read this page:== [[Missing tasks in callouts with some Obsidian 1.6.x versions]].
->
-> For clarity, this is what a task in a callout with a title looks like:
->
-> ```text
-> > [!NOTE] Some Title - remove title to fix issue
-> > - [ ] Task not be found by Obsidian 1.6.3, and not always by 1.6.4
-> ```
+> [!Warning] Warning: Obsidian bug in versions 1.6.0 to 1.6.3 has caused some tasks not to be found
+> See [[Missing tasks in callouts with some Obsidian 1.6.x versions]] for how to ==make Obsidian 1.6.5 fix its metadata cache==, in case it was broken by earlier 1.6.x versions.
 
 <!-- force a blank line --><!-- endInclude -->
 
@@ -35,16 +19,20 @@ _In recent [releases](https://github.com/obsidian-tasks-group/obsidian-tasks/rel
     Keep to around 2 to 3 releases, so that 'Navigation around this site' is visible.
     Move the older ones down to the top of the comment block below...
 -->
+
+- 7.6.0:
+  - New setting to [[Use Filename as Default Date#Additional date format|recognise extra date format]] in file name as default date.
+  - Add page [[Request a Feature]].
 - 7.5.0:
   - Add page [[Missing tasks in callouts with some Obsidian 1.6.x versions]].
   - [[Auto-Suggest#How do I see fewer or more suggestions?|Auto-suggest]] now defaults to at most 20 suggestions in new vaults. This is useful when adding dependencies.
 - 7.4.0:
   - [[Auto-Suggest#Details|Auto-suggest]] now supports [[Task Dependencies#Option 2 Use the Auto-Suggest feature|task dependencies]].
-- 7.3.0:
-  - Add 'Remove date' option to the [[Postponing|postpone]] right-click menu in search results.
 
 > [!Released]- Earlier Releases
 >
+> - 7.3.0:
+>   - Add 'Remove date' option to the [[Postponing|postpone]] right-click menu in search results.
 > - 7.2.0:
 >   - Much improved layout of the [[Create or edit Task]] modal, on mobile devices.
 >   - Add [[Tasks Api#`executeToggleTaskDoneCommand (line string, path string) => string;`|executeToggleTaskDoneCommand()]] to the Tasks API.
