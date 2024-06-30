@@ -12,10 +12,11 @@ publish: true
 
 - [[Known Limitations]]
 - [[Missing tasks in callouts with some Obsidian 1.6.x versions]]
-  - Obsidian 1.6.3 and 1.6.4 have a ==severe issue that causes some tasks not to be found by plugins==.
+  - Use Obsidian 1.6.5 or newer to fix potential missed tasks in your  vaults.
 - [[Breaking Changes]]
   - Tasks releases with version numbers ending `.0.0` indicate that an update to user vaults may be required.
 - [[Report a Bug]]
+- [[Request a Feature]]
 
 ### Ways to use the Tasks Plugin
 
