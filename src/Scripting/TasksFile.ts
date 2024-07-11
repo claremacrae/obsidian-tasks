@@ -6,10 +6,17 @@ import { type CachedMetadata, type FrontMatterCache, getAllTags, parseFrontMatte
 export class TasksFile {
     private readonly _path: string;
     private readonly _cachedMetadata: CachedMetadata;
+    private readonly _frontmatter: FrontMatterCache = {} as FrontMatterCache;
 
     constructor(path: string, cachedMetadata: CachedMetadata = {}) {
         this._path = path;
         this._cachedMetadata = cachedMetadata;
+
+        const rawFrontmatter = cachedMetadata.frontmatter;
+        if (rawFrontmatter !== undefined) {
+            this._frontmatter = JSON.parse(JSON.stringify(rawFrontmatter));
+            this._frontmatter.tags = parseFrontMatterTags(rawFrontmatter) ?? [];
+        }
     }
 
     /**
@@ -22,48 +29,44 @@ export class TasksFile {
     /**
      * Return all the tags in the file, both from frontmatter and the body of the file.
      *
-     * It adds the `#` prefix to tags in the frontmatter.
-     * For now, it includes any global filter that is a tag, if there are any tasks in the file
-     * that have the global filter. This decision will be reviewed later.
+     * - It adds the `#` prefix to tags in the frontmatter.
+     * - It removes any duplicate tag values.
+     * - For now, it includes any global filter that is a tag, if there are any tasks in the file
+     *   that have the global filter. This decision will be reviewed later.
      *
      * @todo Review presence of global filter tag in the results.
      */
     get tags(): string[] {
-        return getAllTags(this.cachedMetadata) ?? [];
-    }
-
-    /**
-     * Return the sanitised tags from the frontmatter.
-     *
-     * It recognises both frontmatter.tags and frontmatter.tag (and various capitalisation combinations too)
-     * It adds the `#` prefix, and removes any null tags.
-     * We would like to make it accessible via task.frontmatter.tags eventually.
-     *
-     * For now, it includes any global filter that is a tag, if there are any tasks in the file
-     * that have the global filter. This decision will be reviewed later.
-     *
-     * @todo Review presence of global filter tag in the results.
-     *       Or should that not be relevant for tags in the frontmatter?
-     */
-    get frontmatterTags(): string[] {
-        return parseFrontMatterTags(this.cachedMetadata.frontmatter) ?? [];
+        // TODO Replace this with storing the sanitised tags, to avoid repeated re-calculation.
+        const tags = getAllTags(this.cachedMetadata) ?? [];
+        return [...new Set(tags)];
     }
 
     /**
      * Return Obsidian's [CachedMetadata](https://docs.obsidian.md/Reference/TypeScript+API/CachedMetadata)
      * for this file, if available.
      *
+     * Any raw frontmatter may be accessed via `cachedMetadata.frontmatter`.
+     * See [FrontMatterCache](https://docs.obsidian.md/Reference/TypeScript+API/FrontMatterCache).
+     * But prefer using {@link frontmatter} where possible.
+     *
      * @note This is currently only populated for Task objects when read in the Obsidian plugin.
      *       It's not populated for queries in the plugin, nor in most unit tests.
      *       If not available, it returns an empty object, {}.
+     *
+     * @see frontmatter, which provides a cleaned-up version of the raw frontmatter.
      */
     public get cachedMetadata(): CachedMetadata {
         return this._cachedMetadata;
     }
 
     /**
-     * Return Obsidian's [FrontMatterCache](https://docs.obsidian.md/Reference/TypeScript+API/FrontMatterCache)
-     * for this file, if available.
+     * Returns a cleaned-up version of the frontmatter.
+     *
+     * If accessing tags, please note:
+     * - If there are any tags in the frontmatter, `frontmatter.tags` will have the values with '#' prefix added.
+     * - It recognises both `frontmatter.tags` and `frontmatter.tag` (and various capitalisation combinations too).
+     * - It removes any null tags.
      *
      * @note This is currently only populated for Task objects when read in the Obsidian plugin.
      *       It's not populated for queries in the plugin, nor in most unit tests.
@@ -71,7 +74,7 @@ export class TasksFile {
      *       or if the markdown file has no frontmatter or empty frontmatter.
      */
     public get frontmatter(): FrontMatterCache {
-        return this._cachedMetadata.frontmatter ?? ({} as FrontMatterCache);
+        return this._frontmatter;
     }
 
     /**

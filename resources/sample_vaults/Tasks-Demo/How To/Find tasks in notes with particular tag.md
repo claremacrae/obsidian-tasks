@@ -31,13 +31,26 @@ Credit: jonlemon in [this Obsidian Forum thread](https://forum.obsidian.md/t/how
 
 ## Tasks experimental approach
 
-> [!warning]
-> Tasks does not currently sanitise tags from frontmatter, such as adding a  `#` prefix.
+### Tasks in files that have a Tag in frontmatter
+
+#### Presence of tag - in frontmatter
 
 ```tasks
-filter by function \
-    task.file.frontmatter.tags?.includes('examples') ?? false
+filter by function task.file.frontmatter.tags?.includes('#examples') ?? false
+```
 
-# you can add any number of extra Tasks instructions, for example:
-group by path
+### Tasks in files that have a Tag anywhere - in frontmatter or body
+
+#### Presence of tag - in frontmatter or body
+
+```tasks
+filter by function task.file.tags.includes('#examples')
+```
+
+#### Absence of tag - in frontmatter or body
+
+```tasks
+filter by function ! task.file.tags.includes('#examples')
+
+limit 20
 ```
