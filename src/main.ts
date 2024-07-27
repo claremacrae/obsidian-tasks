@@ -13,6 +13,7 @@ import { newLivePreviewExtension } from './Obsidian/LivePreviewExtension';
 import { QueryRenderer } from './Renderer/QueryRenderer';
 import { getSettings, updateSettings } from './Config/Settings';
 import { SettingsTab } from './Config/SettingsTab';
+import { TasksFile } from './Scripting/TasksFile';
 import { StatusRegistry } from './Statuses/StatusRegistry';
 import { log, logging } from './lib/logging';
 import { EditorSuggestor } from './Suggestor/EditorSuggestorPopup';
@@ -105,7 +106,9 @@ export default class TasksPlugin extends Plugin {
             return undefined;
         }
         // path is required for placeholders to work
-        const query = getQueryForQueryRenderer(source, GlobalQuery.getInstance(), path);
+        // TODO Also read frontmatter
+        const optionalTasksFile = path ? new TasksFile(path) : undefined;
+        const query = getQueryForQueryRenderer(source, GlobalQuery.getInstance(), optionalTasksFile);
         return query.applyQueryToTasks(this.cache?.getTasks());
     }
 }

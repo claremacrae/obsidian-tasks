@@ -14,6 +14,7 @@ import { HappensDateField } from '../../../src/Query/Filter/HappensDateField';
 import { DueDateField } from '../../../src/Query/Filter/DueDateField';
 import { SearchInfo } from '../../../src/Query/SearchInfo';
 import { TaskBuilder } from '../../TestingTools/TaskBuilder';
+import { TasksFile } from '../../../src/Scripting/TasksFile';
 import { createTasksFromMarkdown, fromLine } from '../../TestingTools/TestHelpers';
 
 window.moment = moment;
@@ -103,20 +104,20 @@ describe('Grouping tasks', () => {
     it('should provide access to SearchInfo', () => {
         // Arrange
         const groupByQueryPath: GrouperFunction = (_task: Task, searchInfo: SearchInfo) => {
-            return [searchInfo.queryPath ? searchInfo.queryPath : 'No SearchInfo'];
+            return [searchInfo.tasksFile ? searchInfo.tasksFile.path : 'No SearchInfo'];
         };
         const grouper: Grouper = new Grouper('group by test', 'test', groupByQueryPath, false);
 
-        const filename = 'somewhere/anything.md';
+        const tasksFile = new TasksFile('somewhere/anything.md');
         const tasks = [new TaskBuilder().build()];
-        const searchInfo = new SearchInfo(filename, tasks);
+        const searchInfo = new SearchInfo(tasksFile, tasks);
 
         // Act
         const groups = new TaskGroups([grouper], tasks, searchInfo);
 
         // Assert
         expect(groups.groups.length).toEqual(1);
-        expect(groups.groups[0].groups).toEqual([filename]);
+        expect(groups.groups[0].groups).toEqual([tasksFile.path]);
     });
 
     it('sorts group names correctly', () => {

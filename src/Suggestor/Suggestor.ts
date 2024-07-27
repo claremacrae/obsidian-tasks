@@ -2,6 +2,7 @@ import type { Editor, EditorPosition } from 'obsidian';
 import type { Settings } from '../Config/Settings';
 import { DateParser } from '../Query/DateParser';
 import { doAutocomplete } from '../lib/DateAbbreviations';
+import { Occurrence } from '../Task/Occurrence';
 import { Recurrence } from '../Task/Recurrence';
 import {
     type DefaultTaskSerializerSymbols,
@@ -381,9 +382,11 @@ function addRecurrenceSuggestions(
             // We also add a nice checkmark in this case to denote it's a complete valid recurrence description
             const parsedRecurrence = Recurrence.fromText({
                 recurrenceRuleText: recurrenceString,
-                startDate: null,
-                scheduledDate: null,
-                dueDate: null,
+                occurrence: new Occurrence({
+                    startDate: null,
+                    scheduledDate: null,
+                    dueDate: null,
+                }),
             })?.toText();
             if (parsedRecurrence) {
                 const appendedText = `${recurrencePrefix} ${parsedRecurrence}` + postfix;

@@ -2,10 +2,8 @@
  * @jest-environment jsdom
  */
 import moment from 'moment/moment';
-import type { CachedMetadata } from 'obsidian';
-import { logging } from '../../src/lib/logging';
-import { getTasksFromFileContent2 } from '../../src/Obsidian/Cache';
 import type { ListItem } from '../../src/Task/ListItem';
+import { getTasksFileFromMockData, listPathAndData } from '../TestingTools/MockDataHelpers';
 import { inheritance_1parent1child } from './__test_data__/inheritance_1parent1child';
 import { inheritance_1parent1child1newroot_after_header } from './__test_data__/inheritance_1parent1child1newroot_after_header';
 import { inheritance_1parent1child1sibling_emptystring } from './__test_data__/inheritance_1parent1child1sibling_emptystring';
@@ -29,61 +27,10 @@ import { callout } from './__test_data__/callout';
 import { callout_labelled } from './__test_data__/callout_labelled';
 import { callout_custom } from './__test_data__/callout_custom';
 import { callouts_nested_issue_2890_unlabelled } from './__test_data__/callouts_nested_issue_2890_unlabelled';
+import { allCacheSampleData } from './AllCacheSampleData';
+import { readTasksFromSimulatedFile } from './SimulatedFile';
 
 window.moment = moment;
-
-function errorReporter() {
-    return;
-}
-
-/* Test creation sequence:
-
-If using this on an Obsidian version newer than the one in saved tests/Obsidian/__test_data__/*.ts
-go to Settings → Files and links → Advanced → Rebuild vault cache.
-
-- Create a sample markdown file in Tasks demo vault (root/Test Data/) with the simplest content
-to represent your test case. Choose a meaningful file name in snake case. See example in 'Test Data/one_task.md'.
-
-    - There is a Templater template that may help with creating a new file, for single-tasks cases:
-      `resources/sample_vaults/Tasks-Demo/_meta/templates/Test Data file.md`
-
-- Open any other note in the vault, just so that Templater will run.
-
-    - The Templater plugin requires a note to be open. The script won't edit the file, so it
-      doesn't matter which file you have open.
-
-- Run the command 'Templater: Insert _meta/templates/convert_test_data_markdown_to_js.md'
-    - Or type the short-cut 'Ctrl + Cmd + Alt + T' / 'Ctrl + Ctrl + Alt + T'
-
-- This will convert all the files 'root/Test Data/*.md' to test functions in 'tests/Obsidian/__test_data__/*.ts'
-
-- Run 'yarn lint:test-data' to standardise the formatting in the generated TypeScript files.
-
-- Use the data in the test with `readTasksFromSimulatedFile()`, the argument is the constant you
-created in the previous step.
-
-- Remember to commit the markdown file in the demo vault and the file with the simulated data.
-
-TODO: Make the order of values in the generated code stable.
- */
-
-interface SimulatedFile {
-    cachedMetadata: CachedMetadata;
-    filePath: string;
-    fileContents: string;
-}
-
-function readTasksFromSimulatedFile(testData: SimulatedFile) {
-    const logger = logging.getLogger('testCache');
-    return getTasksFromFileContent2(
-        testData.filePath,
-        testData.fileContents,
-        testData.cachedMetadata.listItems!,
-        logger,
-        testData.cachedMetadata,
-        errorReporter,
-    );
-}
 
 function testRootAndChildren(root: ListItem, children: ListItem[]) {
     expect(root.parent).toEqual(null);
@@ -604,4 +551,34 @@ describe('cache', () => {
         `);
         expect(tasks.length).toEqual(4);
     });
+});
+
+describe('all mock files', () => {
+    const files: any = allCacheSampleData();
+
+    it.each(listPathAndData(files))(
+        'should create valid TasksFile for all mock files: "%s"',
+        (_path: string, file: any) => {
+            const tasksFile = getTasksFileFromMockData(file);
+
+            const frontmatter = tasksFile.frontmatter;
+            expect(frontmatter).not.toBeUndefined();
+            expect(frontmatter).not.toBeNull();
+
+            // We always define frontmatter.tags, even if there was no frontmatter,
+            // to simplify a common user operation in custom filters.
+            expect(frontmatter.tags).not.toBeUndefined();
+            expect(frontmatter.tags).not.toBeNull();
+            expect(frontmatter.tags).not.toContain(null);
+            expect(frontmatter.tags).not.toContain(undefined);
+        },
+    );
+
+    it.each(listPathAndData(files))(
+        'should be able to read tasks from all mock files: "%s"',
+        (_path: string, file: any) => {
+            const tasks = readTasksFromSimulatedFile(file);
+            expect(tasks.length).toBeGreaterThan(0);
+        },
+    );
 });

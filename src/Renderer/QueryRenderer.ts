@@ -20,6 +20,7 @@ import type { TasksEvents } from '../Obsidian/TasksEvents';
 import { getTaskLineAndFile, replaceTaskWithTasks } from '../Obsidian/File';
 import { State } from '../Obsidian/Cache';
 import { PerformanceTracker } from '../lib/PerformanceTracker';
+import { TasksFile } from '../Scripting/TasksFile';
 import { PriorityMenu } from '../ui/Menus/PriorityMenu';
 import { defaultTaskSaver } from '../ui/Menus/TaskEditingMenu';
 import { TaskLineRenderer, createAndAppendElement } from './TaskLineRenderer';
@@ -46,7 +47,7 @@ export class QueryRenderer {
             events: this.events,
             container: element,
             source,
-            filePath: context.sourcePath,
+            tasksFile: new TasksFile(context.sourcePath),
         });
         context.addChild(queryRenderChild);
         queryRenderChild.load();
@@ -70,8 +71,8 @@ class QueryRenderChild extends MarkdownRenderChild {
      */
     private readonly source: string;
 
-    /// The path of the file that contains the instruction block.
-    private readonly filePath: string;
+    // The path of the file that contains the instruction block, and cached data from that file.
+    private readonly tasksFile: TasksFile;
 
     private query: IQuery;
     // @ts-expect-error: TS6133: 'queryType' is declared but its value is never read
@@ -86,14 +87,14 @@ class QueryRenderChild extends MarkdownRenderChild {
         events,
         container,
         source,
-        filePath,
+        tasksFile,
     }: {
         app: App;
         plugin: TasksPlugin;
         events: TasksEvents;
         container: HTMLElement;
         source: string;
-        filePath: string;
+        tasksFile: TasksFile;
     }) {
         super(container);
 
@@ -101,19 +102,19 @@ class QueryRenderChild extends MarkdownRenderChild {
         this.plugin = plugin;
         this.events = events;
         this.source = source;
-        this.filePath = filePath;
+        this.tasksFile = tasksFile;
 
         // The engine is chosen on the basis of the code block language. Currently,
         // there is only the main engine for the plugin, this allows others to be
         // added later.
         switch (this.containerEl.className) {
             case 'block-language-tasks':
-                this.query = getQueryForQueryRenderer(this.source, GlobalQuery.getInstance(), this.filePath);
+                this.query = getQueryForQueryRenderer(this.source, GlobalQuery.getInstance(), this.tasksFile);
                 this.queryType = 'tasks';
                 break;
 
             default:
-                this.query = getQueryForQueryRenderer(this.source, GlobalQuery.getInstance(), this.filePath);
+                this.query = getQueryForQueryRenderer(this.source, GlobalQuery.getInstance(), this.tasksFile);
                 this.queryType = 'tasks';
                 break;
         }
@@ -138,6 +139,10 @@ class QueryRenderChild extends MarkdownRenderChild {
         }
     }
 
+    public get filePath(): string | undefined {
+        return this.tasksFile?.path ?? undefined;
+    }
+
     /**
      * Reloads the query after midnight to update results from relative date queries.
      *
@@ -154,7 +159,7 @@ class QueryRenderChild extends MarkdownRenderChild {
         const millisecondsToMidnight = midnight.getTime() - now.getTime();
 
         this.queryReloadTimeout = setTimeout(() => {
-            this.query = getQueryForQueryRenderer(this.source, GlobalQuery.getInstance(), this.filePath);
+            this.query = getQueryForQueryRenderer(this.source, GlobalQuery.getInstance(), this.tasksFile);
             // Process the current cache state:
             this.events.triggerRequestCacheUpdate(this.render.bind(this));
             this.reloadQueryAtMidnight();
@@ -234,7 +239,7 @@ class QueryRenderChild extends MarkdownRenderChild {
             this.source,
             GlobalFilter.getInstance(),
             GlobalQuery.getInstance(),
-            this.filePath,
+            this.tasksFile,
         );
 
         const explanationsBlock = createAndAppendElement('pre', content);
@@ -393,7 +398,7 @@ class QueryRenderChild extends MarkdownRenderChild {
         const headerEl = createAndAppendElement(header, content);
         headerEl.addClass('tasks-group-heading');
         const heading = group.displayName + ' ' + taskCountDescription;
-        await MarkdownRenderer.renderMarkdown(heading, headerEl, this.filePath, this);
+        await MarkdownRenderer.renderMarkdown(heading, headerEl, this.tasksFile.path, this);
     }
 
     private addBacklinks(listItem: HTMLElement, task: Task, shortMode: boolean, isFilenameUnique: boolean | undefined) {
