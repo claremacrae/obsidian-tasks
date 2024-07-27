@@ -1,3 +1,4 @@
+import { Occurrence } from '../../src/Task/Occurrence';
 import { Task } from '../../src/Task/Task';
 import { Recurrence } from '../../src/Task/Recurrence';
 import { Status } from '../../src/Statuses/Status';
@@ -55,9 +56,11 @@ export class SampleTasks {
                 .recurrence(
                     Recurrence.fromText({
                         recurrenceRuleText: recurrenceRule,
-                        startDate: null,
-                        scheduledDate: null,
-                        dueDate: null,
+                        occurrence: new Occurrence({
+                            startDate: null,
+                            scheduledDate: null,
+                            dueDate: null,
+                        }),
                     }),
                 )
                 .build();

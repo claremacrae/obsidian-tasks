@@ -1,6 +1,5 @@
-import type { CachedMetadata } from 'obsidian';
+import { verifyAsJson } from 'approvals/lib/Providers/Jest/JestApprovals';
 import { TasksFile } from '../../src/Scripting/TasksFile';
-import { setCurrentCacheFile } from '../__mocks__/obsidian';
 import { callouts_nested_issue_2890_unlabelled } from '../Obsidian/__test_data__/callouts_nested_issue_2890_unlabelled';
 import { no_yaml } from '../Obsidian/__test_data__/no_yaml';
 import { empty_yaml } from '../Obsidian/__test_data__/empty_yaml';
@@ -12,6 +11,13 @@ import { yaml_tags_had_value_then_was_emptied_by_obsidian } from '../Obsidian/__
 import { yaml_tags_is_empty_list } from '../Obsidian/__test_data__/yaml_tags_is_empty_list';
 import { yaml_tags_is_empty } from '../Obsidian/__test_data__/yaml_tags_is_empty';
 import { example_kanban } from '../Obsidian/__test_data__/example_kanban';
+import { getTasksFileFromMockData, listPathAndData } from '../TestingTools/MockDataHelpers';
+import { jason_properties } from '../Obsidian/__test_data__/jason_properties';
+import { yaml_complex_example } from '../Obsidian/__test_data__/yaml_complex_example';
+import { yaml_complex_example_standardised } from '../Obsidian/__test_data__/yaml_complex_example_standardised';
+import { yaml_all_property_types_empty } from '../Obsidian/__test_data__/yaml_all_property_types_empty';
+import { yaml_all_property_types_populated } from '../Obsidian/__test_data__/yaml_all_property_types_populated';
+import { determineExpressionType, formatToRepresentType } from './ScriptingTestHelpers';
 
 describe('TasksFile', () => {
     it('should provide access to path', () => {
@@ -60,37 +66,26 @@ describe('TasksFile', () => {
     });
 });
 
-function getTasksFileFromMockData(data: any) {
-    setCurrentCacheFile(data);
-    const cachedMetadata = data.cachedMetadata as any as CachedMetadata;
-    return new TasksFile(data.filePath, cachedMetadata);
-}
-
-function listPathAndData(inputs: any[]) {
-    // We use map() to extract the path, to use it as a test name in it.each()
-    return inputs.map((data) => [data.filePath, data]);
-}
-
 describe('TasksFile - reading frontmatter', () => {
     it('should read file if not given CachedMetadata', () => {
         const tasksFile = new TasksFile('some path.md', {});
 
         expect(tasksFile.cachedMetadata.frontmatter).toBeUndefined();
-        expect(tasksFile.frontmatter).toEqual({});
+        expect(tasksFile.frontmatter).toEqual({ tags: [] });
     });
 
     it('should read file with no yaml metadata', () => {
         const tasksFile = getTasksFileFromMockData(no_yaml);
         expect(tasksFile.cachedMetadata.frontmatter).toBeUndefined();
-        expect(tasksFile.frontmatter).toEqual({});
-        expect(tasksFile.frontmatter.tags).toEqual(undefined); // TODO This will be inconvenient for users - should be []?
+        expect(tasksFile.frontmatter).toEqual({ tags: [] });
+        expect(tasksFile.frontmatter.tags).toEqual([]);
     });
 
     it('should read file with empty yaml metadata', () => {
         const tasksFile = getTasksFileFromMockData(empty_yaml);
         expect(tasksFile.cachedMetadata.frontmatter).toBeUndefined();
-        expect(tasksFile.frontmatter).toEqual({});
-        expect(tasksFile.frontmatter.tags).toEqual(undefined); // TODO This will be inconvenient for users - should be []?
+        expect(tasksFile.frontmatter).toEqual({ tags: [] });
+        expect(tasksFile.frontmatter.tags).toEqual([]);
     });
 
     it('should provide an independent copy of frontmatter', () => {
@@ -135,6 +130,54 @@ describe('TasksFile - reading frontmatter', () => {
     it('should read file with custom number property', () => {
         const tasksFile = getTasksFileFromMockData(yaml_custom_number_property);
         expect(tasksFile.frontmatter?.custom_number_prop).toEqual(42);
+    });
+
+    it('should read JSON frontmatter', () => {
+        const tasksFile = getTasksFileFromMockData(jason_properties);
+        expect(tasksFile.frontmatter.tags).toEqual(['#journal']);
+        expect(tasksFile.frontmatter.publish).toEqual(false);
+    });
+
+    it('should read yaml_complex_example', () => {
+        const tasksFile = getTasksFileFromMockData(yaml_complex_example);
+        verifyAsJson(tasksFile.frontmatter);
+    });
+
+    it('should read yaml_complex_example_standardised', () => {
+        const tasksFile = getTasksFileFromMockData(yaml_complex_example_standardised);
+        verifyAsJson(tasksFile.frontmatter);
+    });
+
+    it('should read yaml_all_property_types_empty', () => {
+        // See https://help.obsidian.md/Editing+and+formatting/Properties#Property+types
+        const tasksFile = getTasksFileFromMockData(yaml_all_property_types_empty);
+        verifyAsJson(tasksFile.frontmatter);
+    });
+
+    it('should read yaml_all_property_types_populated', () => {
+        // See https://help.obsidian.md/Editing+and+formatting/Properties#Property+types
+        const tasksFile = getTasksFileFromMockData(yaml_all_property_types_populated);
+        const frontmatter = tasksFile.frontmatter;
+        verifyAsJson(frontmatter);
+        const propertyValueTypes = Object.keys(frontmatter).map(
+            (key) =>
+                `${key} => ${determineExpressionType(frontmatter[key])} = ${formatToRepresentType(frontmatter[key])}`,
+        );
+        expect(propertyValueTypes).toMatchInlineSnapshot(`
+            [
+              "sample_checkbox_property => boolean = true",
+              "sample_date_property => string = '2024-07-21'",
+              "sample_date_and_time_property => string = '2024-07-21T12:37:00'",
+              "sample_list_property => string[] = ['Sample', 'List', 'Value']",
+              "sample_number_property => number = 246",
+              "sample_text_property => string = 'Sample Text Value'",
+              "sample_link_property => string = '[[yaml_all_property_types_populated]]'",
+              "sample_link_list_property => string[] = ['[[yaml_all_property_types_populated]]', '[[yaml_all_property_types_empty]]']",
+              "aliases => string[] = ['YAML All Property Types Populated']",
+              "tags => string[] = ['#sample/tag/value']",
+              "creation date => string = '2024-05-25T15:17:00'",
+            ]
+        `);
     });
 });
 
