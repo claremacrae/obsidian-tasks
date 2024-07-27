@@ -1,12 +1,15 @@
 import { type CachedMetadata, type FrontMatterCache, getAllTags, parseFrontMatterTags } from 'obsidian';
 
+export type OptionalTasksFile = TasksFile | undefined;
+
 /**
  * A simple class to provide access to file information via 'task.file' in scripting code.
  */
 export class TasksFile {
     private readonly _path: string;
     private readonly _cachedMetadata: CachedMetadata;
-    private readonly _frontmatter: FrontMatterCache = {} as FrontMatterCache;
+    // Always make TasksFile.frontmatter.tags exist and be empty, even if no frontmatter present:
+    private readonly _frontmatter = { tags: [] } as any;
 
     constructor(path: string, cachedMetadata: CachedMetadata = {}) {
         this._path = path;
