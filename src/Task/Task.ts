@@ -368,13 +368,6 @@ export class Task extends ListItem {
             today,
         );
 
-        let nextOccurrence: Occurrence | null = null;
-        if (newStatus.isCompleted()) {
-            if (!this.status.isCompleted() && this.recurrence !== null) {
-                nextOccurrence = this.recurrence.next(today);
-            }
-        }
-
         const toggledTask = new Task({
             ...this,
             status: newStatus,
@@ -382,17 +375,23 @@ export class Task extends ListItem {
             cancelledDate: newCancelledDate,
         });
 
-        const newTasks: Task[] = [];
+        const newStatusIsNotDone = !newStatus.isCompleted();
+        const oldStatusWasDone = this.status.isCompleted();
+        const noRecurrenceRule = this.recurrence === null;
 
-        if (nextOccurrence !== null) {
-            const nextTask = this.createNextOccurrence(newStatus, nextOccurrence, today);
-            newTasks.push(nextTask);
+        const noNewRecurrence = newStatusIsNotDone || oldStatusWasDone || noRecurrenceRule;
+        if (noNewRecurrence) {
+            return [toggledTask];
         }
 
-        // Write next occurrence before previous occurrence.
-        newTasks.push(toggledTask);
+        const nextOccurrence = this.recurrence.next(today);
+        if (nextOccurrence === null) {
+            return [toggledTask];
+        }
 
-        return newTasks;
+        const nextTask = this.createNextOccurrence(newStatus, nextOccurrence, today);
+        // Write next occurrence before previous occurrence.
+        return [nextTask, toggledTask];
     }
 
     /**
@@ -873,17 +872,25 @@ export class Task extends ListItem {
                 return false;
             }
         }
+        if (!this.recurrenceIdenticalTo(other)) {
+            return false;
+        }
 
+        return this.file.rawFrontmatterIdenticalTo(other.file);
+    }
+
+    private recurrenceIdenticalTo(other: Task) {
         const recurrence1 = this.recurrence;
         const recurrence2 = other.recurrence;
         if (recurrence1 === null && recurrence2 !== null) {
             return false;
-        } else if (recurrence1 !== null && recurrence2 === null) {
-            return false;
-        } else if (recurrence1 && recurrence2 && !recurrence1.identicalTo(recurrence2)) {
+        }
+        if (recurrence1 !== null && recurrence2 === null) {
             return false;
         }
-
+        if (recurrence1 && recurrence2 && !recurrence1.identicalTo(recurrence2)) {
+            return false;
+        }
         return true;
     }
 
