@@ -10,6 +10,7 @@ export class TasksFile {
     private readonly _cachedMetadata: CachedMetadata;
     // Always make TasksFile.frontmatter.tags exist and be empty, even if no frontmatter present:
     private readonly _frontmatter = { tags: [] } as any;
+    private readonly _tags: string[] = [];
 
     constructor(path: string, cachedMetadata: CachedMetadata = {}) {
         this._path = path;
@@ -19,6 +20,11 @@ export class TasksFile {
         if (rawFrontmatter !== undefined) {
             this._frontmatter = JSON.parse(JSON.stringify(rawFrontmatter));
             this._frontmatter.tags = parseFrontMatterTags(rawFrontmatter) ?? [];
+        }
+
+        if (Object.keys(cachedMetadata).length !== 0) {
+            const tags = getAllTags(this.cachedMetadata) ?? [];
+            this._tags = [...new Set(tags)];
         }
     }
 
@@ -40,9 +46,7 @@ export class TasksFile {
      * @todo Review presence of global filter tag in the results.
      */
     get tags(): string[] {
-        // TODO Replace this with storing the sanitised tags, to avoid repeated re-calculation.
-        const tags = getAllTags(this.cachedMetadata) ?? [];
-        return [...new Set(tags)];
+        return this._tags;
     }
 
     /**
@@ -78,6 +82,34 @@ export class TasksFile {
      */
     public get frontmatter(): FrontMatterCache {
         return this._frontmatter;
+    }
+
+    /**
+     * Does the data content of another TasksFile's raw frontmatter
+     * match this one.
+     *
+     * This can be used to detect whether Task objects need to be updated,
+     * or (later) whether queries need to be updated, due to user edits.
+     *
+     * @param other
+     */
+    public rawFrontmatterIdenticalTo(other: TasksFile): boolean {
+        const thisFrontmatter: FrontMatterCache | undefined = this.cachedMetadata.frontmatter;
+        const thatFrontmatter: FrontMatterCache | undefined = other.cachedMetadata.frontmatter;
+        if (thisFrontmatter === thatFrontmatter) {
+            // The same object or both undefined
+            return true;
+        }
+
+        if (!thisFrontmatter || !thatFrontmatter) {
+            return false; // One is undefined and the other is not
+        }
+
+        // Check if the same content.
+        // This is fairly simplistic.
+        // For example, it treats values that are the same but in a different order as being different,
+        // although their information content is the same.
+        return JSON.stringify(thisFrontmatter) === JSON.stringify(thatFrontmatter);
     }
 
     /**
@@ -133,5 +165,49 @@ export class TasksFile {
 
     get filenameWithoutExtension(): string {
         return this.withoutExtension(this.filename);
+    }
+
+    public hasProperty(key: string): boolean {
+        const foundKey = this.findKeyInFrontmatter(key);
+        if (foundKey === undefined) {
+            return false;
+        }
+
+        const propertyValue = this.frontmatter[foundKey];
+        if (propertyValue === null) {
+            return false;
+        }
+
+        if (propertyValue === undefined) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public property(key: string): any {
+        const foundKey = this.findKeyInFrontmatter(key);
+        if (foundKey === undefined) {
+            return null;
+        }
+
+        const propertyValue = this.frontmatter[foundKey];
+        if (propertyValue === undefined) {
+            return null;
+        }
+
+        if (Array.isArray(propertyValue)) {
+            return propertyValue.filter((item: any) => item !== null);
+        }
+
+        return propertyValue;
+    }
+
+    private findKeyInFrontmatter(key: string) {
+        const lowerCaseKey = key.toLowerCase();
+        return Object.keys(this.frontmatter).find((searchKey: string) => {
+            const lowerCaseSearchKey = searchKey.toLowerCase();
+            return lowerCaseSearchKey === lowerCaseKey;
+        });
     }
 }
