@@ -181,7 +181,7 @@ export class QueryResultsRenderer {
         for (const group of tasksSortedLimitedGrouped.groups) {
             // If there were no 'group by' instructions, group.groupHeadings
             // will be empty, and no headings will be added.
-            await this.addGroupHeadings(content, group.groupHeadings);
+            await this.addGroupHeadings(content, group.groupHeadings, group.describeTaskCount());
 
             await this.createTaskList(group.tasks, content, queryRendererParameters);
         }
@@ -275,15 +275,21 @@ export class QueryResultsRenderer {
      * @param content
      * @param groupHeadings - The headings to display. This can be an empty array,
      *                        in which case no headings will be added.
+     * @param taskCountDescription
      * @private
      */
-    private async addGroupHeadings(content: HTMLDivElement, groupHeadings: GroupDisplayHeading[]) {
+    private async addGroupHeadings(
+        content: HTMLDivElement,
+        groupHeadings: GroupDisplayHeading[],
+        taskCountDescription: string,
+    ) {
         for (const heading of groupHeadings) {
-            await this.addGroupHeading(content, heading);
+            const isLastDisplayedHeading = heading === groupHeadings.at(-1);
+            await this.addGroupHeading(content, heading, isLastDisplayedHeading ? `(${taskCountDescription})` : '');
         }
     }
 
-    private async addGroupHeading(content: HTMLDivElement, group: GroupDisplayHeading) {
+    private async addGroupHeading(content: HTMLDivElement, group: GroupDisplayHeading, taskCountDescription: string) {
         // Headings nested to 2 or more levels are all displayed with 'h6:
         let header: keyof HTMLElementTagNameMap = 'h6';
         if (group.nestingLevel === 0) {
@@ -294,7 +300,8 @@ export class QueryResultsRenderer {
 
         const headerEl = createAndAppendElement(header, content);
         headerEl.addClass('tasks-group-heading');
-        await this.renderMarkdown(group.displayName, headerEl, this.tasksFile.path, this.obsidianComponent);
+        const heading = group.displayName + ' ' + taskCountDescription;
+        await this.renderMarkdown(heading, headerEl, this.tasksFile.path, this.obsidianComponent);
     }
 
     private addBacklinks(
