@@ -19,18 +19,13 @@ export class FilterInstructions {
     }
 
     public canCreateFilterForLine(line: string): boolean {
-        for (const filter of this._filters) {
-            if (filter.canCreateFilterForLine(line)) {
-                return true;
-            }
-        }
-        return false;
+        return this._filters.some((filter) => filter.canCreateFilterForLine(line));
     }
 
     public createFilterOrErrorMessage(line: string): FilterOrErrorMessage {
         for (const filter of this._filters) {
             const x = filter.createFilterOrErrorMessage(line);
-            if (x.error === undefined) {
+            if (x.isValid()) {
                 return x;
             }
         }
