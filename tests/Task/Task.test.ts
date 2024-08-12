@@ -21,6 +21,7 @@ import { booleanToEmoji } from '../TestingTools/FilterTestHelpers';
 import type { TasksDate } from '../../src/Scripting/TasksDate';
 import { example_kanban } from '../Obsidian/__test_data__/example_kanban';
 import { jason_properties } from '../Obsidian/__test_data__/jason_properties';
+import { OnCompletion } from '../../src/Task/OnCompletion';
 
 window.moment = moment;
 
@@ -1702,6 +1703,12 @@ describe('identicalTo', () => {
         const lhs = new TaskBuilder().dependsOn([]);
         expect(lhs).toBeIdenticalTo(new TaskBuilder().dependsOn([]));
         expect(lhs).not.toBeIdenticalTo(new TaskBuilder().dependsOn(['12345']));
+    });
+
+    it('should check onCompletion', () => {
+        const lhs = new TaskBuilder().onCompletion(OnCompletion.Ignore);
+        expect(lhs).toBeIdenticalTo(new TaskBuilder().onCompletion(OnCompletion.Ignore));
+        expect(lhs).not.toBeIdenticalTo(new TaskBuilder().onCompletion(OnCompletion.Delete));
     });
 
     it('should correctly compare a task with status read from user settings', () => {

@@ -5,6 +5,7 @@ import { Status } from '../../src/Statuses/Status';
 import { StatusType } from '../../src/Statuses/StatusConfiguration';
 import { Priority } from '../../src/Task/Priority';
 import { PriorityTools } from '../../src/lib/PriorityTools';
+import { OnCompletion } from '../../src/Task/OnCompletion';
 import { TaskBuilder } from './TaskBuilder';
 import { fromLine, fromLines } from './TestHelpers';
 
@@ -278,5 +279,25 @@ export class SampleTasks {
         return descriptions.map((blockLink) => {
             return new TaskBuilder().blockLink(blockLink).build();
         });
+    }
+
+    public static withSampleOnCompletionValues() {
+        const everyDay = Recurrence.fromText({
+            recurrenceRuleText: 'every day',
+            occurrence: new Occurrence({
+                startDate: null,
+                scheduledDate: null,
+                dueDate: null,
+            }),
+        });
+        return [
+            new TaskBuilder().description('#task Keep this task when done').onCompletion(OnCompletion.Ignore),
+            new TaskBuilder().description('#task Keep this task when done too').onCompletion(OnCompletion.Keep),
+            new TaskBuilder().description('#task Remove this task when done').onCompletion(OnCompletion.Delete),
+            new TaskBuilder()
+                .description('#task Remove completed instance of this recurring task when done')
+                .onCompletion(OnCompletion.Delete)
+                .recurrence(everyDay),
+        ].map((builder) => builder.build());
     }
 }

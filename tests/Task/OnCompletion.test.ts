@@ -3,13 +3,11 @@
  */
 import moment from 'moment';
 import { verifyAll } from 'approvals/lib/Providers/Jest/JestApprovals';
-import { RecurrenceBuilder } from '../TestingTools/RecurrenceBuilder';
 import { Status } from '../../src/Statuses/Status';
 import { StatusConfiguration, StatusType } from '../../src/Statuses/StatusConfiguration';
-import { TaskBuilder } from '../TestingTools/TaskBuilder';
-import { fromLine, toLines, toMarkdown } from '../TestingTools/TestHelpers';
+import { fromLine, toMarkdown } from '../TestingTools/TestHelpers';
 import type { Task } from '../../src/Task/Task';
-import { handleOnCompletion } from '../../src/Task/OnCompletion';
+import { OnCompletion, handleOnCompletion, parseOnCompletionValue } from '../../src/Task/OnCompletion';
 
 window.moment = moment;
 
@@ -28,139 +26,75 @@ export function applyStatusAndOnCompletionAction(task: Task, newStatus: Status) 
     return handleOnCompletion(task, tasks);
 }
 
-describe('OnCompletion', () => {
-    it('should just return task if Action is not recognized', () => {
-        // Arrange
-        const dueDate = '2024-02-10';
-        const task = new TaskBuilder()
-            .description('A non-recurring task with invalid OC trigger 🏁 INVALID_ACTION')
-            .dueDate(dueDate)
-            .build();
-        expect(task.status.type).toEqual(StatusType.TODO);
+function makeTask(line: string) {
+    return fromLine({ line });
+}
 
-        // Act
-        const returnedTasks = applyStatusAndOnCompletionAction(task, Status.makeDone());
+describe('OnCompletion - parsing', () => {
+    function checkParseOnCompletionValue(input: string, expected: OnCompletion) {
+        expect(parseOnCompletionValue(input)).toEqual(expected);
+    }
 
-        // Assert
-        expect(returnedTasks.length).toEqual(1);
-        expect(toLines(returnedTasks).join('\n')).toMatchInlineSnapshot(
-            '"- [x] A non-recurring task with invalid OC trigger 🏁 INVALID_ACTION 📅 2024-02-10 ✅ 2024-02-11"',
-        );
+    const deletes = ['delete', 'DELETE', ' delete '];
+    it.each(deletes)('should parse "%s" as OnCompletion.Delete', (input: string) => {
+        checkParseOnCompletionValue(input, OnCompletion.Delete);
     });
 
-    it('should just return task if StatusType has not changed', () => {
+    const keeps = ['keep', 'KEEP', ' keep '];
+    it.each(keeps)('should parse "%s" as OnCompletion.Keep', (input: string) => {
+        checkParseOnCompletionValue(input, OnCompletion.Keep);
+    });
+
+    const ignores = ['', 'unknown'];
+    it.each(ignores)('should parse "%s" as OnCompletion.Ignore', (input: string) => {
+        checkParseOnCompletionValue(input, OnCompletion.Ignore);
+    });
+});
+
+describe('OnCompletion - cases where all tasks are retained', () => {
+    it('should not delete an already-done task', () => {
         // Arrange
-        const dueDate = '2024-02-10';
-        const task = new TaskBuilder()
-            .description('An already-DONE, non-recurring task 🏁 Delete')
-            .dueDate(dueDate)
-            .doneDate(dueDate)
-            .status(Status.DONE)
-            .build();
-        expect(task.status.type).toEqual(StatusType.DONE);
+        const line = '- [x] An already-DONE, non-recurring task 🏁 delete ✅ 2024-02-10';
+        const task = makeTask(line);
 
         // Act
         const returnedTasks = applyStatusAndOnCompletionAction(task, Status.makeDone());
 
         // Assert
         expect(returnedTasks.length).toEqual(1);
-        expect(toLines(returnedTasks).join('\n')).toMatchInlineSnapshot(
-            '"- [x] An already-DONE, non-recurring task 🏁 Delete 📅 2024-02-10 ✅ 2024-02-10"',
-        );
+        expect(returnedTasks[0].originalMarkdown).toEqual(line);
     });
 
     it('should just return trigger-less, non-recurring task', () => {
         // Arrange
-        const dueDate = '2024-02-10';
-        const task = new TaskBuilder().description('A non-recurring task with no trigger').dueDate(dueDate).build();
-        expect(task.status.type).toEqual(StatusType.TODO);
+        const task = makeTask('- [ ] A non-recurring task with no trigger 📅 2024-02-10');
 
         // Act
         const tasks = applyStatusAndOnCompletionAction(task, Status.makeDone());
 
         // Assert
-        expect(tasks.length).toEqual(1);
-        expect(toLines(tasks).join('\n')).toMatchInlineSnapshot(
+        expect(toMarkdown(tasks)).toMatchInlineSnapshot(
             '"- [x] A non-recurring task with no trigger 📅 2024-02-10 ✅ 2024-02-11"',
         );
     });
 
     it('should just return trigger-less recurring task', () => {
         // Arrange
-        const dueDate = '2024-02-10';
-        const recurrence = new RecurrenceBuilder().rule('every day').dueDate(dueDate).build();
-        const task = new TaskBuilder()
-            .description('A recurring task with no trigger')
-            .recurrence(recurrence)
-            .dueDate(dueDate)
-            .build();
-        expect(task.status.type).toEqual(StatusType.TODO);
+        const task = makeTask('- [ ] A recurring task with no trigger 🔁 every day 📅 2024-02-10');
 
         // Act
         const tasks = applyStatusAndOnCompletionAction(task, Status.makeDone());
 
         // Assert
-        expect(tasks.length).toEqual(2);
-        expect(toLines(tasks).join('\n')).toMatchInlineSnapshot(`
+        expect(toMarkdown(tasks)).toMatchInlineSnapshot(`
             "- [ ] A recurring task with no trigger 🔁 every day 📅 2024-02-11
             - [x] A recurring task with no trigger 🔁 every day 📅 2024-02-10 ✅ 2024-02-11"
         `);
     });
 
-    // TODO is there a better way to handle the following?  does an 'empty' Task exist?
-    it('should return an empty Array for a non-recurring task with Delete Action', () => {
-        // Arrange
-        const dueDate = '2024-02-10';
-        const task = new TaskBuilder().description('A non-recurring task with 🏁 Delete').dueDate(dueDate).build();
-        expect(task.status.type).toEqual(StatusType.TODO);
-
-        // Act
-        const tasks = applyStatusAndOnCompletionAction(task, Status.makeDone());
-
-        // Assert
-        expect(tasks).toEqual([]);
-    });
-
-    it('should return only the next instance of a recurring task with Delete action', () => {
-        // Arrange
-        const dueDate = '2024-02-10';
-        const recurrence = new RecurrenceBuilder().rule('every day').dueDate(dueDate).build();
-        const task = new TaskBuilder()
-            .description('A recurring task with 🏁 Delete')
-            .recurrence(recurrence)
-            .dueDate(dueDate)
-            .build();
-        expect(task.status.type).toEqual(StatusType.TODO);
-
-        // Act
-        const tasks = applyStatusAndOnCompletionAction(task, Status.makeDone());
-
-        // Assert
-        expect(tasks.length).toEqual(1);
-        expect(toLines(tasks).join('\n')).toMatchInlineSnapshot(
-            '"- [ ] A recurring task with 🏁 Delete 🔁 every day 📅 2024-02-11"',
-        );
-    });
-    it('should delete a simple task with flag on completion', () => {
-        // Arrange
-        const task = new TaskBuilder().description('A non-recurring task with 🏁 Delete').build();
-
-        // Act
-        const tasks = applyStatusAndOnCompletionAction(task, Status.makeDone());
-
-        // Assert
-        expect(tasks.length).toEqual(0);
-    });
-
     it('should return the task when going from TODO to IN_PROGRESS', () => {
         // Arrange
-        const dueDate = '2024-02-10';
-        const recurrence = new RecurrenceBuilder().rule('every day').dueDate(dueDate).build();
-        const task = new TaskBuilder()
-            .description('A recurring task with 🏁 Delete')
-            .recurrence(recurrence)
-            .dueDate(dueDate)
-            .build();
+        const task = makeTask('- [ ] A recurring task with "delete" Action 🔁 every day 🏁 delete 📅 2024-02-10');
 
         // Act
         const tasks = applyStatusAndOnCompletionAction(task, Status.makeInProgress());
@@ -172,9 +106,8 @@ describe('OnCompletion', () => {
 
     it('should return the task when going from one DONE status to another DONE status', () => {
         // Arrange
-        const done1 = new Status(new StatusConfiguration('x', 'done', ' ', true, StatusType.DONE));
         const done2 = new Status(new StatusConfiguration('X', 'DONE', ' ', true, StatusType.DONE));
-        const task = new TaskBuilder().description('A simple done task with 🏁 Delete').status(done1).build();
+        const task = makeTask('- [x] A simple done task with 🏁 delete');
 
         // Act
         const tasks = applyStatusAndOnCompletionAction(task, done2);
@@ -187,13 +120,52 @@ describe('OnCompletion', () => {
 
     it('should return a task featuring the On Completion flag trigger but an empty string Action', () => {
         // Arrange
-        const task = new TaskBuilder().description('A non-recurring task with 🏁').build();
+        const task = makeTask('- [ ] A non-recurring task with');
 
         // Act
         const tasks = applyStatusAndOnCompletionAction(task, Status.makeDone());
 
         // Assert
         expect(tasks.length).toEqual(1);
+    });
+});
+
+describe('OnCompletion - "keep" action', () => {
+    it('should retain a task with "keep" Action upon completion', () => {
+        // Arrange
+        const task = makeTask('- [ ] A non-recurring task with "keep" Action 🏁 keep');
+
+        // Act
+        const tasks = applyStatusAndOnCompletionAction(task, Status.makeDone());
+
+        // Assert
+        expect(tasks.length).toEqual(1);
+    });
+});
+
+describe('OnCompletion - "delete" action', () => {
+    it('should retain only the next instance of a recurring task with "delete" Action upon completion', () => {
+        // Arrange
+        const task = makeTask('- [ ] A recurring task with "delete" Action 🔁 every day 🏁 delete 📅 2024-02-10');
+
+        // Act
+        const tasks = applyStatusAndOnCompletionAction(task, Status.makeDone());
+
+        // Assert
+        expect(toMarkdown(tasks)).toMatchInlineSnapshot(
+            '"- [ ] A recurring task with "delete" Action 🔁 every day 🏁 delete 📅 2024-02-11"',
+        );
+    });
+
+    it('should discard a task with "delete" Action upon completion', () => {
+        // Arrange
+        const task = makeTask('- [ ] A non-recurring task with "delete" Action 🏁 delete');
+
+        // Act
+        const tasks = applyStatusAndOnCompletionAction(task, Status.makeDone());
+
+        // Assert
+        expect(tasks.length).toEqual(0);
     });
 });
 
@@ -213,12 +185,12 @@ function getCases(): ToggleCase[] {
 
         {
             nextStatus: Status.makeDone(),
-            line: '- [ ] A non-recurring task with 🏁 Delete',
+            line: '- [ ] A non-recurring task with 🏁 delete',
         },
 
         {
             nextStatus: Status.makeDone(),
-            line: '- [ ] A non-recurring task with 🏁 Delete 📅 2024-02-10',
+            line: '- [ ] A non-recurring task with 🏁 delete 📅 2024-02-10',
         },
 
         {
@@ -240,24 +212,36 @@ function getCases(): ToggleCase[] {
 
         {
             nextStatus: Status.makeDone(),
-            line: '- [ ] A recurring task with 🏁 Delete 🔁 every day 📅 2024-02-10',
+            line: '- [ ] A recurring task with 🏁 delete 🔁 every day 📅 2024-02-10',
         },
 
         {
             nextStatus: Status.makeInProgress(),
-            line: '- [ ] A recurring task with 🏁 Delete 🔁 every day 📅 2024-02-10',
+            line: '- [ ] A recurring task with 🏁 delete 🔁 every day 📅 2024-02-10',
         },
 
         // Other
 
         {
             nextStatus: Status.makeDone(),
-            line: '- [x] An already-DONE task, changing to Same      DONE status 🏁 Delete 📅 2024-02-10 ✅ 2024-02-10',
+            line: '- [x] An already-DONE task, changing to Same      DONE status 🏁 delete 📅 2024-02-10 ✅ 2024-02-10',
         },
 
         {
             nextStatus: new Status(new StatusConfiguration('X', 'new status', ' ', false, StatusType.DONE)),
-            line: '- [x] An already-DONE task, changing to Different DONE status 🏁 Delete 📅 2024-02-10 ✅ 2024-02-10',
+            line: '- [x] An already-DONE task, changing to Different DONE status 🏁 delete 📅 2024-02-10 ✅ 2024-02-10',
+        },
+
+        // Indented, within callout/code block
+
+        {
+            nextStatus: Status.makeDone(),
+            line: '    - [ ] An indented task with 🏁 delete',
+        },
+
+        {
+            nextStatus: Status.makeDone(),
+            line: '> - [ ] A task within a block quote or callout and 🏁 delete',
         },
     ];
 }

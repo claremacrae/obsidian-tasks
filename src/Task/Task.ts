@@ -18,7 +18,7 @@ import type { Recurrence } from './Recurrence';
 import type { TaskLocation } from './TaskLocation';
 import type { Priority } from './Priority';
 import { TaskRegularExpressions } from './TaskRegularExpressions';
-import { handleOnCompletion } from './OnCompletion';
+import { OnCompletion, handleOnCompletion } from './OnCompletion';
 
 /**
  * Storage for the task line, broken down in to sections.
@@ -61,6 +61,7 @@ export class Task extends ListItem {
     public readonly cancelledDate: Moment | null;
 
     public readonly recurrence: Recurrence | null;
+    public readonly onCompletion: OnCompletion;
 
     public readonly dependsOn: string[];
     public readonly id: string;
@@ -88,6 +89,7 @@ export class Task extends ListItem {
         doneDate,
         cancelledDate,
         recurrence,
+        onCompletion,
         dependsOn,
         id,
         blockLink,
@@ -110,6 +112,7 @@ export class Task extends ListItem {
         doneDate: moment.Moment | null;
         cancelledDate: moment.Moment | null;
         recurrence: Recurrence | null;
+        onCompletion: OnCompletion;
         dependsOn: string[] | [];
         id: string;
         blockLink: string;
@@ -138,6 +141,7 @@ export class Task extends ListItem {
         this.cancelledDate = cancelledDate;
 
         this.recurrence = recurrence;
+        this.onCompletion = onCompletion;
 
         this.dependsOn = dependsOn;
         this.id = id;
@@ -835,6 +839,7 @@ export class Task extends ListItem {
             'scheduledDateIsInferred',
             'id',
             'dependsOn',
+            'onCompletion',
         ];
         for (const el of args) {
             if (this[el]?.toString() !== other[el]?.toString()) return false;
