@@ -4,7 +4,6 @@
 import moment from 'moment';
 import type { Task } from '../../src/Task/Task';
 import {
-    type HappensDate,
     createFixedDateTask,
     createPostponedTask,
     createTaskWithDateRemoved,
@@ -15,11 +14,12 @@ import {
     postponementSuccessMessage,
     removeDateMenuItemTitle,
     shouldShowPostponeButton,
-} from '../../src/Scripting/Postponer';
+} from '../../src/DateTime/Postponer';
 import { Status } from '../../src/Statuses/Status';
 import { StatusConfiguration, StatusType } from '../../src/Statuses/StatusConfiguration';
 import type { PostponingFunction } from '../../src/ui/Menus/PostponeMenu';
 import { TaskBuilder } from '../TestingTools/TaskBuilder';
+import type { HappensDate } from '../../src/DateTime/DateFieldTypes';
 
 window.moment = moment;
 

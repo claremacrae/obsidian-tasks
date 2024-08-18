@@ -1,8 +1,9 @@
 import type { Moment, unitOfTime } from 'moment';
 import { capitalizeFirstLetter } from '../lib/StringHelpers';
-import { DateFallback } from '../Task/DateFallback';
 import { Task } from '../Task/Task';
+import { DateFallback } from './DateFallback';
 import { TasksDate } from './TasksDate';
+import type { AllTaskDateFields, HappensDate } from './DateFieldTypes';
 
 export function shouldShowPostponeButton(task: Task) {
     // don't postpone if any invalid dates
@@ -21,8 +22,6 @@ export function shouldShowPostponeButton(task: Task) {
     // only postpone not done tasks
     return !task.isDone && hasAValidHappensDate;
 }
-
-export type HappensDate = keyof Pick<Task, 'startDate' | 'scheduledDate' | 'dueDate'>;
 
 /**
  * Gets a {@link HappensDate} field from a {@link Task} with the following priority: due > scheduled > start.
@@ -190,7 +189,7 @@ function prettyPrintDateFieldName(updatedDateType: HappensDate) {
     return capitalizeFirstLetter(updatedDateType.replace('Date', ''));
 }
 
-function splitDateText(updatedDateType: HappensDate) {
+export function splitDateText(updatedDateType: AllTaskDateFields) {
     return updatedDateType.replace('Date', ' date');
 }
 
