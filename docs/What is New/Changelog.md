@@ -1,5 +1,7 @@
 ---
 publish: true
+aliases:
+  - What is New?/Changelog
 ---
 
 # Changelog
@@ -8,7 +10,12 @@ See also [[Breaking Changes]]: Tasks releases with version numbers ending `.0.0`
 
 _In recent [Tasks releases](https://github.com/obsidian-tasks-group/obsidian-tasks/releases)..._
 
-- X.Y.Z.
+## 7.x releases
+
+- 7.9.0:
+  - Add [[Layout|hide and show]] instructions `hide on completion` and `show on completion`.
+  - Add one-click support for the [[Border Theme|Border]] theme.
+- 7.8.0.
   - Add [[On Completion]] facility, to tidy up your completed tasks.
 - 7.7.0:
   - Queries can now use values in [[Obsidian Properties]] (also known as YAML or frontmatter) for filtering, sorting and grouping.
@@ -32,6 +39,9 @@ _In recent [Tasks releases](https://github.com/obsidian-tasks-group/obsidian-tas
 - 7.0.0:
   - Major improvements to [[Combining Filters]] with Boolean combinations. See [[Combining Filters#Appendix Changes to Boolean filters in Tasks 7.0.0|the appendix]] for details.
   - Add documentation page (now in [[Useful Links]]), with links to write-ups,  talks and sample vaults from users.
+
+## 6.x releases
+
 - 6.1.0:
   - Add support for [[task dependencies]]:
     - First, [[Create or edit Task#Dependencies|use 'Create or edit Task']] to define the order in which you want to work on a set of tasks, using two new task emojis: 🆔  and ⛔.
@@ -45,6 +55,9 @@ _In recent [Tasks releases](https://github.com/obsidian-tasks-group/obsidian-tas
   - **Warning**: This release contains some **bug-fixes** to **sorting** and to treatment of **invalid dates**.
     - The changes are detailed in [[Breaking Changes#Tasks 6.0.0 (19 January 2024)|breaking changes]], even though they are all improvements to the previous behaviour.
     - You may need to update any CSS snippets for the Edit or Postpone buttons: see [[How to style buttons]].
+
+## 5.x releases
+
 - 5.6.0:
   - The [[Postponing|postpone]] menu now offers `today` and `tomorrow`.
 - 5.5.0:
@@ -70,6 +83,9 @@ _In recent [Tasks releases](https://github.com/obsidian-tasks-group/obsidian-tas
   - Document [[Comments#Inline comments|inline comments]]
   - Document [[Recurring Tasks and Custom Statuses|recurring tasks and custom statuses]]
   - Add new Help pages [[Known Limitations]] and [[Breaking Changes]].
+
+## 4.x releases
+
 - 4.9.0:
   - Add [[Task Properties|task properties]] `task.priorityNameGroupText` and `task.status.typeGroupText`, for example:
     - `group by function task.priorityNameGroupText + ': ' + task.status.typeGroupText`
@@ -97,6 +113,9 @@ _In recent [Tasks releases](https://github.com/obsidian-tasks-group/obsidian-tas
   - Add [[Layout|hide and show tags]]
 - 4.0.0:
   - Add [[Custom Grouping|custom grouping]], using [[Task Properties|task properties]] to create [[expressions|expressions]] - the start of a whole new [[About Scripting|scripting]] world in Tasks!
+
+## 3.x releases
+
 - 3.9.0:
   - Add [[Priority#Priorities and Order|lowest and highest]] priorities
 - 3.8.0:
