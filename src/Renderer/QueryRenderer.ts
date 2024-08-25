@@ -10,6 +10,8 @@ import type { TasksEvents } from '../Obsidian/TasksEvents';
 import { TasksFile } from '../Scripting/TasksFile';
 import { DateFallback } from '../DateTime/DateFallback';
 import type { Task } from '../Task/Task';
+import { PriorityMenu } from '../ui/Menus/PriorityMenu';
+import { defaultTaskSaver } from '../ui/Menus/TaskEditingMenu';
 import { QueryResultsRenderer } from './QueryResultsRenderer';
 import { createAndAppendElement } from './TaskLineRenderer';
 
@@ -135,6 +137,7 @@ class QueryRenderChild extends MarkdownRenderChild {
             backlinksClickHandler,
             backlinksMousedownHandler,
             editTaskPencilClickHandler,
+            editTaskPencilRightClickHandler,
         });
 
         this.containerEl.firstChild?.replaceWith(content);
@@ -142,7 +145,14 @@ class QueryRenderChild extends MarkdownRenderChild {
 }
 
 function editTaskPencilClickHandler(event: MouseEvent, task: Task, allTasks: Task[]) {
+    // Only show Edit Task modal if main menu button pressed.
+    // This is required to allow the contextmenu event to work.
+    if (event.button !== 0) {
+        return;
+    }
+
     event.preventDefault();
+    event.stopPropagation(); // suppress further event propagation
 
     const onSubmit = async (updatedTasks: Task[]): Promise<void> => {
         await replaceTaskWithTasks({
@@ -159,6 +169,13 @@ function editTaskPencilClickHandler(event: MouseEvent, task: Task, allTasks: Tas
         allTasks,
     });
     taskModal.open();
+}
+
+async function editTaskPencilRightClickHandler(ev: MouseEvent, task: Task, editTaskPencil: HTMLAnchorElement) {
+    ev.preventDefault(); // suppress the default context menu
+    ev.stopPropagation(); // suppress further event propagation
+    const menu = new PriorityMenu(task, defaultTaskSaver, editTaskPencil);
+    menu.showAtPosition({ x: ev.clientX, y: ev.clientY });
 }
 
 async function backlinksClickHandler(ev: MouseEvent, task: Task) {

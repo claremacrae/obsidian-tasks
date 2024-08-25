@@ -18,6 +18,7 @@ import { TaskLineRenderer, createAndAppendElement } from './TaskLineRenderer';
 
 type BacklinksEventHandler = (ev: MouseEvent, task: Task) => Promise<void>;
 type EditButtonClickHandler = (event: MouseEvent, task: Task, allTasks: Task[]) => void;
+type EditButtonRightClickHandler = (event: MouseEvent, task: Task, editTaskPencil: HTMLAnchorElement) => void;
 
 export interface QueryRendererParameters {
     allTasks: Task[];
@@ -25,6 +26,7 @@ export interface QueryRendererParameters {
     backlinksClickHandler: BacklinksEventHandler;
     backlinksMousedownHandler: BacklinksEventHandler;
     editTaskPencilClickHandler: EditButtonClickHandler;
+    editTaskPencilRightClickHandler: EditButtonRightClickHandler;
 }
 
 export class QueryResultsRenderer {
@@ -264,6 +266,12 @@ export class QueryResultsRenderer {
         editTaskPencil.addEventListener('click', (event: MouseEvent) =>
             queryRendererParameters.editTaskPencilClickHandler(event, task, queryRendererParameters.allTasks),
         );
+
+        editTaskPencil.addEventListener('contextmenu', (event: MouseEvent) => {
+            queryRendererParameters.editTaskPencilRightClickHandler(event, task, editTaskPencil);
+        });
+
+        editTaskPencil.setAttribute('title', 'Right-click for options');
     }
 
     private addUrgency(listItem: HTMLElement, task: Task) {

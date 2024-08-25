@@ -36,6 +36,7 @@ describe('QueryResultsRenderer tests', () => {
             backlinksClickHandler: () => Promise.resolve(),
             backlinksMousedownHandler: () => Promise.resolve(),
             editTaskPencilClickHandler: () => Promise.resolve(),
+            editTaskPencilRightClickHandler: () => Promise.resolve(),
         };
         const container = document.createElement('div');
 
