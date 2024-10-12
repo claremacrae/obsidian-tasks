@@ -1,30 +1,50 @@
-# 1 Callouts and Block Quotes
+# Callouts and Block Quotes
 
-## 1.1 Query
+## 1 Query
 
-> [!NOTE] Tasks recognised by Tasks Plugin in this file
+### 1.1 Full Mode, with headings - in callout
+
+> [!NOTE] Tasks recognised by Tasks Plugin in this file - full mode
 >
 > ```tasks
-> path includes Callouts and Block Quotes
+> path includes {{query.file.path}}
 > group by heading
 > sort by description
 > ```
 
+### 1.2 Short Mode, without headings - incallout
+
+> [!NOTE] Tasks recognised by Tasks Plugin in this file - short mode
+>
+> ```tasks
+> path includes {{query.file.path}}
+> short mode
+> sort by description
+> ```
+
+### 1.3 Short Mode, without headings -  not in callout
+
+```tasks
+path includes {{query.file.path}}
+short mode
+sort by description
+```
+
 ---
 
-## 1.2 Vanilla
+## 2 Vanilla
 
 - [ ] #task Task 1 Vanilla
 - [ ] #task Task 2 Vanilla
 
-## 1.3 Callout
+## 3 Callout
 
 > [!NOTE]
 >
 > - [ ] #task Task 1 Callout
 > - [ ] #task Task 2 Callout
 
-### 1.3.1 Callout containing Blockquote
+### 3.1 Callout containing Blockquote
 
 > [!NOTE]
 > >
@@ -32,24 +52,26 @@
 > > - [ ] #task Task 2 Callout containing Blockquote
 >
 
-## 1.4 Blockquote
+## 4 Blockquote
 
 > - [ ] #task Task 1 Blockquote
 > - [ ] #task Task 2 Blockquote
 
-### 1.4.1 Blockquote containing Callout
+### 4.1 Blockquote containing Callout
 
 > > [!NOTE]
 > >
 > > - [ ] #task Task 1 Blockquote containing Callout
 > > - [ ] #task Task 2 Blockquote containing Callout
 
-## 1.5 Numbered task in unordered list
+## 5 Numbered task in unordered list
 
-- [ ] #task 1. Task 1 Numbered task in unordered list
-- [ ] #task 2. Task 2 Numbered task in unordered list
+The following tasks have extra properties on them so that, when in short mode, the tooltips have multiple lines, to demonstrate the issue
 
-## 1.6 Not currently treated as a task by Tasks
+- [ ] #task 1. Task 1 Numbered task in unordered list 🔁 every day when done ➕ 2024-09-08 🛫 2024-09-08 ⏳ 2024-09-08 📅 2024-09-08
+- [ ] #task 2. Task 2 Numbered task in unordered list 🔁 every day when done ➕ 2024-09-08 🛫 2024-09-08 ⏳ 2024-09-08 📅 2024-09-08
+
+## 6 Not currently treated as a task by Tasks
 
 x - [ ] #task  wibble
 
@@ -57,7 +79,7 @@ x - [ ] #task  wibble
 - [ ] #task Task 1 Vanilla
 ```
 
-### 1.6.1 Task in numbered list
+### 6.1 Task in numbered list
 
 1. [ ] #task Task 1 Task in numbered list
 2. [ ] #task Task 2 Task in numbered list
