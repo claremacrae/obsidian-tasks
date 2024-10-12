@@ -1,6 +1,6 @@
 {
   "name": "obsidian-tasks",
-  "version": "7.9.0",
+  "version": "7.11.1",
   "description": "Task management for the Obsidian knowledge base",
   "main": "main.js",
   "engines": {
@@ -31,7 +31,7 @@
   "devDependencies": {
     "@codemirror/view": "^6.2.0",
     "@evilmartians/lefthook": "^1.7.2",
-    "@testing-library/jest-dom": "^6.1.6",
+    "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/svelte": "^3.2.2",
     "@tsconfig/svelte": "^3.0.0",
     "@types/jest": "^29.5.8",
@@ -61,7 +61,7 @@
     "svelte-check": "^3.8.4",
     "svelte-jester": "^2.3.2",
     "svelte-preprocess": "^5.0.4",
-    "ts-jest": "^29.1.1",
+    "ts-jest": "^29.2.5",
     "tslib": "^2.5.2",
     "typescript": "^5.0.4"
   },

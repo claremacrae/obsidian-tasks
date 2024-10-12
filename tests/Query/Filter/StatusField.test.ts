@@ -9,6 +9,24 @@ import {
 } from '../../CustomMatchers/CustomMatchersForSorting';
 import { StatusConfiguration, StatusType } from '../../../src/Statuses/StatusConfiguration';
 import { fromLine } from '../../TestingTools/TestHelpers';
+import { StatusRegistry } from '../../../src/Statuses/StatusRegistry';
+import type { StatusCollection } from '../../../src/Statuses/StatusCollection';
+
+beforeAll(() => {
+    StatusRegistry.getInstance().resetToDefaultStatuses();
+    const importantCycle: StatusCollection = [
+        ['!', 'todo', 'X', 'TODO'],
+        ['X', 'done', '!', 'DONE'],
+    ];
+    importantCycle.forEach((entry) => {
+        const status = Status.createFromImportedValue(entry);
+        StatusRegistry.getInstance().add(status);
+    });
+});
+
+afterAll(() => {
+    StatusRegistry.getInstance().resetToDefaultStatuses();
+});
 
 describe('status', () => {
     it('done', () => {
@@ -16,11 +34,11 @@ describe('status', () => {
         const filter = new StatusField().createFilterOrErrorMessage('done');
 
         // Assert
-        expect(filter).not.toMatchTaskWithStatus(Status.makeTodo().configuration);
-        expect(filter).toMatchTaskWithStatus(Status.makeDone().configuration);
+        expect(filter).not.toMatchTaskWithStatus(Status.TODO.configuration);
+        expect(filter).toMatchTaskWithStatus(Status.DONE.configuration);
         expect(filter).toMatchTaskWithStatus(new StatusConfiguration('X', 'Really Done', 'x', true, StatusType.DONE));
-        expect(filter).not.toMatchTaskWithStatus(Status.makeInProgress().configuration);
-        expect(filter).toMatchTaskWithStatus(Status.makeCancelled().configuration);
+        expect(filter).not.toMatchTaskWithStatus(Status.IN_PROGRESS.configuration);
+        expect(filter).toMatchTaskWithStatus(Status.CANCELLED.configuration);
         expect(filter).not.toMatchTaskWithStatus(new StatusConfiguration('!', 'Todo', 'x', true, StatusType.TODO)); // 'done' checks type.
         expect(filter).toMatchTaskWithStatus(new StatusConfiguration('^', 'Non', 'x', true, StatusType.NON_TASK));
     });
@@ -30,13 +48,13 @@ describe('status', () => {
         const filter = new StatusField().createFilterOrErrorMessage('not done');
 
         // Assert
-        expect(filter).toMatchTaskWithStatus(Status.makeTodo().configuration);
-        expect(filter).not.toMatchTaskWithStatus(Status.makeDone().configuration);
+        expect(filter).toMatchTaskWithStatus(Status.TODO.configuration);
+        expect(filter).not.toMatchTaskWithStatus(Status.DONE.configuration);
         expect(filter).not.toMatchTaskWithStatus(
             new StatusConfiguration('X', 'Really Done', 'x', true, StatusType.DONE),
         );
-        expect(filter).toMatchTaskWithStatus(Status.makeInProgress().configuration);
-        expect(filter).not.toMatchTaskWithStatus(Status.makeCancelled().configuration);
+        expect(filter).toMatchTaskWithStatus(Status.IN_PROGRESS.configuration);
+        expect(filter).not.toMatchTaskWithStatus(Status.CANCELLED.configuration);
         expect(filter).toMatchTaskWithStatus(new StatusConfiguration('!', 'Todo', 'x', true, StatusType.TODO)); // 'not done' type.
         expect(filter).not.toMatchTaskWithStatus(new StatusConfiguration('^', 'Non', 'x', true, StatusType.NON_TASK));
     });
@@ -67,13 +85,13 @@ describe('sorting by status', () => {
         expectTaskComparesBefore(sorter, todoTask, TestHelpers.fromLine({ line: '- [-] Z' }));
         expectTaskComparesBefore(sorter, todoTask, TestHelpers.fromLine({ line: '- [x] Z' }));
         expectTaskComparesBefore(sorter, todoTask, TestHelpers.fromLine({ line: '- [X] Z' }));
-        expectTaskComparesBefore(sorter, todoTask, TestHelpers.fromLine({ line: '- [!] Z' }));
+        expectTaskComparesEqual(sorter, todoTask, TestHelpers.fromLine({ line: '- [!] Z' }));
 
         expectTaskComparesEqual(sorter, doneTask, doneTask);
         expectTaskComparesEqual(sorter, doneTask, TestHelpers.fromLine({ line: '- [-] Z' }));
         expectTaskComparesEqual(sorter, doneTask, TestHelpers.fromLine({ line: '- [x] Z' }));
         expectTaskComparesEqual(sorter, doneTask, TestHelpers.fromLine({ line: '- [X] Z' }));
-        expectTaskComparesEqual(sorter, doneTask, TestHelpers.fromLine({ line: '- [!] Z' }));
+        expectTaskComparesAfter(sorter, doneTask, TestHelpers.fromLine({ line: '- [!] Z' }));
     });
 
     it('sort by status reverse', () => {
@@ -96,15 +114,20 @@ describe('grouping by status', () => {
         ['- [ ] a', ['Todo']],
         ['- [x] a', ['Done']],
         ['- [X] a', ['Done']],
-        ['- [/] a', ['Done']],
+        ['- [/] a', ['Todo']],
         ['- [-] a', ['Done']],
-        ['- [!] a', ['Done']],
+        ['- [!] a', ['Todo']],
     ])('task "%s" should have groups: %s', (taskLine: string, groups: string[]) => {
         // Arrange
         const grouper = new StatusField().createNormalGrouper();
 
         // Assert
         const tasks = [fromLine({ line: taskLine })];
+
+        // Check this symbol has been registered, so we are not passing by luck:
+        const symbol = tasks[0].status.symbol;
+        expect(StatusRegistry.getInstance().bySymbol(symbol).type).not.toEqual(StatusType.EMPTY);
+
         expect({ grouper, tasks }).groupHeadingsToBe(groups);
     });
 

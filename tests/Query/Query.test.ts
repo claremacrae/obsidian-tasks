@@ -247,7 +247,7 @@ describe('Query parsing', () => {
 
         describe.each(namedFields)('has sufficient sample "filter" lines for field "%s"', ({ name, field }) => {
             function fieldDoesNotSupportFiltering() {
-                return name === 'backlink' || name === 'urgency';
+                return name === 'backlink' || name === 'urgency' || name === 'random';
             }
 
             // This is a bit weaker than the corresponding tests for 'sort by' and 'group by',
@@ -311,6 +311,8 @@ describe('Query parsing', () => {
             'sort by path reverse',
             'sort by priority',
             'sort by priority reverse',
+            'sort by random',
+            'sort by random reverse',
             'sort by recurring',
             'sort by recurring reverse',
             'sort by scheduled',
@@ -1542,7 +1544,8 @@ describe('Query', () => {
     describe('error handling', () => {
         it('should catch an exception that occurs during searching', () => {
             // Arrange
-            const source = 'filter by function wibble';
+            const source = `filter by function \\
+wibble`;
             const query = new Query(source);
             const queryUpper = new Query(source.toUpperCase());
             const task = TaskBuilder.createFullyPopulatedTask();
@@ -1553,10 +1556,26 @@ describe('Query', () => {
 
             // Assert
             expect(queryResult.searchErrorMessage).toEqual(
-                'Error: Search failed.\nThe error message was:\n    "ReferenceError: wibble is not defined"',
+                `Error: Search failed.
+The error message was:
+    "ReferenceError: wibble is not defined"
+Problem statement:
+    filter by function \\
+    wibble
+     =>
+    filter by function wibble
+`,
             );
             expect(queryResultUpper.searchErrorMessage).toEqual(
-                'Error: Search failed.\nThe error message was:\n    "ReferenceError: WIBBLE is not defined"',
+                `Error: Search failed.
+The error message was:
+    "ReferenceError: WIBBLE is not defined"
+Problem statement:
+    FILTER BY FUNCTION \\
+    WIBBLE
+     =>
+    FILTER BY FUNCTION WIBBLE
+`,
             );
         });
     });

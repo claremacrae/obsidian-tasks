@@ -14,5 +14,7 @@
   "broken-links",
   "obsidian-plugin-update-tracker",
   "obsidian-kanban",
-  "js-engine"
+  "js-engine",
+  "table-editor-obsidian",
+  "reveal-active-file-button"
 ]
