@@ -266,7 +266,7 @@ export class QueryResultsRenderer {
     private addEditButton(listItem: HTMLElement, task: Task, queryRendererParameters: QueryRendererParameters) {
         const editTaskPencil = createAndAppendElement('a', listItem);
         editTaskPencil.classList.add('tasks-edit');
-        editTaskPencil.title = 'Edit task';
+        editTaskPencil.title = 'Edit task. Right-click for options';
         editTaskPencil.href = '#';
 
         editTaskPencil.addEventListener('click', (event: MouseEvent) =>
@@ -276,8 +276,6 @@ export class QueryResultsRenderer {
         editTaskPencil.addEventListener('contextmenu', (event: MouseEvent) => {
             queryRendererParameters.editTaskPencilRightClickHandler(event, task, editTaskPencil);
         });
-
-        editTaskPencil.setAttribute('title', 'Right-click for options');
     }
 
     private addUrgency(listItem: HTMLElement, task: Task) {
