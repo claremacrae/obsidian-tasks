@@ -97,10 +97,18 @@ If a query gives unexpected results, see [[Explaining Queries]] and add the `exp
 
 ### Tasks are not indented in query results
 
-> [!warning]
-> The result list will list tasks unindented.
-See [#60](https://github.com/obsidian-tasks-group/obsidian-tasks/discussions/60) for a discussion around the topic.
-Do not hesitate to contribute 😊
+By default, the result list will list tasks unindented.
+
+> [!tip]
+> Use the `show tree` instruction to indent tasks and list items in query results. See [[Layout#Hide and Show Tree|Hide and Show Tree]].
+>
+> ![Sample search results with 'show tree' instruction](../images/show-tree.png)
+<span class="caption">Sample search results with 'show tree' instruction</span>
+
+You can see related feature requests in:
+
+- ["scope: sub-tasks and super-tasks" Issues](https://github.com/obsidian-tasks-group/obsidian-tasks/issues?q=is%3Aopen%20label%3A%22scope%3A%20sub-tasks%20and%20super-tasks%22%20is%3Aissue%20)
+- ["scope: sub-tasks and super-tasks" Discussions](https://github.com/obsidian-tasks-group/obsidian-tasks/discussions/categories/ideas-any-new-feature-requests-go-in-issues-please?discussions_q=is%3Aopen+label%3A%22scope%3A+sub-tasks+and+super-tasks%22+category%3A%22Ideas%3A+Any+New+Feature+Requests+go+in+Issues+please%22+sort%3Atop)
 
 ### Footnotes are not displayed in query results
 
