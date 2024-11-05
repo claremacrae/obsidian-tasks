@@ -49,42 +49,27 @@ export class Explainer {
     }
 
     public explainFilters(query: Query) {
-        const numberOfFilters = query.filters.length;
-        if (numberOfFilters === 0) {
+        if (query.filters.length === 0) {
             return this.indent('No filters supplied. All tasks will match the query.\n');
         }
 
-        return query.filters
-            .map((filter) => {
-                return filter.explainFilterIndented(this.indentation);
-            })
-            .join('\n');
+        return query.filters.map((filter) => filter.explainFilterIndented(this.indentation)).join('\n');
     }
 
     public explainGroups(query: Query) {
-        const numberOfGroups = query.grouping.length;
-        if (numberOfGroups === 0) {
+        if (query.grouping.length === 0) {
             return this.indent('No grouping instructions supplied.\n');
         }
 
-        let result = '';
-        for (let i = 0; i < numberOfGroups; i++) {
-            result += this.indentation + query.grouping[i].instruction + '\n';
-        }
-        return result;
+        return query.grouping.map((group) => this.indentation + group.instruction).join('\n') + '\n';
     }
 
     public explainSorters(query: Query) {
-        const numberOfSorters = query.sorting.length;
-        if (numberOfSorters === 0) {
+        if (query.sorting.length === 0) {
             return this.indent('No sorting instructions supplied.\n');
         }
 
-        let result = '';
-        for (let i = 0; i < numberOfSorters; i++) {
-            result += this.indentation + query.sorting[i].instruction + '\n';
-        }
-        return result;
+        return query.sorting.map((group) => this.indentation + group.instruction).join('\n') + '\n';
     }
 
     public explainQueryLimits(query: Query) {

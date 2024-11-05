@@ -14,6 +14,11 @@ import { verifyWithFileExtension } from '../TestingTools/ApprovalTestHelpers';
 import { verifyAllCombinations3Async } from '../TestingTools/CombinationApprovalsAsync';
 import { prettifyHTML } from '../TestingTools/HTMLHelpers';
 import { TaskBuilder } from '../TestingTools/TaskBuilder';
+import {
+    getAndCheckApplyButton,
+    getAndCheckRenderedDescriptionElement,
+    getAndCheckRenderedElement,
+} from './RenderingTestHelpers';
 
 window.moment = moment;
 /**
@@ -48,28 +53,6 @@ function renderAndCheckModal(task: Task, onSubmit: (updatedTasks: Task[]) => voi
     const { container } = result;
     expect(() => container).toBeTruthy();
     return { result, container };
-}
-
-/**
- * Find the element with the given id.
- * Template type T might be, for example, HTMLInputElement or HTMLSelectElement
- * @param container
- * @param elementId
- */
-function getAndCheckRenderedElement<T>(container: HTMLElement, elementId: string) {
-    const element = container.ownerDocument.getElementById(elementId) as T;
-    expect(() => element).toBeTruthy();
-    return element;
-}
-
-function getAndCheckRenderedDescriptionElement(container: HTMLElement): HTMLInputElement {
-    return getAndCheckRenderedElement<HTMLInputElement>(container, 'description');
-}
-
-function getAndCheckApplyButton(result: RenderResult<EditTask>): HTMLButtonElement {
-    const submit = result.getByText('Apply') as HTMLButtonElement;
-    expect(submit).toBeTruthy();
-    return submit;
 }
 
 async function editInputElement(inputElement: HTMLInputElement, newValue: string) {
@@ -675,7 +658,9 @@ describe('Edit Modal HTML snapshot tests', () => {
     });
 
     function verifyModalHTML() {
-        const task = taskFromLine({ line: '- [ ] absolutely to do', path: '' });
+        // Populate task a valid and an invalid date. Note that the valid date value
+        // is not visible in the HTML output.
+        const task = taskFromLine({ line: '- [ ] absolutely to do 🛫 2024-01-01 ⏳ 2024-02-33', path: '' });
         const onSubmit = () => {};
         const allTasks = [task];
         const { container } = renderAndCheckModal(task, onSubmit, allTasks);
