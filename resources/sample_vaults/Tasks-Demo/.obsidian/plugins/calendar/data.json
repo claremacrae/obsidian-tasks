@@ -1,10 +1,10 @@
 {
-  "shouldConfirmBeforeCreate": true,
+  "shouldConfirmBeforeCreate": false,
   "weekStart": "locale",
   "wordsPerDot": 250,
-  "showWeeklyNote": false,
+  "showWeeklyNote": true,
   "weeklyNoteFormat": "",
-  "weeklyNoteTemplate": "",
-  "weeklyNoteFolder": "",
+  "weeklyNoteTemplate": "_meta/templates/weekly note template - Templater plugin.md",
+  "weeklyNoteFolder": "Weekly Notes",
   "localeOverride": "system-default"
 }
