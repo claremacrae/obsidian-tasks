@@ -17,5 +17,6 @@
   "js-engine",
   "table-editor-obsidian",
   "reveal-active-file-button",
-  "obsidian-jump-to-date-plugin"
+  "obsidian-jump-to-date-plugin",
+  "calendar"
 ]
