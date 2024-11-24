@@ -6,19 +6,20 @@ import type { Task } from 'Task/Task';
 import { State } from '../../src/Obsidian/Cache';
 import { QueryResultsRenderer } from '../../src/Renderer/QueryResultsRenderer';
 import { TasksFile } from '../../src/Scripting/TasksFile';
-import { inheritance_rendering_sample } from '../Obsidian/__test_data__/inheritance_rendering_sample';
-import { inheritance_task_2listitem_3task } from '../Obsidian/__test_data__/inheritance_task_2listitem_3task';
+import inheritance_rendering_sample from '../Obsidian/__test_data__/inheritance_rendering_sample.json';
+import inheritance_task_2listitem_3task from '../Obsidian/__test_data__/inheritance_task_2listitem_3task.json';
 import { readTasksFromSimulatedFile } from '../Obsidian/SimulatedFile';
 import { verifyWithFileExtension } from '../TestingTools/ApprovalTestHelpers';
 import { prettifyHTML } from '../TestingTools/HTMLHelpers';
 import { TaskBuilder } from '../TestingTools/TaskBuilder';
+import { toMarkdown } from '../TestingTools/TestHelpers';
 import { mockHTMLRenderer } from './RenderingTestHelpers';
 
 window.moment = moment;
 
 beforeEach(() => {
     jest.useFakeTimers();
-    jest.setSystemTime(new Date('2024-08-19'));
+    jest.setSystemTime(new Date('2023-07-05'));
 });
 
 afterEach(() => {
@@ -47,13 +48,22 @@ describe('QueryResultsRenderer tests', () => {
 
         await renderer.render(State.Warm, allTasks, container, queryRendererParameters);
 
+        const taskAsMarkdown = `<!--
+${toMarkdown(allTasks)}
+-->\n\n`;
+
         const prettyHTML = prettifyHTML(container.outerHTML);
-        verifyWithFileExtension(prettyHTML, 'html');
+        verifyWithFileExtension(taskAsMarkdown + prettyHTML, 'html');
     }
 
     it('fully populated task', async () => {
         const allTasks = [TaskBuilder.createFullyPopulatedTask()];
-        await verifyRenderedTasksHTML(allTasks);
+        await verifyRenderedTasksHTML(allTasks, 'show urgency');
+    });
+
+    it('fully populated task - short mode', async () => {
+        const allTasks = [TaskBuilder.createFullyPopulatedTask()];
+        await verifyRenderedTasksHTML(allTasks, 'show urgency\nshort mode');
     });
 
     const showTree = 'show tree\n';
