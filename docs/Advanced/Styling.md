@@ -44,9 +44,15 @@ The Tasks plugin renders a task in the following structure (this refers to query
         - Task description and tags (span class="task-description")
           - Internal span
             - Each tag in the description is wrapped in <a href class="tag" data-tag-name="[tag-name]">
+        - Task ID (span class="task-id")
+          - Internal span
+        - Task 'depends on' (span class="task-dependsOn")
+          - Internal span
         - Task priority (span class="task-priority" + data-task-priority attribute)
           - Internal span
         - Task recurrence rule (span class="task-recurring")
+          - Internal span
+        - Task 'on completion' (span class="onCompletion")
           - Internal span
         - Task created date (span class="task-created" + data-task-created attribute)
           - Internal span
@@ -65,113 +71,31 @@ The reason for this additional internal span is that it allows CSS styles that c
 
 ### Sample HTML: Full mode
 
-To help visualise the structure above, here is the HTML for a sample task shown in [[Layout#Full Mode|full mode]].
+To help visualise the structure above, below is the HTML for a sample Tasks search shown in [[Layout#Full Mode|full mode]].
 
 > [!Note]
-> The below does not (yet) show the "Task extras".
+> In Reading Mode:
+>
+> - all the classes and data inside the `li` are available,
+> - and none of the "Task extras" content is available.
 
-<!-- snippet: TaskLineRenderer.test.Visualise_HTML_Full_task_-_full_mode.approved.html -->
-```html
-<!--
-  - [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03 📅 2023-07-04 ❌ 2023-07-06 ✅ 2023-07-05 ^dcf64c
--->
-
-<li
-  class="task-list-item plugin-tasks-list-item"
-  data-task-priority="medium"
-  data-task-created="past-4d"
-  data-task-start="past-3d"
-  data-task-scheduled="past-2d"
-  data-task-due="past-1d"
-  data-task-cancelled="future-1d"
-  data-task-done="today"
-  data-task=""
-  data-line="0"
-  data-task-status-name="Todo"
-  data-task-status-type="TODO">
-  <input class="task-list-item-checkbox" type="checkbox" title="Right-click for options" data-line="0" />
-  <span class="tasks-list-text">
-    <span class="task-description"><span>Do exercises #todo #health</span></span>
-    <span class="task-id"><span>🆔 abcdef</span></span>
-    <span class="task-dependsOn"><span>⛔ 123456,abc123</span></span>
-    <span class="task-priority" data-task-priority="medium"><span>🔼</span></span>
-    <span class="task-recurring"><span>🔁 every day when done</span></span>
-    <span class="task-onCompletion"><span>🏁 delete</span></span>
-    <span class="task-created" data-task-created="past-4d" title="Right-click to edit created date">
-      <span>➕ 2023-07-01</span>
-    </span>
-    <span class="task-start" data-task-start="past-3d" title="Right-click to edit start date">
-      <span>🛫 2023-07-02</span>
-    </span>
-    <span class="task-scheduled" data-task-scheduled="past-2d" title="Right-click to edit scheduled date">
-      <span>⏳ 2023-07-03</span>
-    </span>
-    <span class="task-due" data-task-due="past-1d" title="Right-click to edit due date">
-      <span>📅 2023-07-04</span>
-    </span>
-    <span class="task-cancelled" data-task-cancelled="future-1d" title="Right-click to edit cancelled date">
-      <span>❌ 2023-07-06</span>
-    </span>
-    <span class="task-done" data-task-done="today" title="Right-click to edit done date">
-      <span>✅ 2023-07-05</span>
-    </span>
-    <span class="task-block-link"><span>^dcf64c</span></span>
-  </span>
-</li>
-```
-<!-- endSnippet -->
+> [!example]- Sample HTML: Full mode
+> ![[Sample HTML - Full mode]]
 
 ### Sample HTML: Short mode
 
-Here is the same task in [[Layout#Short Mode|short mode]]. The only difference is that any text values after Tasks emoji are omitted:
+Below is the same Tasks search in [[Layout#Short Mode|short mode]].
 
 > [!Note]
-> The below does not (yet) show the "Task extras".
+> The differences from Full mode are:
 >
-<!-- snippet: TaskLineRenderer.test.Visualise_HTML_Full_task_-_short_mode.approved.html -->
-```html
-<!--
-  - [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03 📅 2023-07-04 ❌ 2023-07-06 ✅ 2023-07-05 ^dcf64c
--->
+> - the `ul` has an extra class `tasks-layout-short-mode`,
+> - any text values after Tasks emoji are omitted,
+> - the backlink is shorter and has an extra class `internal-link-short-mode`,
+> - the postpone button has an extra class `tasks-postpone-short-mode`.
 
-<li
-  class="task-list-item plugin-tasks-list-item"
-  data-task-priority="medium"
-  data-task-created="past-4d"
-  data-task-start="past-3d"
-  data-task-scheduled="past-2d"
-  data-task-due="past-1d"
-  data-task-cancelled="future-1d"
-  data-task-done="today"
-  data-task=""
-  data-line="0"
-  data-task-status-name="Todo"
-  data-task-status-type="TODO">
-  <input class="task-list-item-checkbox" type="checkbox" title="Right-click for options" data-line="0" />
-  <span class="tasks-list-text">
-    <span class="task-description"><span>Do exercises #todo #health</span></span>
-    <span class="task-id"><span>🆔</span></span>
-    <span class="task-dependsOn"><span>⛔</span></span>
-    <span class="task-priority" data-task-priority="medium"><span>🔼</span></span>
-    <span class="task-recurring"><span>🔁</span></span>
-    <span class="task-onCompletion"><span>🏁</span></span>
-    <span class="task-created" data-task-created="past-4d" title="Right-click to edit created date">
-      <span>➕</span>
-    </span>
-    <span class="task-start" data-task-start="past-3d" title="Right-click to edit start date"><span>🛫</span></span>
-    <span class="task-scheduled" data-task-scheduled="past-2d" title="Right-click to edit scheduled date">
-      <span>⏳</span>
-    </span>
-    <span class="task-due" data-task-due="past-1d" title="Right-click to edit due date"><span>📅</span></span>
-    <span class="task-cancelled" data-task-cancelled="future-1d" title="Right-click to edit cancelled date">
-      <span>❌</span>
-    </span>
-    <span class="task-done" data-task-done="today" title="Right-click to edit done date"><span>✅</span></span>
-    <span class="task-block-link"><span>^dcf64c</span></span>
-  </span>
-</li>
-```
-<!-- endSnippet -->
+> [!example]- Sample HTML: Short mode
+> ![[Sample HTML - Short mode]]
 
 ## Generic Classes and Data Attributes
 
@@ -192,8 +116,10 @@ The generic classes are:
 - `task-cancelled`
 - `task-done`
 - `task-recurring`
+- `task-onCompletion`
 - `task-id`
 - `task-dependsOn`
+- `task-block-link`
 
 In addition to the generic classes, there are [**data attributes**](https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes) that represent the content of the various task components.
 

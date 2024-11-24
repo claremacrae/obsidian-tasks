@@ -2,35 +2,37 @@
  * @jest-environment jsdom
  */
 import moment from 'moment/moment';
+import type { CachedMetadata } from 'obsidian';
 import type { ListItem } from '../../src/Task/ListItem';
 import { getTasksFileFromMockData, listPathAndData } from '../TestingTools/MockDataHelpers';
-import { inheritance_1parent1child } from './__test_data__/inheritance_1parent1child';
-import { inheritance_1parent1child1newroot_after_header } from './__test_data__/inheritance_1parent1child1newroot_after_header';
-import { inheritance_1parent1child1sibling_emptystring } from './__test_data__/inheritance_1parent1child1sibling_emptystring';
-import { inheritance_1parent2children } from './__test_data__/inheritance_1parent2children';
-import { inheritance_1parent2children1grandchild } from './__test_data__/inheritance_1parent2children1grandchild';
-import { inheritance_1parent2children1sibling } from './__test_data__/inheritance_1parent2children1sibling';
-import { inheritance_1parent2children2grandchildren } from './__test_data__/inheritance_1parent2children2grandchildren';
-import { inheritance_1parent2children2grandchildren1sibling } from './__test_data__/inheritance_1parent2children2grandchildren1sibling';
-import { inheritance_1parent2children2grandchildren1sibling_start_with_heading } from './__test_data__/inheritance_1parent2children2grandchildren1sibling_start_with_heading';
-import { inheritance_2roots_listitem_listitem_task } from './__test_data__/inheritance_2roots_listitem_listitem_task';
-import { inheritance_2siblings } from './__test_data__/inheritance_2siblings';
-import { inheritance_listitem_listitem_task } from './__test_data__/inheritance_listitem_listitem_task';
-import { inheritance_listitem_task } from './__test_data__/inheritance_listitem_task';
-import { inheritance_listitem_task_siblings } from './__test_data__/inheritance_listitem_task_siblings';
-import { inheritance_task_2listitem_3task } from './__test_data__/inheritance_task_2listitem_3task';
-import { inheritance_task_listitem } from './__test_data__/inheritance_task_listitem';
-import { inheritance_task_listitem_mixed_grandchildren } from './__test_data__/inheritance_task_listitem_mixed_grandchildren';
-import { inheritance_task_listitem_task } from './__test_data__/inheritance_task_listitem_task';
-import { inheritance_task_mixed_children } from './__test_data__/inheritance_task_mixed_children';
-import { one_task } from './__test_data__/one_task';
-import { callouts_nested_issue_2890_labelled } from './__test_data__/callouts_nested_issue_2890_labelled';
-import { callout } from './__test_data__/callout';
-import { callout_labelled } from './__test_data__/callout_labelled';
-import { callout_custom } from './__test_data__/callout_custom';
-import { callouts_nested_issue_2890_unlabelled } from './__test_data__/callouts_nested_issue_2890_unlabelled';
+import inheritance_1parent1child from './__test_data__/inheritance_1parent1child.json';
+import inheritance_1parent1child1newroot_after_header from './__test_data__/inheritance_1parent1child1newroot_after_header.json';
+import inheritance_1parent1child1sibling_emptystring from './__test_data__/inheritance_1parent1child1sibling_emptystring.json';
+import inheritance_1parent2children from './__test_data__/inheritance_1parent2children.json';
+import inheritance_1parent2children1grandchild from './__test_data__/inheritance_1parent2children1grandchild.json';
+import inheritance_1parent2children1sibling from './__test_data__/inheritance_1parent2children1sibling.json';
+import inheritance_1parent2children2grandchildren from './__test_data__/inheritance_1parent2children2grandchildren.json';
+import inheritance_1parent2children2grandchildren1sibling from './__test_data__/inheritance_1parent2children2grandchildren1sibling.json';
+import inheritance_1parent2children2grandchildren1sibling_start_with_heading from './__test_data__/inheritance_1parent2children2grandchildren1sibling_start_with_heading.json';
+import inheritance_2roots_listitem_listitem_task from './__test_data__/inheritance_2roots_listitem_listitem_task.json';
+import inheritance_2siblings from './__test_data__/inheritance_2siblings.json';
+import inheritance_listitem_listitem_task from './__test_data__/inheritance_listitem_listitem_task.json';
+import inheritance_listitem_task from './__test_data__/inheritance_listitem_task.json';
+import inheritance_listitem_task_siblings from './__test_data__/inheritance_listitem_task_siblings.json';
+import inheritance_task_2listitem_3task from './__test_data__/inheritance_task_2listitem_3task.json';
+import inheritance_task_listitem from './__test_data__/inheritance_task_listitem.json';
+import inheritance_task_listitem_mixed_grandchildren from './__test_data__/inheritance_task_listitem_mixed_grandchildren.json';
+import inheritance_task_listitem_task from './__test_data__/inheritance_task_listitem_task.json';
+import inheritance_task_mixed_children from './__test_data__/inheritance_task_mixed_children.json';
+import one_task from './__test_data__/one_task.json';
+import callouts_nested_issue_2890_labelled from './__test_data__/callouts_nested_issue_2890_labelled.json';
+import callout from './__test_data__/callout.json';
+import callout_labelled from './__test_data__/callout_labelled.json';
+import callout_custom from './__test_data__/callout_custom.json';
+import callouts_nested_issue_2890_unlabelled from './__test_data__/callouts_nested_issue_2890_unlabelled.json';
+import links_everywhere from './__test_data__/links_everywhere.json';
 import { allCacheSampleData } from './AllCacheSampleData';
-import { readTasksFromSimulatedFile } from './SimulatedFile';
+import { type SimulatedFile, readTasksFromSimulatedFile } from './SimulatedFile';
 
 window.moment = moment;
 
@@ -601,6 +603,130 @@ describe('cache', () => {
             "
         `);
         expect(tasks.length).toEqual(4);
+    });
+});
+
+describe('accessing links in file', function () {
+    describe('explore accessing links in file "links_everywhere.md"', () => {
+        const data = links_everywhere as unknown as SimulatedFile;
+
+        const tasks = readTasksFromSimulatedFile(data);
+        expect(tasks.length).toEqual(1);
+        const task = tasks[0];
+
+        const cachedMetadata: CachedMetadata = task.file.cachedMetadata;
+
+        /**
+         * I am thinking of the following, to evantually make links accessible to users.
+         * 1. Provide a class or interface called Link, with fields:
+         *      - displayText, e.g. "link_in_yaml"
+         *      - link, e.g. "link_in_yaml"
+         *      - original, e.g. "[[link_in_yaml]]"
+         * 2. Add some getters that construct the relevant Link objects from cached metadata on demand, such as:
+         *      - task.file.linksInBody
+         *      - task.file.linksInFrontMatter
+         *      - task.file.allLinks
+         *      - task.links
+         * 3. Consider the vocabulary - some dataview users talk about inlines and outlinks.
+         *    The above are all outlinks - but do we want to name them as such, to prepare
+         *    for if or when inlinks are also supported?
+         */
+
+        it('see source', () => {
+            expect(data.fileContents).toMatchInlineSnapshot(`
+                            "---
+                            link-in-frontmatter: "[[link_in_yaml]]"
+                            ---
+                            # links_everywhere
+
+                            A link in the file body: [[link_in_file_body]]
+
+                            ## A link in a [[link_in_heading]]
+
+                            - [ ] #task Task in 'links_everywhere' - a link on the task: [[link_in_task_wikilink]]
+                            "
+                    `);
+        });
+
+        it('should access links in frontmatter', () => {
+            // Update to Obsidian API 1.4.0 to access cachedMetadata.frontmatterLinks
+            // @ts-expect-error TS2551: Property frontmatterLinks does not exist on type CachedMetadata
+            const frontMatterLinks = cachedMetadata['frontmatterLinks'];
+            expect(frontMatterLinks).toBeDefined();
+
+            const firstFrontMatterLink = frontMatterLinks![0];
+            expect(firstFrontMatterLink.original).toEqual('[[link_in_yaml]]');
+            expect(firstFrontMatterLink).toMatchInlineSnapshot(`
+                            {
+                              "displayText": "link_in_yaml",
+                              "key": "link-in-frontmatter",
+                              "link": "link_in_yaml",
+                              "original": "[[link_in_yaml]]",
+                            }
+                    `);
+        });
+
+        it('should access links in file body', () => {
+            const fileBodyLinks = cachedMetadata.links;
+
+            const originalLinkText = fileBodyLinks?.map((link) => link.original).join('\n');
+            expect(originalLinkText).toMatchInlineSnapshot(`
+                            "[[link_in_file_body]]
+                            [[link_in_heading]]
+                            [[link_in_task_wikilink]]"
+                    `);
+
+            const firstFileBodyLink = fileBodyLinks![0];
+            expect(firstFileBodyLink).toMatchInlineSnapshot(`
+                            {
+                              "displayText": "link_in_file_body",
+                              "link": "link_in_file_body",
+                              "original": "[[link_in_file_body]]",
+                              "position": {
+                                "end": {
+                                  "col": 46,
+                                  "line": 5,
+                                  "offset": 114,
+                                },
+                                "start": {
+                                  "col": 25,
+                                  "line": 5,
+                                  "offset": 93,
+                                },
+                              },
+                            }
+                    `);
+        });
+
+        it('should access links in task line', () => {
+            const fileBodyLinks = cachedMetadata.links;
+            const linksOnTask = fileBodyLinks?.filter((link) => link.position.start.line === task.lineNumber);
+
+            expect(linksOnTask).toBeDefined();
+            expect(linksOnTask?.length).toEqual(1);
+
+            const firstLinkOnTask = linksOnTask![0];
+            expect(firstLinkOnTask.original).toEqual('[[link_in_task_wikilink]]');
+            expect(firstLinkOnTask).toMatchInlineSnapshot(`
+                {
+                  "displayText": "link_in_task_wikilink",
+                  "link": "link_in_task_wikilink",
+                  "original": "[[link_in_task_wikilink]]",
+                  "position": {
+                    "end": {
+                      "col": 86,
+                      "line": 9,
+                      "offset": 238,
+                    },
+                    "start": {
+                      "col": 61,
+                      "line": 9,
+                      "offset": 213,
+                    },
+                  },
+                }
+            `);
+        });
     });
 });
 

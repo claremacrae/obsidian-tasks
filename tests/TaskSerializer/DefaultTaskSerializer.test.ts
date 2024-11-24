@@ -13,6 +13,7 @@ import {
 import { TaskBuilder } from '../TestingTools/TaskBuilder';
 import { OnCompletion } from '../../src/Task/OnCompletion';
 import { Priority } from '../../src/Task/Priority';
+import { escapeInvisibleCharacters } from '../../src/lib/StringHelpers';
 
 jest.mock('obsidian');
 window.moment = moment;
@@ -39,6 +40,44 @@ describe('validate emojis', () => {
     // If these tests fail, paste the problem emoji in to https://apps.timwhitlock.info/unicode/inspect
     it.each(allTaskPluginEmojis())('emoji does not contain Variant Selector 16: "%s"', (emoji: string) => {
         expect(hasVariantSelector16(emoji)).toBe(false);
+    });
+});
+
+describe('validate emoji regular expressions', () => {
+    /**
+     * Generate a string representation of all regular expressions
+     * in TaskFormatRegularExpressions by concatenating their source and flags.
+     */
+    function generateRegexApprovalTest(): string {
+        const regexMap = DEFAULT_SYMBOLS.TaskFormatRegularExpressions;
+        const regexDetails = Object.entries(regexMap).map(([key, regex]) => {
+            // Get the source and flags for each regex
+            if (regex instanceof RegExp) {
+                return `${key}: /${regex.source}/${regex.flags}`;
+            } else {
+                throw new Error(`Unexpected value for ${key}: Not a regular expression.`);
+            }
+        });
+        // Concatenate all entries into a single string, with any Variation Selectors made visible
+        return escapeInvisibleCharacters('\n' + regexDetails.join('\n') + '\n');
+    }
+
+    it('regular expressions should have expected source', () => {
+        expect(generateRegexApprovalTest()).toMatchInlineSnapshot(`
+            "
+            priorityRegex: /([🔺⏫🔼🔽⏬])\\ufe0f?$/u
+            startDateRegex: /🛫\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/u
+            createdDateRegex: /➕\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/u
+            scheduledDateRegex: /[⏳⌛]\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/u
+            dueDateRegex: /[📅📆🗓]\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/u
+            doneDateRegex: /✅\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/u
+            cancelledDateRegex: /❌\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/u
+            recurrenceRegex: /🔁\\ufe0f? *([a-zA-Z0-9, !]+)$/u
+            onCompletionRegex: /🏁\\ufe0f? *([a-zA-Z]+)$/u
+            dependsOnRegex: /⛔\\ufe0f? *([a-zA-Z0-9-_]+( *, *[a-zA-Z0-9-_]+ *)*)$/u
+            idRegex: /🆔\\ufe0f? *([a-zA-Z0-9-_]+)$/u
+            "
+        `);
     });
 });
 
@@ -81,6 +120,15 @@ describe.each(symbolMap)("DefaultTaskSerializer with '$taskFormat' symbols", ({ 
             it('should parse a scheduledDate - with non-standard emoji', () => {
                 const taskDetails = deserialize('⌛ 2021-06-20');
                 expect(taskDetails).toMatchTaskDetails({ ['scheduledDate']: moment('2021-06-20', 'YYYY-MM-DD') });
+            });
+
+            it('should parse a scheduledDate - with Variation Selector', () => {
+                // This test showed the existence of https://github.com/obsidian-tasks-group/obsidian-tasks/issues/3179
+                const input = '⏳️ 2024-11-18';
+                expect(hasVariantSelector16(input)).toBe(true);
+
+                const taskDetails = deserialize(input);
+                expect(taskDetails).toMatchTaskDetails({ ['scheduledDate']: moment('2024-11-18', 'YYYY-MM-DD') });
             });
 
             it('should parse a dueDate - with non-standard emoji 1', () => {
@@ -134,9 +182,15 @@ describe.each(symbolMap)("DefaultTaskSerializer with '$taskFormat' symbols", ({ 
 
         describe('should parse onCompletion', () => {
             it('should parse delete action', () => {
-                const onCompletion = `${onCompletionSymbol} delete`;
+                const onCompletion = `${onCompletionSymbol} Delete`;
                 const taskDetails = deserialize(onCompletion);
                 expect(taskDetails).toMatchTaskDetails({ onCompletion: OnCompletion.Delete });
+            });
+
+            it('should allow multiple spaces', () => {
+                const onCompletion = `${onCompletionSymbol}  Keep`;
+                const taskDetails = deserialize(onCompletion);
+                expect(taskDetails).toMatchTaskDetails({ onCompletion: OnCompletion.Keep });
             });
         });
 
