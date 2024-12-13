@@ -25,7 +25,6 @@ export interface ILogLevel {
 /**
  * Logger class to handle consistency of logs across the plugin.
  *
- * @export
  * @interface LogEntry
  */
 export interface LogEntry {
@@ -40,7 +39,6 @@ export interface LogEntry {
 /**
  * Logging options structure.
  *
- * @export
  * @interface LogOptions
  */
 export interface LogOptions {
@@ -62,7 +60,6 @@ export type TLogLevelName = ILogLevel[TLogLevelId];
 /**
  * Logger class to handle consistency of logs across the plugin.
  *
- * @export
  * @class LogManager
  * @extends {EventEmitter2}
  */
@@ -82,7 +79,6 @@ export class LogManager extends EventEmitter2 {
      *
      * @param {LogOptions} options
      * @return {*}  {LogManager}
-     * @memberof LogManager
      */
     public configure(options: LogOptions): LogManager {
         this.options = Object.assign({}, this.options, options);
@@ -94,7 +90,6 @@ export class LogManager extends EventEmitter2 {
      *
      * @param {string} module
      * @return {*}  {Logger}
-     * @memberof LogManager
      */
     public getLogger(module: string): Logger {
         let minLevel = 'none';
@@ -114,7 +109,6 @@ export class LogManager extends EventEmitter2 {
      *
      * @param {(logEntry: LogEntry) => void} listener
      * @return {*}  {LogManager}
-     * @memberof LogManager
      */
     public onLogEntry(listener: (logEntry: LogEntry) => void): LogManager {
         this.on('log', listener);
@@ -127,7 +121,6 @@ export class LogManager extends EventEmitter2 {
      * Registers a logger that write to the console.
      *
      * @return {*}  {LogManager}
-     * @memberof LogManager
      */
     public registerConsoleLogger(): LogManager {
         if (this.consoleLoggerRegistered) return this;
@@ -176,7 +169,6 @@ export const logging = new LogManager();
  * Main logging library, to view the logs a logger listener must be added. The
  * Console Logger is already implemented for this project.
  *
- * @export
  * @class Logger
  */
 export class Logger {
@@ -196,7 +188,6 @@ export class Logger {
      * @param {EventEmitter2} logManager
      * @param {string} module
      * @param {string} minLevel
-     * @memberof Logger
      */
     constructor(logManager: EventEmitter2, module: string, minLevel: string) {
         this.logManager = logManager;
@@ -315,7 +306,6 @@ const timingMap: TimingMap = {};
  * This deceleration will log the time taken to run the function it is attached to. Be
  * careful where it is added as it increases the output.
  *
- * @export
  * @return {*}
  */
 export const logCall = (target: Object, propertyKey: string, descriptor: PropertyDescriptor) => {
@@ -377,7 +367,6 @@ export function logCallDetails() {
 /**
  * Provides a simple log function that can be used to log messages against default module.
  *
- * @export
  * @param {TLogLevelName} logLevel
  * @param {string} message
  */
@@ -410,7 +399,6 @@ export function log(logLevel: TLogLevelName, message: string) {
  * add it when debugging on a device. Not meant to be used by
  * end users. Add it into main.ts and remove before you commit.
  *
- * @export
  * @param {Plugin} plugin
  * @return {*}
  */

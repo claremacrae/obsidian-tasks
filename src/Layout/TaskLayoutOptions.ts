@@ -93,3 +93,42 @@ export class TaskLayoutOptions {
         this.setTagsVisibility(!this.areTagsShown());
     }
 }
+
+/**
+ * Parse show/hide options for Task layout options
+ * @param taskLayoutOptions
+ * @param option - must already have been lower-cased
+ * @param visible - whether the option should be shown
+ * @return True if the option was recognised, and false otherwise
+ * @see parseQueryShowHideOptions
+ */
+export function parseTaskShowHideOptions(taskLayoutOptions: TaskLayoutOptions, option: string, visible: boolean) {
+    const optionMap = new Map<string, TaskLayoutComponent>([
+        // Alphabetical order
+        ['cancelled date', TaskLayoutComponent.CancelledDate],
+        ['created date', TaskLayoutComponent.CreatedDate],
+        ['depends on', TaskLayoutComponent.DependsOn],
+        ['done date', TaskLayoutComponent.DoneDate],
+        ['due date', TaskLayoutComponent.DueDate],
+        ['id', TaskLayoutComponent.Id],
+        ['on completion', TaskLayoutComponent.OnCompletion],
+        ['priority', TaskLayoutComponent.Priority],
+        ['recurrence rule', TaskLayoutComponent.RecurrenceRule],
+        ['scheduled date', TaskLayoutComponent.ScheduledDate],
+        ['start date', TaskLayoutComponent.StartDate],
+    ]);
+
+    for (const [key, component] of optionMap.entries()) {
+        if (option.startsWith(key)) {
+            taskLayoutOptions.setVisibility(component, visible);
+            return true;
+        }
+    }
+
+    if (option.startsWith('tags')) {
+        taskLayoutOptions.setTagsVisibility(visible);
+        return true;
+    }
+
+    return false;
+}

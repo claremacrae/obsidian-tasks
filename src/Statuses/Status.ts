@@ -11,7 +11,6 @@ import type { StatusCollectionEntry } from './StatusCollection';
  * @see StatusSettingsHelpers.ts
  * @see CustomStatusModal
  *
- * @export
  * @class Status
  */
 export class Status {
@@ -20,7 +19,6 @@ export class Status {
      *
      * @static
      * @type {Status}
-     * @memberof Status
      */
     public static readonly DONE: Status = new Status(new StatusConfiguration('x', 'Done', ' ', true, StatusType.DONE));
 
@@ -29,7 +27,6 @@ export class Status {
      *
      * @static
      * @type {Status}
-     * @memberof Status
      */
     public static readonly EMPTY: Status = new Status(new StatusConfiguration('', 'EMPTY', '', true, StatusType.EMPTY));
 
@@ -39,7 +36,6 @@ export class Status {
      *
      * @static
      * @type {Status}
-     * @memberof Status
      */
     public static readonly TODO: Status = new Status(new StatusConfiguration(' ', 'Todo', 'x', true, StatusType.TODO));
 
@@ -48,7 +44,6 @@ export class Status {
      *
      * @static
      * @type {Status}
-     * @memberof Status
      */
     public static readonly CANCELLED: Status = new Status(
         new StatusConfiguration('-', 'Cancelled', ' ', true, StatusType.CANCELLED),
@@ -59,7 +54,6 @@ export class Status {
      *
      * @static
      * @type {Status}
-     * @memberof Status
      */
     public static readonly IN_PROGRESS: Status = new Status(
         new StatusConfiguration('/', 'In Progress', 'x', true, StatusType.IN_PROGRESS),
@@ -70,7 +64,6 @@ export class Status {
      *
      * @static
      * @type {Status}
-     * @memberof Status
      */
     public static readonly NON_TASK: Status = new Status(
         new StatusConfiguration('Q', 'Non-Task', 'A', true, StatusType.NON_TASK),
@@ -80,7 +73,6 @@ export class Status {
      * The configuration stored in the data.json file.
      *
      * @type {StatusConfiguration}
-     * @memberof Status
      */
     public readonly configuration: StatusConfiguration;
 
@@ -88,7 +80,6 @@ export class Status {
      * The symbol used between the two square brackets in the markdown task.
      *
      * @type {string}
-     * @memberof Status
      */
     public get symbol(): string {
         return this.configuration.symbol;
@@ -98,7 +89,6 @@ export class Status {
      * Returns the name of the status for display purposes.
      *
      * @type {string}
-     * @memberof Status
      */
     public get name(): string {
         return this.configuration.name;
@@ -108,7 +98,6 @@ export class Status {
      * Returns the next status for a task when toggled.
      *
      * @type {string}
-     * @memberof Status
      * @see nextSymbol
      */
     public get nextStatusSymbol(): string {
@@ -120,7 +109,6 @@ export class Status {
      * This is an alias for {@link nextStatusSymbol} which is provided for brevity in user scripts.
      *
      * @type {string}
-     * @memberof Status
      * @see nextStatusSymbol
      */
     public get nextSymbol(): string {
@@ -131,7 +119,6 @@ export class Status {
      * If true then it is registered as a command that the user can map to.
      *
      * @type {boolean}
-     * @memberof Status
      */
     public get availableAsCommand(): boolean {
         return this.configuration.availableAsCommand;
@@ -184,7 +171,6 @@ export class Status {
      * of the default statuses.
      *
      * @param {StatusConfiguration} configuration
-     * @memberof Status
      */
     constructor(configuration: StatusConfiguration) {
         this.configuration = configuration;
@@ -251,7 +237,6 @@ export class Status {
      * when the task is done/x.
      *
      * @return {*}  {boolean}
-     * @memberof Status
      */
     public isCompleted(): boolean {
         return this.type === StatusType.DONE;

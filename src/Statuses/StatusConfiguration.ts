@@ -14,7 +14,6 @@ export enum StatusType {
  * This is the object stored by the Obsidian configuration and used to create the status
  * objects for the session
  *
- * @export
  * @class StatusConfiguration
  */
 export class StatusConfiguration {
@@ -22,7 +21,6 @@ export class StatusConfiguration {
      * The character used between the two square brackets in the markdown task.
      *
      * @type {string}
-     * @memberof Status
      */
     public readonly symbol: string;
 
@@ -30,7 +28,6 @@ export class StatusConfiguration {
      * Returns the name of the status for display purposes.
      *
      * @type {string}
-     * @memberof Status
      */
     public readonly name: string;
 
@@ -38,7 +35,6 @@ export class StatusConfiguration {
      * Returns the next status for a task when toggled.
      *
      * @type {string}
-     * @memberof Status
      */
     public readonly nextStatusSymbol: string;
 
@@ -46,7 +42,6 @@ export class StatusConfiguration {
      * If true then it is registered as a command that the user can map to.
      *
      * @type {boolean}
-     * @memberof Status
      */
     public readonly availableAsCommand: boolean;
 
@@ -64,7 +59,6 @@ export class StatusConfiguration {
      * @param {Status} nextStatusSymbol
      * @param {boolean} availableAsCommand
      * @param {StatusType} type
-     * @memberof Status
      */
     constructor(
         symbol: string,
