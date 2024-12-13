@@ -6,7 +6,7 @@ import type { IQuery } from '../IQuery';
 import { QueryLayout } from '../Layout/QueryLayout';
 import { TaskLayout } from '../Layout/TaskLayout';
 import { PerformanceTracker } from '../lib/PerformanceTracker';
-import { explainResults, getQueryForQueryRenderer } from '../lib/QueryRendererHelper';
+import { explainResults, getQueryForQueryRenderer } from '../Query/QueryRendererHelper';
 import { State } from '../Obsidian/Cache';
 import type { GroupDisplayHeading } from '../Query/Group/GroupDisplayHeading';
 import type { TaskGroups } from '../Query/Group/TaskGroups';
@@ -28,23 +28,6 @@ export interface QueryRendererParameters {
     backlinksMousedownHandler: BacklinksEventHandler;
     editTaskPencilClickHandler: EditButtonClickHandler;
     editTaskPencilRightClickHandler: EditButtonRightClickHandler;
-}
-
-/**
- * We want this function to be a method of ListItem but that causes a circular dependency
- * which makes the plugin fail to load in Obsidian.
- *
- * Note: the tests are in ListItem.test.ts
- *
- * @param listItem
- */
-export function findClosestParentTask(listItem: ListItem) {
-    // Try to find the closest parent that is a task
-    let closestParentTask = listItem.parent;
-    while (closestParentTask !== null && !(closestParentTask instanceof Task)) {
-        closestParentTask = closestParentTask.parent;
-    }
-    return closestParentTask;
 }
 
 export class QueryResultsRenderer {
@@ -222,10 +205,8 @@ export class QueryResultsRenderer {
         const taskList = createAndAppendElement('ul', content);
 
         taskList.classList.add('contains-task-list', 'plugin-tasks-query-result');
-        const taskLayout = new TaskLayout(this.query.taskLayoutOptions);
-        taskList.classList.add(...taskLayout.generateHiddenClasses());
-        const queryLayout = new QueryLayout(this.query.queryLayoutOptions);
-        taskList.classList.add(...queryLayout.getHiddenClasses());
+        taskList.classList.add(...new TaskLayout(this.query.taskLayoutOptions).generateHiddenClasses());
+        taskList.classList.add(...new QueryLayout(this.query.queryLayoutOptions).getHiddenClasses());
 
         const groupingAttribute = this.getGroupingAttribute();
         if (groupingAttribute && groupingAttribute.length > 0) taskList.dataset.taskGroupBy = groupingAttribute;
@@ -276,7 +257,7 @@ export class QueryResultsRenderer {
     }
 
     private willBeRenderedLater(listItem: ListItem, renderedListItems: Set<ListItem>, listItems: ListItem[]) {
-        const closestParentTask = findClosestParentTask(listItem);
+        const closestParentTask = listItem.findClosestParentTask();
         if (!closestParentTask) {
             return false;
         }
@@ -351,7 +332,7 @@ export class QueryResultsRenderer {
         await this.textRenderer(
             listItem.description,
             span,
-            findClosestParentTask(listItem)?.path ?? '',
+            listItem.findClosestParentTask()?.path ?? '',
             this.obsidianComponent,
         );
 

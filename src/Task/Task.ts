@@ -37,7 +37,6 @@ interface TaskComponents {
  * the extensions provided by this plugin. This is used to parse and
  * generate the markdown task for all updates and replacements.
  *
- * @export
  * @class Task
  */
 export class Task extends ListItem {
@@ -165,7 +164,6 @@ export class Task extends ListItem {
      * @param {TaskLocation} taskLocation - The location of the task line
      * @param {(Moment | null)} fallbackDate - The date to use as the scheduled date if no other date is set
      * @return {*}  {(Task | null)}
-     * @memberof Task
      * @see parseTaskSignifiers
      */
     public static fromLine({
@@ -280,7 +278,6 @@ export class Task extends ListItem {
      *
      * @note Output depends on {@link Settings.taskFormat}
      * @return {*}  {string}
-     * @memberof Task
      */
     public toString(): string {
         return getUserSelectedTaskFormat().taskSerializer.serialize(this);
@@ -291,7 +288,6 @@ export class Task extends ListItem {
      *
      * @note Output depends on {@link Settings.taskFormat}
      * @return {*}  {string}
-     * @memberof Task
      */
     public toFileLineString(): string {
         return `${this.indentation}${this.listMarker} [${this.status.symbol}] ${this.toString()}`;
@@ -490,6 +486,15 @@ export class Task extends ListItem {
         const potentiallyPrunedTasks = handleOnCompletion(this, newTasks);
         const { recurrenceOnNextLine } = getSettings();
         return recurrenceOnNextLine ? potentiallyPrunedTasks.reverse() : potentiallyPrunedTasks;
+    }
+
+    /**
+     * Return whether this object is a {@link Task}.
+     *
+     * This is useful at run-time to discover whether a {@link ListItem} reference is in fact a {@link Task}.
+     */
+    get isTask() {
+        return true;
     }
 
     /**

@@ -9,7 +9,6 @@ import type { QueryResult } from './Query/QueryResult';
  * engines can be created by using this and then updating the
  * Query Render class to handle the syntax for the new query engine.
  *
- * @export
  * @interface IQuery
  */
 export interface IQuery {
@@ -18,7 +17,6 @@ export interface IQuery {
      * the query to be used by a implementation of the IQuery.
      *
      * @type {string}
-     * @memberof IQuery
      */
     source: string;
 
@@ -27,7 +25,6 @@ export interface IQuery {
      * the main task properties like backlink, heading, path, status, etc.
      *
      * @type {Grouper[]}
-     * @memberof IQuery
      */
     grouping: Grouper[];
 
@@ -36,7 +33,6 @@ export interface IQuery {
      * shown to users.
      *
      * @type {(string | undefined)}
-     * @memberof IQuery
      */
     error: string | undefined;
 
@@ -45,7 +41,6 @@ export interface IQuery {
      * used in the query.
      *
      * @type {TaskLayoutOptions}
-     * @memberof IQuery
      */
     taskLayoutOptions: TaskLayoutOptions;
 
@@ -54,7 +49,6 @@ export interface IQuery {
      * used in the query.
      *
      * @type {QueryLayoutOptions}
-     * @memberof IQuery
      */
     queryLayoutOptions: QueryLayoutOptions;
 
@@ -67,7 +61,6 @@ export interface IQuery {
      *
      * @param {Task[]} tasks
      * @return {*}  {TaskGroups}
-     * @memberof Query
      */
     applyQueryToTasks: (tasks: Task[]) => QueryResult;
 
