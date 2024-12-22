@@ -1,4 +1,11 @@
-import { type EventRef, type MarkdownPostProcessorContext, MarkdownRenderChild, MarkdownRenderer } from 'obsidian';
+import {
+    type CachedMetadata,
+    type EventRef,
+    type MarkdownPostProcessorContext,
+    MarkdownRenderChild,
+    MarkdownRenderer,
+    TFile,
+} from 'obsidian';
 import { App, Keymap } from 'obsidian';
 import { GlobalQuery } from '../Config/GlobalQuery';
 import { getQueryForQueryRenderer } from '../Query/QueryRendererHelper';
@@ -15,7 +22,7 @@ import { createAndAppendElement } from './TaskLineRenderer';
 
 export class QueryRenderer {
     private readonly app: App;
-    private plugin: TasksPlugin;
+    private readonly plugin: TasksPlugin;
     private readonly events: TasksEvents;
 
     constructor({ plugin, events }: { plugin: TasksPlugin; events: TasksEvents }) {
@@ -29,13 +36,29 @@ export class QueryRenderer {
     public addQueryRenderChild = this._addQueryRenderChild.bind(this);
 
     private async _addQueryRenderChild(source: string, element: HTMLElement, context: MarkdownPostProcessorContext) {
+        // Issues with this first implementation of accessing properties in query files:
+        //  - If the file was created in the last second or two, any CachedMetadata is probably
+        //    not yet available, so empty.
+        //  - It does not listen out for edits the properties, so if a property is edited,
+        //    the user needs to close and re-open the file.
+        //  - Multi-line properties are supported, but they cannot contain
+        //    continuation lines.
+        const app = this.app;
+        const filePath = context.sourcePath;
+        const tFile = app.vault.getAbstractFileByPath(filePath);
+        let fileCache: CachedMetadata | null = null;
+        if (tFile && tFile instanceof TFile) {
+            fileCache = app.metadataCache.getFileCache(tFile);
+        }
+        const tasksFile = new TasksFile(filePath, fileCache ?? {});
+
         const queryRenderChild = new QueryRenderChild({
-            app: this.app,
+            app: app,
             plugin: this.plugin,
             events: this.events,
             container: element,
             source,
-            tasksFile: new TasksFile(context.sourcePath),
+            tasksFile,
         });
         context.addChild(queryRenderChild);
         queryRenderChild.load();
@@ -44,13 +67,13 @@ export class QueryRenderer {
 
 class QueryRenderChild extends MarkdownRenderChild {
     private readonly app: App;
-    private plugin: TasksPlugin;
+    private readonly plugin: TasksPlugin;
     private readonly events: TasksEvents;
 
     private renderEventRef: EventRef | undefined;
     private queryReloadTimeout: NodeJS.Timeout | undefined;
 
-    private queryResultsRenderer: QueryResultsRenderer;
+    private readonly queryResultsRenderer: QueryResultsRenderer;
 
     constructor({
         app,
