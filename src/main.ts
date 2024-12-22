@@ -2,7 +2,7 @@ import { Plugin } from 'obsidian';
 
 import type { Task } from 'Task/Task';
 import type { QueryResult } from 'Query/QueryResult';
-import { getQueryForQueryRenderer } from 'lib/QueryRendererHelper';
+import { getQueryForQueryRenderer } from 'Query/QueryRendererHelper';
 import { Cache, State } from './Obsidian/Cache';
 import { Commands } from './Commands';
 import { GlobalQuery } from './Config/GlobalQuery';
