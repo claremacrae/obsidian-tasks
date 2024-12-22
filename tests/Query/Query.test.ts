@@ -22,6 +22,8 @@ import { shouldSupportFiltering } from '../TestingTools/FilterTestHelpers';
 import { TaskBuilder } from '../TestingTools/TaskBuilder';
 import { Priority } from '../../src/Task/Priority';
 import { TaskLayoutComponent } from '../../src/Layout/TaskLayoutOptions';
+import query_using_properties from '../Obsidian/__test_data__/query_using_properties.json';
+import { getTasksFileFromMockData } from '../TestingTools/MockDataHelpers';
 
 window.moment = moment;
 
@@ -766,6 +768,166 @@ Problem statement:
                     '    path includes {{query.file.noSuchProperty}}',
             );
             expect(query.filters.length).toEqual(0);
+        });
+
+        it('should report first error if non-existent placeholder used', () => {
+            // Arrange
+            const source = `{{error 1}}
+{{error 2}}
+{{error 3}}`;
+            const tasksFile = new TasksFile('a/b/path with space.md');
+
+            // Act
+            const query = new Query(source, tasksFile);
+
+            // Assert
+            expect(query).not.toBeValid();
+            expect(query.error).toEqual(
+                'There was an error expanding one or more placeholders.\n' +
+                    '\n' +
+                    'The error message was:\n' +
+                    '    Unknown property: error 1\n' +
+                    '\n' +
+                    'The problem is in:\n' +
+                    '    {{error 1}}',
+            );
+            expect(query.filters.length).toEqual(0);
+        });
+    });
+
+    describe('properties in the query file', () => {
+        const file = getTasksFileFromMockData(query_using_properties);
+
+        function makeQueryFromPropertyWithValue(propertyName: string, propertyValue: string) {
+            const source = "{{query.file.property('" + propertyName + "')}}";
+            const query = new Query(source, file);
+
+            expect(file.property(propertyName)).toEqual(propertyValue);
+            return query;
+        }
+
+        describe('via placeholders', () => {
+            it('should use query.file.property() via placeholder', () => {
+                const propertyValue = 'group by filename';
+                const query = makeQueryFromPropertyWithValue('task_instruction', propertyValue);
+
+                expect(query.error).toBeUndefined();
+                expect(query.explainQuery()).toMatchInlineSnapshot(`
+                    "No filters supplied. All tasks will match the query.
+
+                    {{query.file.property('task_instruction')}} =>
+                    group by filename
+
+                    No sorting instructions supplied.
+                    "
+                `);
+            });
+
+            it('should use query.file.property() via placeholder that has spaces around value', () => {
+                const propertyValue = '  path includes query_using_properties  ';
+                const query = makeQueryFromPropertyWithValue('task_instruction_with_spaces', propertyValue);
+
+                expect(query.error).toBeUndefined();
+                expect(query.explainQuery()).toMatchInlineSnapshot(`
+                    "{{query.file.property('task_instruction_with_spaces')}} =>
+                    path includes query_using_properties
+
+                    No grouping instructions supplied.
+
+                    No sorting instructions supplied.
+                    "
+                `);
+            });
+
+            it('should access multi-line property with query.file.property via placeholder', () => {
+                const propertyValue = `group by root
+group by folder
+  group by filename
+# a comment
+  # an indented comment
+`;
+                const query = makeQueryFromPropertyWithValue('task_instructions', propertyValue);
+
+                expect(query.error).toBeUndefined();
+                expect(query.explainQuery()).toMatchInlineSnapshot(`
+                    "No filters supplied. All tasks will match the query.
+
+                    {{query.file.property('task_instructions')}}: statement 1 after expansion of placeholder =>
+                    group by root
+
+                    {{query.file.property('task_instructions')}}: statement 2 after expansion of placeholder =>
+                    group by folder
+
+                    {{query.file.property('task_instructions')}}: statement 3 after expansion of placeholder =>
+                    group by filename
+
+                    No sorting instructions supplied.
+                    "
+                `);
+            });
+
+            it('does not work with continuation lines in multi-line property with query.file.property via placeholder', () => {
+                const propertyValue = `path \\
+  includes query_using_properties
+`;
+                const query = makeQueryFromPropertyWithValue('task_instructions_with_continuation_line', propertyValue);
+
+                expect(query.error).not.toBeUndefined();
+                expect(query.error).toMatchInlineSnapshot(`
+                    "do not understand query
+                    Problem statement:
+                        {{query.file.property('task_instructions_with_continuation_line')}}: statement 1 after expansion of placeholder =>
+                        path \\
+                    "
+                `);
+            });
+        });
+
+        describe('via "filter by function"', () => {
+            it('should use a list property in a custom filter', () => {
+                // Act
+                const source = `
+filter by function \\
+    if (!query.file.hasProperty('root_dirs_to_search')) { \\
+        throw Error('Please set the "root_dirs_to_search" list property, with each value ending in a backslash...'); \\
+    } \\
+    const roots = query.file.property('root_dirs_to_search'); \\
+    return roots.includes(task.file.root);
+`;
+                const query = new Query(source, file);
+
+                // Assert
+                expect(file.frontmatter.root_dirs_to_search).toEqual(['Formats/', 'Filters/']);
+
+                expect(query.error).toBeUndefined();
+                expect(query.filters.length).toEqual(1);
+
+                expect(query.explainQuery()).toMatchInlineSnapshot(`
+                    "filter by function \\
+                        if (!query.file.hasProperty('root_dirs_to_search')) { \\
+                            throw Error('Please set the "root_dirs_to_search" list property, with each value ending in a backslash...'); \\
+                        } \\
+                        const roots = query.file.property('root_dirs_to_search'); \\
+                        return roots.includes(task.file.root);
+                     =>
+                    filter by function if (!query.file.hasProperty('root_dirs_to_search')) { throw Error('Please set the "root_dirs_to_search" list property, with each value ending in a backslash...'); } const roots = query.file.property('root_dirs_to_search'); return roots.includes(task.file.root);
+
+                    No grouping instructions supplied.
+
+                    No sorting instructions supplied.
+                    "
+                `);
+
+                function checkNumberOfMatches(expectedNumberOfMatches: number, path: string) {
+                    const queryResult = query.applyQueryToTasks([new TaskBuilder().path(path).build()]);
+                    expect(queryResult.totalTasksCount).toEqual(expectedNumberOfMatches);
+                }
+
+                checkNumberOfMatches(1, 'Formats/Some Sample file.md');
+                checkNumberOfMatches(1, 'Filters/Another file.md');
+                checkNumberOfMatches(0, 'filters/Another file.md'); // it is case-sensitive
+                checkNumberOfMatches(0, 'Somewhere/Place/Else.md');
+            });
         });
     });
 });
