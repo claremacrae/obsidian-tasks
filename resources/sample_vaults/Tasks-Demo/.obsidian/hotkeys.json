@@ -22,6 +22,12 @@
       "modifiers": [
         "Mod"
       ],
+      "key": "M"
+    },
+    {
+      "modifiers": [
+        "Mod"
+      ],
       "key": "Enter"
     }
   ],
@@ -35,5 +41,15 @@
       ],
       "key": "T"
     }
-  ]
+  ],
+  "editor:toggle-source": [
+    {
+      "modifiers": [
+        "Ctrl",
+        "Mod"
+      ],
+      "key": "/"
+    }
+  ],
+  "editor:open-link-in-new-leaf": []
 }
