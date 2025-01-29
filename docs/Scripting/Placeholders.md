@@ -29,9 +29,11 @@ For example, when the following query with [[Query Properties]] in [[Placeholder
 ```text
 explain
 path includes {{query.file.path}}
+path includes {{query.file.pathWithoutExtension}}
 root includes {{query.file.root}}
 folder includes {{query.file.folder}}
 filename includes {{query.file.filename}}
+filename includes {{query.file.filenameWithoutExtension}}
 
 description includes Some Cryptic String {{! Inline comments are removed before search }}
 ```
@@ -46,6 +48,9 @@ Explanation of this Tasks code block query:
   path includes {{query.file.path}} =>
   path includes some/sample/file path.md
 
+  path includes {{query.file.pathWithoutExtension}} =>
+  path includes some/sample/file path
+
   root includes {{query.file.root}} =>
   root includes some/
 
@@ -55,6 +60,9 @@ Explanation of this Tasks code block query:
   filename includes {{query.file.filename}} =>
   filename includes file path.md
 
+  filename includes {{query.file.filenameWithoutExtension}} =>
+  filename includes file path
+
   description includes Some Cryptic String {{! Inline comments are removed before search }} =>
   description includes Some Cryptic String
 
@@ -63,6 +71,13 @@ Explanation of this Tasks code block query:
   No sorting instructions supplied.
 ```
 <!-- endSnippet -->
+
+## Using Query Properties in Placeholders
+
+> [!released]
+> Use of Obsidian properties in placeholders was introduced in Tasks X.Y.Z.
+
+It is now possible to use properties in the query file. See [[Obsidian Properties#Using Query Properties in Placeholders]]
 
 ## Error checking: invalid variables
 
@@ -119,13 +134,8 @@ The problem is in:
 ## Known Limitations
 
 - It complains about any unrecognised placeholders in comments, even though comments are then ignored.
-- Explanations:
-  - `explain` instructions only show the expanded text.
-  - It would be nice to also show the original variable name, and then the expanded text.
 - Use in regular expressions is allowed
   - but due to [[Regular Expressions#Special characters|characters with special meanings]] in regular expressions, it is not recommended to use them.
-- When you rename a file containing a tasks query block with variable names in, the query block is not automatically updated:
-  - the workaround is to close and re-open the file containing the query.
 
 ## Missing Features
 
