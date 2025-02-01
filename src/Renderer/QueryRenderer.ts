@@ -44,12 +44,7 @@ export class QueryRenderer {
         //    continuation lines.
         const app = this.app;
         const filePath = context.sourcePath;
-        const tFile = app.vault.getAbstractFileByPath(filePath);
-        let fileCache: CachedMetadata | null = null;
-        if (tFile && tFile instanceof TFile) {
-            fileCache = app.metadataCache.getFileCache(tFile);
-        }
-        const tasksFile = new TasksFile(filePath, fileCache ?? {});
+        const tasksFile = QueryRenderer.getTasksFile(app, filePath);
 
         const queryRenderChild = new QueryRenderChild({
             app: app,
@@ -61,6 +56,16 @@ export class QueryRenderer {
         });
         context.addChild(queryRenderChild);
         queryRenderChild.load();
+    }
+
+    static getTasksFile(app: App, filePath: string) {
+        const tFile = app.vault.getAbstractFileByPath(filePath);
+        let fileCache: CachedMetadata | null = null;
+        if (tFile && tFile instanceof TFile) {
+            fileCache = app.metadataCache.getFileCache(tFile);
+        }
+        const tasksFile = new TasksFile(filePath, fileCache ?? {});
+        return tasksFile;
     }
 }
 
