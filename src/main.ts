@@ -113,6 +113,10 @@ export default class TasksPlugin extends Plugin {
         // TODO Also read frontmatter
         const optionalTasksFile = path ? new TasksFile(path) : undefined;
         const query = getQueryForQueryRenderer(source, GlobalQuery.getInstance(), optionalTasksFile);
+        if (query.error) {
+            query.logger.error(query.error);
+            return undefined;
+        }
         return query.applyQueryToTasks(this.cache?.getTasks());
     }
 }
