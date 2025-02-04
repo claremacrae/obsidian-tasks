@@ -82,8 +82,7 @@
         },
         "tag": "#task"
       }
-    ],
-    "v": 1
+    ]
   },
   "fileContents": "- [ ] #task parent\n    - [ ] #task child\n",
   "filePath": "Test Data/inheritance_1parent1child.md",
@@ -91,6 +90,6 @@
     "#task",
     "#task"
   ],
-  "obsidianApiVersion": "1.8.0",
+  "obsidianApiVersion": "1.8.4",
   "parseFrontMatterTags": null
 }

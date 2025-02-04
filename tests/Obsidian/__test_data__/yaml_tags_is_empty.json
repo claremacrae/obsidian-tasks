@@ -115,14 +115,13 @@
         },
         "tag": "#task"
       }
-    ],
-    "v": 1
+    ]
   },
   "fileContents": "---\ntags:\n---\n\n# yaml_tags_is_empty\n\n- [ ] #task Task in 'yaml_tags_is_empty'\n",
   "filePath": "Test Data/yaml_tags_is_empty.md",
   "getAllTags": [
     "#task"
   ],
-  "obsidianApiVersion": "1.8.0",
+  "obsidianApiVersion": "1.8.4",
   "parseFrontMatterTags": null
 }
