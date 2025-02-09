@@ -30,15 +30,14 @@ To try this out:
     - Enable the Obsidian core Properties view plugin: `Settings` > `Core plugins` > turn on `Properties view`
     - Switch to Reading or Live Preview modes.
     - Run the `Properties view: Show file properties` command.
-2. Add one or more `tasks_query_*` properties to the file
+2. Add one or more `TQ_*` properties to the file
     - Click on `Add property`.
-    - Start typing `tasks_query_`.
-    - Or you can paste in property names from the [[#Supported Query File Defaults property values]] section below.
+    - Start typing `TQ_`, or any part of the property names list in [[#Supported Query File Defaults property values]] below.
     - Press `<Return>` or `<Enter>` to add the property.
-3. Now you can modify these `tasks_query_*` properties to change the behaviour of Tasks searches in this file.
+3. Now you can modify these `TQ_*` properties to change the behaviour of all the Tasks searches in this file.
 
-> [!info]
-> We plan to streamline the addition of these properties to notes.
+> [!tip]
+> Use the command **Tasks: Add all Query File Defaults properties** to add all the available `TQ_*` properties to the active note in one simple step.
 
 #### Widening property names in Obsidian
 
@@ -50,7 +49,7 @@ You can make them wider with the following CSS Snippet.
 ```css
 /* Make property labels wider, to fit the names of Tasks-specific properties */
 .metadata-content {
-    --metadata-label-width: 18em;
+    --metadata-label-width: 14em;
 }
 ```
 <!-- endSnippet -->
@@ -84,34 +83,33 @@ These are all the properties currently supported by Tasks, as Query File Default
 <!-- snippet: DocsSamplesForDefaults.test.DocsSamplesForDefaults_supported-properties-empty.approved.yaml -->
 ```yaml
 ---
-tasks_query_explain:
-tasks_query_short_mode:
-tasks_query_show_tree:
-tasks_query_show_tags:
-tasks_query_show_id:
-tasks_query_show_depends_on:
-tasks_query_show_priority:
-tasks_query_show_recurrence_rule:
-tasks_query_show_on_completion:
-tasks_query_show_created_date:
-tasks_query_show_start_date:
-tasks_query_show_scheduled_date:
-tasks_query_show_due_date:
-tasks_query_show_cancelled_date:
-tasks_query_show_done_date:
-tasks_query_show_urgency:
-tasks_query_show_backlink:
-tasks_query_show_edit_button:
-tasks_query_show_postpone_button:
-tasks_query_show_task_count:
-tasks_query_extra_instructions:
+TQ_explain:
+TQ_extra_instructions:
+TQ_short_mode:
+TQ_show_backlink:
+TQ_show_cancelled_date:
+TQ_show_created_date:
+TQ_show_depends_on:
+TQ_show_done_date:
+TQ_show_due_date:
+TQ_show_edit_button:
+TQ_show_id:
+TQ_show_on_completion:
+TQ_show_postpone_button:
+TQ_show_priority:
+TQ_show_recurrence_rule:
+TQ_show_scheduled_date:
+TQ_show_start_date:
+TQ_show_tags:
+TQ_show_task_count:
+TQ_show_tree:
+TQ_show_urgency:
 ---
 ```
 <!-- endSnippet -->
 
 > [!tip]
-> We hope in the future to add an Obsidian Command to add all supported Query
-> File Defaults properties to the current file automatically.
+> Use the command **Tasks: Add all Query File Defaults properties** to add all these properties to the active note.
 
 ### Types of Query File Defaults property values
 
@@ -119,33 +117,34 @@ These are all the types of properties currently supported by Tasks, as Query
 File Defaults.
 
 > [!tip]
-> We plan to make Tasks add these types to the Obsidian vault automatically in
-> future.
+> The Tasks plugin automatically adds these properties to the Obsidian vault.
 
+<!-- snippet: DocsSamplesForDefaults.test.DocsSamplesForDefaults_fake-types.json.approved.json -->
 ```json
 {
   "types": {
-    "tasks_query_explain": "checkbox",
-    "tasks_query_short_mode": "checkbox",
-    "tasks_query_show_tree": "checkbox",
-    "tasks_query_show_tags": "checkbox",
-    "tasks_query_show_id": "checkbox",
-    "tasks_query_show_depends_on": "checkbox",
-    "tasks_query_show_priority": "checkbox",
-    "tasks_query_show_recurrence_rule": "checkbox",
-    "tasks_query_show_on_completion": "checkbox",
-    "tasks_query_show_created_date": "checkbox",
-    "tasks_query_show_start_date": "checkbox",
-    "tasks_query_show_scheduled_date": "checkbox",
-    "tasks_query_show_due_date": "checkbox",
-    "tasks_query_show_cancelled_date": "checkbox",
-    "tasks_query_show_done_date": "checkbox",
-    "tasks_query_show_urgency": "checkbox",
-    "tasks_query_show_backlink": "checkbox",
-    "tasks_query_show_edit_button": "checkbox",
-    "tasks_query_show_postpone_button": "checkbox",
-    "tasks_query_show_task_count": "checkbox",
-    "tasks_query_extra_instructions": "text"
+    "TQ_explain": "checkbox",
+    "TQ_extra_instructions": "text",
+    "TQ_short_mode": "checkbox",
+    "TQ_show_backlink": "checkbox",
+    "TQ_show_cancelled_date": "checkbox",
+    "TQ_show_created_date": "checkbox",
+    "TQ_show_depends_on": "checkbox",
+    "TQ_show_done_date": "checkbox",
+    "TQ_show_due_date": "checkbox",
+    "TQ_show_edit_button": "checkbox",
+    "TQ_show_id": "checkbox",
+    "TQ_show_on_completion": "checkbox",
+    "TQ_show_postpone_button": "checkbox",
+    "TQ_show_priority": "checkbox",
+    "TQ_show_recurrence_rule": "checkbox",
+    "TQ_show_scheduled_date": "checkbox",
+    "TQ_show_start_date": "checkbox",
+    "TQ_show_tags": "checkbox",
+    "TQ_show_task_count": "checkbox",
+    "TQ_show_tree": "checkbox",
+    "TQ_show_urgency": "checkbox"
   }
 }
 ```
+<!-- endSnippet -->

@@ -1,5 +1,6 @@
 import type { Pos } from 'obsidian';
 
+import { verifyAsJson } from 'approvals/lib/Providers/Jest/JestApprovals';
 import { getTasksFileFromMockData } from '../../TestingTools/MockDataHelpers';
 import query_file_defaults_all_options_null from '../../Obsidian/__test_data__/query_file_defaults_all_options_null.json';
 import query_file_defaults_all_options_true from '../../Obsidian/__test_data__/query_file_defaults_all_options_true.json';
@@ -15,7 +16,15 @@ function extractFrontmatter(data: any) {
 
 describe('DocsSamplesForDefaults', () => {
     it('supported-properties-empty', () => {
-        verifyWithFileExtension(extractFrontmatter(query_file_defaults_all_options_null), '.yaml');
+        const frontmatter = extractFrontmatter(query_file_defaults_all_options_null);
+
+        // Make sure that any trailing spaces have been removed from the
+        // properties in query_file_defaults_all_options_null.md, to avoid
+        // fighting with spaces at end of line when the approved file from this
+        // test is embedded in the user docs.
+        expect(frontmatter).not.toContain(': ');
+
+        verifyWithFileExtension(frontmatter, '.yaml');
     });
 
     it('supported-properties-full', () => {
@@ -28,5 +37,25 @@ describe('DocsSamplesForDefaults', () => {
 
     it('meta-bind-widgets-snippet', () => {
         verifyMarkdown(new QueryFileDefaults().metaBindPluginWidgets());
+    });
+
+    it('fake-types.json', () => {
+        const queryFileDefaults = new QueryFileDefaults();
+        const allPropertyNamesSorted = queryFileDefaults.allPropertyNamesSorted();
+
+        // Generate an object representing QueryFileDefaults in Obsidain's types.json.
+        const types: { [key: string]: string } = allPropertyNamesSorted.reduce(
+            (acc: { [key: string]: string }, propName) => {
+                const propType = queryFileDefaults.propertyType(propName);
+                if (propType !== undefined) {
+                    acc[propName] = propType;
+                }
+                return acc;
+            },
+            {},
+        );
+        const generatedObject = { types };
+
+        verifyAsJson(generatedObject);
     });
 });
