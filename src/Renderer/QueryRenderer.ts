@@ -18,8 +18,8 @@ import type { TasksEvents } from '../Obsidian/TasksEvents';
 import { TasksFile } from '../Scripting/TasksFile';
 import { DateFallback } from '../DateTime/DateFallback';
 import type { Task } from '../Task/Task';
-// import { PriorityMenu } from '../ui/Menus/PriorityMenu';
-// import { defaultTaskSaver } from '../ui/Menus/TaskEditingMenu';
+import { PriorityMenu } from '../ui/Menus/PriorityMenu';
+import { defaultTaskSaver } from '../ui/Menus/TaskEditingMenu';
 import { type BacklinksEventHandler, type EditButtonClickHandler, QueryResultsRenderer } from './QueryResultsRenderer';
 import { createAndAppendElement } from './TaskLineRenderer';
 
@@ -209,7 +209,7 @@ class QueryRenderChild extends MarkdownRenderChild {
             backlinksClickHandler: createBacklinksClickHandler(this.app),
             backlinksMousedownHandler: createBacklinksMousedownHandler(this.app),
             editTaskPencilClickHandler: createEditTaskPencilClickHandler(this.app),
-            // editTaskPencilRightClickHandler,
+            editTaskPencilRightClickHandler,
         });
 
         this.containerEl.firstChild?.replaceWith(content);
@@ -245,14 +245,12 @@ function createEditTaskPencilClickHandler(app: App): EditButtonClickHandler {
     };
 }
 
-/* Comment out until develop3 branch is merged
 async function editTaskPencilRightClickHandler(ev: MouseEvent, task: Task, editTaskPencil: HTMLAnchorElement) {
     ev.preventDefault(); // suppress the default context menu
     ev.stopPropagation(); // suppress further event propagation
     const menu = new PriorityMenu(task, defaultTaskSaver, editTaskPencil);
     menu.showAtPosition({ x: ev.clientX, y: ev.clientY });
 }
-*/
 
 function createBacklinksClickHandler(app: App): BacklinksEventHandler {
     return async function backlinksClickHandler(ev: MouseEvent, task: Task) {

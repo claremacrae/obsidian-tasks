@@ -19,7 +19,7 @@ import { TaskLineRenderer, type TextRenderer, createAndAppendElement } from './T
 
 export type BacklinksEventHandler = (ev: MouseEvent, task: Task) => Promise<void>;
 export type EditButtonClickHandler = (event: MouseEvent, task: Task, allTasks: Task[]) => void;
-// type EditButtonRightClickHandler = (event: MouseEvent, task: Task, editTaskPencil: HTMLAnchorElement) => void;
+export type EditButtonRightClickHandler = (event: MouseEvent, task: Task, editTaskPencil: HTMLAnchorElement) => void;
 
 export interface QueryRendererParameters {
     allTasks: Task[];
@@ -27,7 +27,7 @@ export interface QueryRendererParameters {
     backlinksClickHandler: BacklinksEventHandler;
     backlinksMousedownHandler: BacklinksEventHandler;
     editTaskPencilClickHandler: EditButtonClickHandler;
-    // editTaskPencilRightClickHandler: EditButtonRightClickHandler;
+    editTaskPencilRightClickHandler: EditButtonRightClickHandler;
 }
 
 export class QueryResultsRenderer {
@@ -408,11 +408,9 @@ export class QueryResultsRenderer {
             queryRendererParameters.editTaskPencilClickHandler(event, task, queryRendererParameters.allTasks),
         );
 
-        /* Comment out until develop3 branch is merged
         editTaskPencil.addEventListener('contextmenu', (event: MouseEvent) => {
             queryRendererParameters.editTaskPencilRightClickHandler(event, task, editTaskPencil);
         });
-         */
     }
 
     private addUrgency(listItem: HTMLElement, task: Task) {
