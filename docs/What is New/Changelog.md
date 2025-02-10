@@ -12,13 +12,20 @@ _In recent [Tasks releases](https://github.com/obsidian-tasks-group/obsidian-tas
 
 ## 7.x releases
 
-- X.Y.Z:
-  - Add `query.file.hasProperty()` and `query.file.property()` in custom filters
-  - Add `{{query.file.hasProperty()}}` and `{{query.file.property()}}` in placeholders - see [[Obsidian Properties#Using Query Properties in Searches|Using Query Properties in Placeholders]].
-  - Placeholders can now call functions and contain expressions.
-  - New [[Query File Defaults]] facility allows easy customising of all the
-    Tasks searches in a file, by editing properties
-  - Add Chinese translation of [[Settings]], [[Editing a Status]] and [[Check your Statuses]]
+- 7.15.0:
+  - Tasks now requires [Obsidian 1.4.0](https://obsidian.md/changelog/2023-08-31-desktop-v1.4.5/) or newer.
+  - **Translations**:
+    - Add Chinese translation of [[Settings]], [[Editing a Status]] and [[Check your Statuses]].
+    - See [contribute translations](https://publish.obsidian.md/tasks-contributing/Translation/Contribute+translationsl) and [related pages](https://publish.obsidian.md/tasks-contributing/Translation/About+Translation) on the [Contributing](https://publish.obsidian.md/tasks-contributing/Welcome) guide.
+    - We will gradually translate more parts of Tasks in forthcoming releases.
+  - Use **standardised properties** in Query files to customise your searches:
+    - New [[Query File Defaults]] facility allows easy customising of all the Tasks searches in a file, by editing properties, for example, to customise the [[layout]].
+    - New [[Query File Defaults#Command Add all Query File Defaults properties|'Add all Query File Defaults properties' command]]
+    - Use the [[Meta Bind plugin]] to [[make a query user interface]].
+  - Use **custom properties** in Query files to customise your searches:
+    - Add `query.file.hasProperty()` and `query.file.property()` in custom filters
+    - Add `{{query.file.hasProperty()}}` and `{{query.file.property()}}` in placeholders - see [[Obsidian Properties#Using Query Properties in Searches|Using Query Properties in Placeholders]].
+  - [[Placeholders]] can now contain functions and contain expressions.
 - 7.14.0:
   - Add [[Editing Dates#Date-picker on task dates|date picker]] to Reading mode and Tasks query search results.
 - 7.13.0:

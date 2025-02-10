@@ -56,6 +56,7 @@ hide created date
 >     - However, `#123` is [not recognised as a valid Obsidian tag](https://help.obsidian.md/Editing+and+formatting/Tags#Tag+format) and so not hidden.
 >     - See [[Tags#Recognising Tags]] for more information.
 > 1. It is not possible to hide or show individual tags. We are tracking this in [discussion #848](https://github.com/obsidian-tasks-group/obsidian-tasks/discussions/848).
+>     - However, you can hide individual tags in Tasks search results with CSS snippets: see [this comment](https://github.com/obsidian-tasks-group/obsidian-tasks/discussions/848#discussioncomment-12117010).
 
 ## Query Elements
 
@@ -151,7 +152,7 @@ For example:
     ```tasks
     no due date
     path includes GitHub
-    
+
     hide recurrence rule
     hide task count
     hide backlink
@@ -190,3 +191,38 @@ Example:
     ```
 
 This can be reversed with [[#Full Mode]].
+
+## Alternative to typing layout instructions
+
+> [!released]
+> [[Query File Defaults]] were introduced in Tasks 7.15.0.
+
+All the layout instructions in this page can be generated for you automatically, by putting certain file properties (called 'Query File Defaults') in the file containing the query.
+
+For example, suppose the file containing our query begins with the following:
+
+<!-- snippet: DocsSamplesForDefaults.test.DocsSamplesForDefaults_demo-short-mode_yaml.approved.yaml -->
+```yaml
+---
+TQ_short_mode: true
+---
+```
+<!-- endSnippet -->
+
+All Tasks code blocks in that file will then have this content automatically inserted at their start:
+
+<!-- snippet: DocsSamplesForDefaults.test.DocsSamplesForDefaults_demo-short-mode_instructions.approved.txt -->
+```txt
+short mode
+```
+<!-- endSnippet -->
+
+And of course, if `TQ_short_mode` were `false`, the following would be inserted:
+
+```txt
+full mode
+```
+
+For more information, see [[Query File Defaults]].
+
+And for even more power, see [[Make a query user interface]].

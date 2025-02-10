@@ -46,8 +46,8 @@ This page documents all the available pieces of information in Queries that you 
 1. The presence of `.md` filename extensions is chosen to match the existing conventions in the Tasks filter instructions [[Filters#File Path|path]] and [[Filters#File Name|filename]].
 1. `query.file.pathWithoutExtension` was added in Tasks 4.8.0.
 1. `query.file.filenameWithoutExtension` was added in Tasks 4.8.0.
-1. `query.file.hasProperty()` was added in Tasks X.Y.Z.
-1. `query.file.property()` was added in Tasks X.Y.Z.
+1. `query.file.hasProperty()` was added in Tasks 7.15.0.
+1. `query.file.property()` was added in Tasks 7.15.0.
 
 ## Values for Query Search Properties
 
@@ -64,3 +64,7 @@ This page documents all the available pieces of information in Queries that you 
     - The [[Global Query|global query]] does not affect `query.allTasks`: all tasks tracked by the Tasks plugin are included.
     - See [[Task Properties]] for the available properties on each task.
     - `query.allTasks` was added in Tasks 6.1.0.
+
+## Related Pages
+
+See also [[Query File Defaults]] for a mechanism to generate query instructions from pre-defined Obsidian properties.
