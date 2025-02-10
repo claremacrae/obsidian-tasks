@@ -434,6 +434,5 @@
   "getAllTags": [
     "#task"
   ],
-  "obsidianApiVersion": "1.7.7",
   "parseFrontMatterTags": null
 }

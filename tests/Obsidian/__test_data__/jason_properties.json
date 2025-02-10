@@ -116,8 +116,7 @@
         },
         "tag": "#task"
       }
-    ],
-    "v": 1
+    ]
   },
   "fileContents": "---\n{\n  \"tags\": \"journal\",\n  \"publish\": false\n}\n---\n\n# jason_properties\n\n- [ ] #task Task in 'jason_properties'\n",
   "filePath": "Test Data/jason_properties.md",
@@ -125,7 +124,6 @@
     "#journal",
     "#task"
   ],
-  "obsidianApiVersion": "1.7.7",
   "parseFrontMatterTags": [
     "#journal"
   ]

@@ -4,6 +4,7 @@ import {
     type MarkdownPostProcessorContext,
     MarkdownRenderChild,
     MarkdownRenderer,
+    type TAbstractFile,
     TFile,
 } from 'obsidian';
 import { App, Keymap } from 'obsidian';
@@ -19,7 +20,7 @@ import { DateFallback } from '../DateTime/DateFallback';
 import type { Task } from '../Task/Task';
 // import { PriorityMenu } from '../ui/Menus/PriorityMenu';
 // import { defaultTaskSaver } from '../ui/Menus/TaskEditingMenu';
-import { QueryResultsRenderer } from './QueryResultsRenderer';
+import { type BacklinksEventHandler, type EditButtonClickHandler, QueryResultsRenderer } from './QueryResultsRenderer';
 import { createAndAppendElement } from './TaskLineRenderer';
 
 export class QueryRenderer {
@@ -41,18 +42,11 @@ export class QueryRenderer {
         // Issues with this first implementation of accessing properties in query files:
         //  - If the file was created in the last second or two, any CachedMetadata is probably
         //    not yet available, so empty.
-        //  - It does not listen out for edits the properties, so if a property is edited,
-        //    the user needs to close and re-open the file.
         //  - Multi-line properties are supported, but they cannot contain
         //    continuation lines.
         const app = this.app;
         const filePath = context.sourcePath;
-        const tFile = app.vault.getAbstractFileByPath(filePath);
-        let fileCache: CachedMetadata | null = null;
-        if (tFile && tFile instanceof TFile) {
-            fileCache = app.metadataCache.getFileCache(tFile);
-        }
-        const tasksFile = new TasksFile(filePath, fileCache ?? {});
+        const tasksFile = QueryRenderer.getTasksFile(app, filePath);
 
         const queryRenderChild = new QueryRenderChild({
             app: app,
@@ -64,6 +58,16 @@ export class QueryRenderer {
         });
         context.addChild(queryRenderChild);
         queryRenderChild.load();
+    }
+
+    static getTasksFile(app: App, filePath: string) {
+        const tFile = app.vault.getAbstractFileByPath(filePath);
+        let fileCache: CachedMetadata | null = null;
+        if (tFile && tFile instanceof TFile) {
+            fileCache = app.metadataCache.getFileCache(tFile);
+        }
+        const tasksFile = new TasksFile(filePath, fileCache ?? {});
+        return tasksFile;
     }
 }
 
@@ -101,21 +105,66 @@ class QueryRenderChild extends MarkdownRenderChild {
             MarkdownRenderer.renderMarkdown,
             this,
         );
+
+        this.queryResultsRenderer.query.debug('[render] QueryRenderChild.constructor() entered');
+
         this.app = app;
         this.plugin = plugin;
         this.events = events;
     }
 
     onload() {
+        this.queryResultsRenderer.query.debug('[render] QueryRenderChild.onload() entered');
+
         // Process the current cache state:
         this.events.triggerRequestCacheUpdate(this.render.bind(this));
         // Listen to future cache changes:
         this.renderEventRef = this.events.onCacheUpdate(this.render.bind(this));
 
         this.reloadQueryAtMidnight();
+
+        this.registerEvent(
+            this.app.metadataCache.on('changed', (sourceFile, _data, fileCache) => {
+                const filePath = sourceFile.path;
+                if (filePath !== this.queryResultsRenderer.filePath) {
+                    // We get notified of edits to all files, and are only interested in the
+                    // file where our query is.
+                    return;
+                }
+
+                this.handleMetadataOrFilePathChange(filePath, fileCache);
+            }),
+        );
+
+        this.registerEvent(
+            this.app.vault.on('rename', (tFile: TAbstractFile, _oldPath: string) => {
+                let fileCache: CachedMetadata | null = null;
+                if (tFile && tFile instanceof TFile) {
+                    fileCache = this.app.metadataCache.getFileCache(tFile);
+                }
+                this.handleMetadataOrFilePathChange(tFile.path, fileCache);
+            }),
+        );
+    }
+
+    private handleMetadataOrFilePathChange(filePath: string, fileCache: CachedMetadata | null) {
+        const oldTasksFile = this.queryResultsRenderer.tasksFile;
+        const newTasksFile = new TasksFile(filePath, fileCache ?? {});
+
+        // Has anything changed which might change the query results?
+        const differentPath = oldTasksFile.path !== newTasksFile.path;
+        const differentFrontmatter = !oldTasksFile.rawFrontmatterIdenticalTo(newTasksFile);
+        const queryNeedsReloading = differentPath || differentFrontmatter;
+
+        if (queryNeedsReloading) {
+            this.queryResultsRenderer.setTasksFile(newTasksFile);
+            this.events.triggerRequestCacheUpdate(this.render.bind(this));
+        }
     }
 
     onunload() {
+        this.queryResultsRenderer.query.debug('[render] QueryRenderChild.onunload() entered');
+
         if (this.renderEventRef !== undefined) {
             this.events.off(this.renderEventRef);
         }
@@ -157,9 +206,9 @@ class QueryRenderChild extends MarkdownRenderChild {
         await this.queryResultsRenderer.render(state, tasks, content, {
             allTasks: this.plugin.getTasks(),
             allMarkdownFiles: this.app.vault.getMarkdownFiles(),
-            backlinksClickHandler,
-            backlinksMousedownHandler,
-            editTaskPencilClickHandler,
+            backlinksClickHandler: createBacklinksClickHandler(this.app),
+            backlinksMousedownHandler: createBacklinksMousedownHandler(this.app),
+            editTaskPencilClickHandler: createEditTaskPencilClickHandler(this.app),
             // editTaskPencilRightClickHandler,
         });
 
@@ -167,31 +216,33 @@ class QueryRenderChild extends MarkdownRenderChild {
     }
 }
 
-function editTaskPencilClickHandler(event: MouseEvent, task: Task, allTasks: Task[]) {
-    // Only show Edit Task modal if main menu button pressed.
-    // This is required to allow the contextmenu event to work.
-    if (event.button !== 0) {
-        return;
-    }
+function createEditTaskPencilClickHandler(app: App): EditButtonClickHandler {
+    return function editTaskPencilClickHandler(event: MouseEvent, task: Task, allTasks: Task[]) {
+        // Only show Edit Task modal if main menu button pressed.
+        // This is required to allow the contextmenu event to work.
+        if (event.button !== 0) {
+            return;
+        }
 
-    event.preventDefault();
-    event.stopPropagation(); // suppress further event propagation
+        event.preventDefault();
+        event.stopPropagation(); // suppress further event propagation
 
-    const onSubmit = async (updatedTasks: Task[]): Promise<void> => {
-        await replaceTaskWithTasks({
-            originalTask: task,
-            newTasks: DateFallback.removeInferredStatusIfNeeded(task, updatedTasks),
+        const onSubmit = async (updatedTasks: Task[]): Promise<void> => {
+            await replaceTaskWithTasks({
+                originalTask: task,
+                newTasks: DateFallback.removeInferredStatusIfNeeded(task, updatedTasks),
+            });
+        };
+
+        // Need to create a new instance every time, as cursor/task can change.
+        const taskModal = new TaskModal({
+            app,
+            task,
+            onSubmit,
+            allTasks,
         });
+        taskModal.open();
     };
-
-    // Need to create a new instance every time, as cursor/task can change.
-    const taskModal = new TaskModal({
-        app,
-        task,
-        onSubmit,
-        allTasks,
-    });
-    taskModal.open();
 }
 
 /* Comment out until develop3 branch is merged
@@ -203,33 +254,37 @@ async function editTaskPencilRightClickHandler(ev: MouseEvent, task: Task, editT
 }
 */
 
-async function backlinksClickHandler(ev: MouseEvent, task: Task) {
-    const result = await getTaskLineAndFile(task, app.vault);
-    if (result) {
-        const [line, file] = result;
-        const leaf = app.workspace.getLeaf(Keymap.isModEvent(ev));
-        // When the corresponding task has been found,
-        // suppress the default behavior of the mouse click event
-        // (which would interfere e.g. if the query is rendered inside a callout).
-        ev.preventDefault();
-        // Instead of the default behavior, open the file with the required line highlighted.
-        await leaf.openFile(file, { eState: { line: line } });
-    }
-}
-
-async function backlinksMousedownHandler(ev: MouseEvent, task: Task) {
-    // Open in a new tab on middle-click.
-    // This distinction is not available in the 'click' event, so we handle the 'mousedown' event
-    // solely for this.
-    // (for regular left-click we prefer the 'click' event, and not to just do everything here, because
-    // the 'click' event is more generic for touch devices etc.)
-    if (ev.button === 1) {
+function createBacklinksClickHandler(app: App): BacklinksEventHandler {
+    return async function backlinksClickHandler(ev: MouseEvent, task: Task) {
         const result = await getTaskLineAndFile(task, app.vault);
         if (result) {
             const [line, file] = result;
-            const leaf = app.workspace.getLeaf('tab');
+            const leaf = app.workspace.getLeaf(Keymap.isModEvent(ev));
+            // When the corresponding task has been found,
+            // suppress the default behavior of the mouse click event
+            // (which would interfere e.g. if the query is rendered inside a callout).
             ev.preventDefault();
-            await leaf.openFile(file, { eState: { line: line } });
+            // Instead of the default behavior, open the file with the required line highlighted.
+            await leaf.openFile(file, { eState: { line } });
         }
-    }
+    };
+}
+
+function createBacklinksMousedownHandler(app: App): BacklinksEventHandler {
+    return async function backlinksMousedownHandler(ev: MouseEvent, task: Task) {
+        // Open in a new tab on middle-click.
+        // This distinction is not available in the 'click' event, so we handle the 'mousedown' event
+        // solely for this.
+        // (for regular left-click we prefer the 'click' event, and not to just do everything here, because
+        // the 'click' event is more generic for touch devices etc.)
+        if (ev.button === 1) {
+            const result = await getTaskLineAndFile(task, app.vault);
+            if (result) {
+                const [line, file] = result;
+                const leaf = app.workspace.getLeaf('tab');
+                ev.preventDefault();
+                await leaf.openFile(file, { eState: { line: line } });
+            }
+        }
+    };
 }

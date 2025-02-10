@@ -3,6 +3,7 @@
  */
 import moment from 'moment/moment';
 import type { CachedMetadata } from 'obsidian';
+import { GlobalFilter } from '../../src/Config/GlobalFilter';
 import type { ListItem } from '../../src/Task/ListItem';
 import { getTasksFileFromMockData, listPathAndData } from '../TestingTools/MockDataHelpers';
 import inheritance_1parent1child from './__test_data__/inheritance_1parent1child.json';
@@ -19,6 +20,7 @@ import inheritance_2siblings from './__test_data__/inheritance_2siblings.json';
 import inheritance_listitem_listitem_task from './__test_data__/inheritance_listitem_listitem_task.json';
 import inheritance_listitem_task from './__test_data__/inheritance_listitem_task.json';
 import inheritance_listitem_task_siblings from './__test_data__/inheritance_listitem_task_siblings.json';
+import inheritance_non_task_child from './__test_data__/inheritance_non_task_child.json';
 import inheritance_task_2listitem_3task from './__test_data__/inheritance_task_2listitem_3task.json';
 import inheritance_task_listitem from './__test_data__/inheritance_task_listitem.json';
 import inheritance_task_listitem_mixed_grandchildren from './__test_data__/inheritance_task_listitem_mixed_grandchildren.json';
@@ -94,6 +96,10 @@ function printRoots(listItems: ListItem[]) {
     });
     return rootHierarchies;
 }
+
+afterEach(() => {
+    GlobalFilter.getInstance().reset();
+});
 
 describe('cache', () => {
     it('should read one task', () => {
@@ -480,6 +486,35 @@ describe('cache', () => {
         `);
     });
 
+    it('should read non task check box when global filter is enabled', () => {
+        GlobalFilter.getInstance().set('#task');
+
+        const data = inheritance_non_task_child;
+        const tasks = readTasksFromSimulatedFile(data);
+        expect(data.fileContents).toMatchInlineSnapshot(`
+            "-  [ ] #task task parent
+                - [ ] #task task child
+                - [ ] non-task child
+                - list item child
+
+            \`\`\`tasks
+            filename includes {{query.file.filename}}
+            show tree
+            \`\`\`
+            "
+        `);
+
+        expect(tasks.length).toEqual(2);
+
+        expect(printRoots(tasks)).toMatchInlineSnapshot(`
+            "-  [ ] #task task parent : Task
+                - [ ] #task task child : Task
+                - [ ] non-task child : ListItem
+                - list item child : ListItem
+            "
+        `);
+    });
+
     it('callout', () => {
         const tasks = readTasksFromSimulatedFile(callout);
         expect(callout.fileContents).toMatchInlineSnapshot(`
@@ -649,8 +684,6 @@ describe('accessing links in file', function () {
         });
 
         it('should access links in frontmatter', () => {
-            // Update to Obsidian API 1.4.0 to access cachedMetadata.frontmatterLinks
-            // @ts-expect-error TS2551: Property frontmatterLinks does not exist on type CachedMetadata
             const frontMatterLinks = cachedMetadata['frontmatterLinks'];
             expect(frontMatterLinks).toBeDefined();
 
@@ -755,7 +788,11 @@ describe('all mock files', () => {
         'should be able to read tasks from all mock files: "%s"',
         (path: string, file: any) => {
             const tasks = readTasksFromSimulatedFile(file);
-            if (path === 'Test Data/non_tasks.md') {
+            const files_without_tasks = [
+                'Test Data/docs_sample_for_explain_query_file_defaults.md',
+                'Test Data/non_tasks.md',
+            ];
+            if (files_without_tasks.includes(path)) {
                 expect(tasks.length).toEqual(0);
             } else {
                 expect(tasks.length).toBeGreaterThan(0);

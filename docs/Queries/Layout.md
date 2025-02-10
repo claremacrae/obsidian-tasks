@@ -56,6 +56,7 @@ hide created date
 >     - However, `#123` is [not recognised as a valid Obsidian tag](https://help.obsidian.md/Editing+and+formatting/Tags#Tag+format) and so not hidden.
 >     - See [[Tags#Recognising Tags]] for more information.
 > 1. It is not possible to hide or show individual tags. We are tracking this in [discussion #848](https://github.com/obsidian-tasks-group/obsidian-tasks/discussions/848).
+>     - However, you can hide individual tags in Tasks search results with CSS snippets: see [this comment](https://github.com/obsidian-tasks-group/obsidian-tasks/discussions/848#discussioncomment-12117010).
 
 ## Query Elements
 
@@ -88,6 +89,9 @@ hide task count
 > The new instruction `show tree` is the first in a long series of steps to teach the Tasks plugin to fully handle [nested tasks and list items](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Nesting+lists).
 >
 > When you use `show tree`, Tasks shows all found tasks, and **all** their nested tasks and list items (for now, regardless of whether or not the nested tasks matched the query).
+
+> [!released]
+> `show tree` was introduced in Tasks 7.12.0.
 
 #### Show Tree example
 
@@ -133,6 +137,7 @@ The `show tree` instruction enables us to see the parent/child relationships in 
 
 - For now, **all child tasks and list items are displayed**, regardless of whether they match the query.
   - In the screenshot above, `Decide who to invite` did not match the `not done` query, but it is still shown.
+  - If you are using the Global Filter, any child tasks without the Global Filter are rendered without their checkbox. We are tracking this in [issue #3170](https://github.com/obsidian-tasks-group/obsidian-tasks/issues/3170).
 - Any **sorting instructions only affect the sorting of the left-most tasks** in the results list.
   - Child tasks and list items are displayed in the order that they appear in the file. They are not affected by any `sort by` instructions.
 - For now, the **tree layout is turned off by default**, whilst we explore how it should interact with the filtering instructions.
@@ -147,7 +152,7 @@ For example:
     ```tasks
     no due date
     path includes GitHub
-    
+
     hide recurrence rule
     hide task count
     hide backlink
@@ -186,3 +191,38 @@ Example:
     ```
 
 This can be reversed with [[#Full Mode]].
+
+## Alternative to typing layout instructions
+
+> [!released]
+> [[Query File Defaults]] were introduced in Tasks 7.15.0.
+
+All the layout instructions in this page can be generated for you automatically, by putting certain file properties (called 'Query File Defaults') in the file containing the query.
+
+For example, suppose the file containing our query begins with the following:
+
+<!-- snippet: DocsSamplesForDefaults.test.DocsSamplesForDefaults_demo-short-mode_yaml.approved.yaml -->
+```yaml
+---
+TQ_short_mode: true
+---
+```
+<!-- endSnippet -->
+
+All Tasks code blocks in that file will then have this content automatically inserted at their start:
+
+<!-- snippet: DocsSamplesForDefaults.test.DocsSamplesForDefaults_demo-short-mode_instructions.approved.txt -->
+```txt
+short mode
+```
+<!-- endSnippet -->
+
+And of course, if `TQ_short_mode` were `false`, the following would be inserted:
+
+```txt
+full mode
+```
+
+For more information, see [[Query File Defaults]].
+
+And for even more power, see [[Make a query user interface]].

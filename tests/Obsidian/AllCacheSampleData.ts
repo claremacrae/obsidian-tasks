@@ -9,6 +9,7 @@ import callouts_nested_issue_2890_labelled from './__test_data__/callouts_nested
 import callouts_nested_issue_2890_unlabelled from './__test_data__/callouts_nested_issue_2890_unlabelled.json';
 import comments_html_style from './__test_data__/comments_html_style.json';
 import comments_markdown_style from './__test_data__/comments_markdown_style.json';
+import docs_sample_for_explain_query_file_defaults from './__test_data__/docs_sample_for_explain_query_file_defaults.json';
 import docs_sample_for_task_properties_reference from './__test_data__/docs_sample_for_task_properties_reference.json';
 import empty_yaml from './__test_data__/empty_yaml.json';
 import example_kanban from './__test_data__/example_kanban.json';
@@ -26,6 +27,7 @@ import inheritance_2siblings from './__test_data__/inheritance_2siblings.json';
 import inheritance_listitem_listitem_task from './__test_data__/inheritance_listitem_listitem_task.json';
 import inheritance_listitem_task from './__test_data__/inheritance_listitem_task.json';
 import inheritance_listitem_task_siblings from './__test_data__/inheritance_listitem_task_siblings.json';
+import inheritance_non_task_child from './__test_data__/inheritance_non_task_child.json';
 import inheritance_rendering_sample from './__test_data__/inheritance_rendering_sample.json';
 import inheritance_task_2listitem_3task from './__test_data__/inheritance_task_2listitem_3task.json';
 import inheritance_task_listitem from './__test_data__/inheritance_task_listitem.json';
@@ -50,6 +52,11 @@ import no_heading from './__test_data__/no_heading.json';
 import no_yaml from './__test_data__/no_yaml.json';
 import non_tasks from './__test_data__/non_tasks.json';
 import one_task from './__test_data__/one_task.json';
+import query_file_defaults_all_options_false from './__test_data__/query_file_defaults_all_options_false.json';
+import query_file_defaults_all_options_null from './__test_data__/query_file_defaults_all_options_null.json';
+import query_file_defaults_all_options_true from './__test_data__/query_file_defaults_all_options_true.json';
+import query_file_defaults_ignore_global_query from './__test_data__/query_file_defaults_ignore_global_query.json';
+import query_file_defaults_short_mode from './__test_data__/query_file_defaults_short_mode.json';
 import query_using_properties from './__test_data__/query_using_properties.json';
 import yaml_1_alias from './__test_data__/yaml_1_alias.json';
 import yaml_2_aliases from './__test_data__/yaml_2_aliases.json';
@@ -79,6 +86,7 @@ export function allCacheSampleData() {
         callouts_nested_issue_2890_unlabelled,
         comments_html_style,
         comments_markdown_style,
+        docs_sample_for_explain_query_file_defaults,
         docs_sample_for_task_properties_reference,
         empty_yaml,
         example_kanban,
@@ -96,6 +104,7 @@ export function allCacheSampleData() {
         inheritance_listitem_listitem_task,
         inheritance_listitem_task,
         inheritance_listitem_task_siblings,
+        inheritance_non_task_child,
         inheritance_rendering_sample,
         inheritance_task_2listitem_3task,
         inheritance_task_listitem,
@@ -120,6 +129,11 @@ export function allCacheSampleData() {
         no_yaml,
         non_tasks,
         one_task,
+        query_file_defaults_all_options_false,
+        query_file_defaults_all_options_null,
+        query_file_defaults_all_options_true,
+        query_file_defaults_ignore_global_query,
+        query_file_defaults_short_mode,
         query_using_properties,
         yaml_1_alias,
         yaml_2_aliases,

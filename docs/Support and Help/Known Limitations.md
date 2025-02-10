@@ -87,6 +87,10 @@ This page gathers together all the documentation on known limitations of the plu
 
 ![[Custom Sorting#Limitations of Custom Sorting]]
 
+## Queries: Query File Defaults
+
+![[Query File Defaults#Limitations of Query File Defaults]]
+
 ## Settings: Status Settings
 
 ![[Status Settings#Limitations and Issues]]
@@ -106,3 +110,7 @@ This page gathers together all the documentation on known limitations of the plu
 ## Advanced: Urgency
 
 ![[Urgency#Limitations of the Urgency Score]]
+
+## Advanced: Tasks API
+
+![[Tasks Api#Limitations of the Tasks API]]

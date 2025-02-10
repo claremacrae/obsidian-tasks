@@ -20,9 +20,16 @@ import { Sort } from './Sort/Sort';
 import type { Sorter } from './Sort/Sorter';
 import { Statement } from './Statement';
 
+let queryInstanceCounter = 0;
+
 export class Query implements IQuery {
     /** Note: source is the raw source, before expanding any placeholders */
     public readonly source: string;
+
+    /** statements contain each source line after processing continuations and placeholders.
+     * There may be more statements than lines in the source, if any multi-line query file property values were used. */
+    public readonly statements: Statement[] = [];
+
     public readonly tasksFile: OptionalTasksFile;
 
     private _limit: number | undefined = undefined;
@@ -55,21 +62,18 @@ export class Query implements IQuery {
         this.source = source;
         this.tasksFile = tasksFile;
 
-        this.debug(`Creating query: ${this.formatQueryForLogging()}`);
-
         const anyContinuationLinesRemoved = continueLines(source);
 
-        const anyPlaceholdersExpanded: Statement[] = [];
         for (const statement of anyContinuationLinesRemoved) {
             const expandedStatements = this.expandPlaceholders(statement, tasksFile);
             if (this.error !== undefined) {
                 // There was an error expanding placeholders.
                 return;
             }
-            anyPlaceholdersExpanded.push(...expandedStatements);
+            this.statements.push(...expandedStatements);
         }
 
-        for (const statement of anyPlaceholdersExpanded) {
+        for (const statement of this.statements) {
             try {
                 this.parseLine(statement);
                 if (this.error !== undefined) {
@@ -133,7 +137,11 @@ export class Query implements IQuery {
     }
 
     private formatQueryForLogging() {
-        return `[${this.source.split('\n').join(' ; ')}]`;
+        return `
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+${this.source}
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+`;
     }
 
     private expandPlaceholders(statement: Statement, tasksFile: OptionalTasksFile): Statement[] {
@@ -297,7 +305,7 @@ ${statement.explainStatement('    ')}
     }
 
     public applyQueryToTasks(tasks: Task[]): QueryResult {
-        this.debug(`Executing query: ${this.formatQueryForLogging()}`);
+        this.debug(`[search] Executing query: ${this.formatQueryForLogging()}`);
 
         const searchInfo = new SearchInfo(this.tasksFile, tasks);
 
@@ -420,11 +428,8 @@ ${statement.explainStatement('    ')}
      * @return {*}  {string}
      */
     private generateQueryId(length: number): string {
-        const chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-        const randomArray = Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]);
-
-        const randomString = randomArray.join('');
-        return randomString;
+        queryInstanceCounter += 1;
+        return queryInstanceCounter.toString().padStart(length, '0');
     }
 
     public debug(message: string, objects?: any): void {

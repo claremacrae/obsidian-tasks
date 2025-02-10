@@ -118,14 +118,12 @@
         },
         "tag": "#task"
       }
-    ],
-    "v": 1
+    ]
   },
   "fileContents": "---\naliases:\n  - YAML Alias 1\n  - YAML Alias 2\n---\n\n# yaml_2_aliases\n\n- [ ] #task Task in 'yaml_2_aliases'\n",
   "filePath": "Test Data/yaml_2_aliases.md",
   "getAllTags": [
     "#task"
   ],
-  "obsidianApiVersion": "1.7.7",
   "parseFrontMatterTags": null
 }

@@ -82,8 +82,7 @@
         },
         "tag": "#task"
       }
-    ],
-    "v": 1
+    ]
   },
   "fileContents": "- [ ] #task sibling 1\n- [ ] #task sibling 2\n",
   "filePath": "Test Data/inheritance_2siblings.md",
@@ -91,6 +90,5 @@
     "#task",
     "#task"
   ],
-  "obsidianApiVersion": "1.7.7",
   "parseFrontMatterTags": null
 }

@@ -19,6 +19,7 @@ If you'd like to see the Tasks plugin in action, have a look at these resources 
 - 2023-01-28: [Massive tasks update!](https://www.youtube.com/watch?v=beCk8wXtVto&t=240s) by [Danny Hatcher](https://www.youtube.com/@DannyHatcherTech): A thorough walk-through of [[Custom Statuses]]
 - 2023-08-04: [Obsidian doesn't have a way to do tasks, but...](https://www.youtube.com/watch?v=c6A0u6NQccw) by [vladcampos](https://www.youtube.com/@vladcampos)
 - 2024-09-02: [How to Manage Tasks in Obsidian: I Turned Obsidian into the Ultimate Task Manager](https://www.youtube.com/watch?v=ZjVBQHyLyMM) by [Mike Schmitz](https://www.youtube.com/@MikeSchmitz)
+- 2024-10-04: [Build a Customizable Task Manager in Obsidian](https://www.youtube.com/watch?v=6ksJRqxVc8s) by [CreaDev Labs](https://www.youtube.com/@creadevlabs)
 
 ### Articles
 
@@ -41,6 +42,10 @@ _Did we miss any? [Let us know](https://github.com/obsidian-tasks-group/obsidian
 - Improving the plugin:
   - [Issues](https://github.com/obsidian-tasks-group/obsidian-tasks/issues)
   - [Discussions](https://github.com/obsidian-tasks-group/obsidian-tasks/discussions)
+- [Roadmap](https://github.com/orgs/obsidian-tasks-group/projects/4)
+  - This shows items that I (Clare Macrae) have prioritised and would like to do eventually, given enough free time.
+  - The Roadmap makes visible the Issues that are labelled `priority: high`, and puts them in the rough order that they might be done on.
+  - It is just a rough guideline, mainly to convey the size of the backlog: The volume of requests on the Tasks project is so large that it is impossible to say with any confident _if_ or _when_ any item might be done.
 
 ## Notes for Tasks developers
 

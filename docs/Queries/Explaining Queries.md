@@ -20,8 +20,10 @@ This has a number of benefits:
 - If there is a [[Global Filter|global filter]] enabled, it is included in the explanation.
   - This often explains why tasks are missing from results.
 - If there is a [[Global Query|global query]] enabled, it too is included in the explanation.
-- Any [[Grouping|'group by']] instructions are listed (since Tasks 5.4.0)
-- Any [[Sorting|'sort by']] instructions are listed (since Tasks 5.4.0)
+- Any [[query file defaults]]-generated instructions are listed (since Tasks 7.15.0).
+  - Note that `show/hide` [[layout]] are not yet shown in `explain` output, however. We are tracking this in [issue #2093](https://github.com/obsidian-tasks-group/obsidian-tasks/issues/2093).
+- Any [[Grouping|'group by']] instructions are listed (since Tasks 5.4.0).
+- Any [[Sorting|'sort by']] instructions are listed (since Tasks 5.4.0).
 
 ## Examples
 
@@ -52,10 +54,6 @@ Explanation of this Tasks code block query:
 
   due before tomorrow =>
     due date is before 2022-10-22 (Saturday 22nd October 2022)
-
-  No grouping instructions supplied.
-
-  No sorting instructions supplied.
 ```
 <!-- endSnippet -->
 
@@ -85,10 +83,6 @@ Explanation of this Tasks code block query:
 
   path regex matches /^Root/Sub-Folder/Sample File\.md/i =>
     using regex:     '^Root\/Sub-Folder\/Sample File\.md' with flag 'i'
-
-  No grouping instructions supplied.
-
-  No sorting instructions supplied.
 ```
 <!-- endSnippet -->
 
@@ -117,10 +111,6 @@ Explanation of this Tasks code block query:
       due before tomorrow =>
         due date is before 2022-10-22 (Saturday 22nd October 2022)
       is recurring
-
-  No grouping instructions supplied.
-
-  No sorting instructions supplied.
 ```
 <!-- endSnippet -->
 
@@ -170,12 +160,10 @@ Explanation of this Tasks code block query:
           description includes 7
         NOT:
           description includes 7
-
-  No grouping instructions supplied.
-
-  No sorting instructions supplied.
 ```
 <!-- endSnippet -->
+
+## Advanced Examples
 
 ### Global Query is displayed
 
@@ -209,10 +197,6 @@ Explanation of the global query:
 
   heading includes tasks
 
-  No grouping instructions supplied.
-
-  No sorting instructions supplied.
-
   At most 50 tasks.
 
 Explanation of this Tasks code block query:
@@ -223,12 +207,69 @@ Explanation of this Tasks code block query:
     due date is between:
       2022-10-24 (Monday 24th October 2022) and
       2022-10-30 (Sunday 30th October 2022) inclusive
-
-  No grouping instructions supplied.
-
-  No sorting instructions supplied.
 ```
 <!-- endSnippet -->
+
+### Query File Defaults are displayed
+
+> [!released]
+> The [[Query File Defaults]] facility was introduced in Tasks 7.15.0.
+
+> [!info]- What are Query File Defaults?
+> You can use [[Query File Defaults]] facility to modify Tasks searches, by adding certain pre-defined property value's the query file's frontmatter.
+>
+> For example, setting `TQ_short_mode` to `true` makes Tasks insert the following line at the start of the query:
+>
+> ```text
+> short mode
+> ```
+
+Consider this Markdown note:
+
+<!-- placeholder to force blank line before included text --><!-- include: DocsSamplesForExplain.test.explain_query_file_defaults_file_content.approved.md -->
+
+````text
+---
+TQ_extra_instructions: |-
+  folder includes {{query.file.folder}}
+  not done
+TQ_short_mode: true
+TQ_show_tree: true
+---
+
+```tasks
+explain
+```
+````
+
+<!-- placeholder to force blank line after included text --><!-- endInclude -->
+
+The Tasks results begin would the following:
+
+<!-- snippet: DocsSamplesForExplain.test.explain_query_file_defaults_explanation.approved.explanation.text -->
+```text
+Explanation of the Query File Defaults (from properties/frontmatter in the query's file):
+
+  folder includes {{query.file.folder}} =>
+  folder includes Test Data/
+
+  not done
+
+Explanation of this Tasks code block query:
+
+  No filters supplied. All tasks will match the query.
+```
+<!-- endSnippet -->
+
+> [!info]- Why are the generated layout instructions not visible?
+> The Query File Defaults will have generated these instructions:
+>
+> ```text
+> short mode
+> show tree
+> ```
+>
+> Currently, the `explain` output does not display [[layout]] instructions.  We are tracking this in [issue #2093](https://github.com/obsidian-tasks-group/obsidian-tasks/issues/2093).
 
 ### Placeholder values are expanded
 
@@ -241,9 +282,11 @@ For example, when the following query with [[Query Properties]] in [[Placeholder
 ```text
 explain
 path includes {{query.file.path}}
+path includes {{query.file.pathWithoutExtension}}
 root includes {{query.file.root}}
 folder includes {{query.file.folder}}
 filename includes {{query.file.filename}}
+filename includes {{query.file.filenameWithoutExtension}}
 
 description includes Some Cryptic String {{! Inline comments are removed before search }}
 ```
@@ -258,6 +301,9 @@ Explanation of this Tasks code block query:
   path includes {{query.file.path}} =>
   path includes some/sample/file path.md
 
+  path includes {{query.file.pathWithoutExtension}} =>
+  path includes some/sample/file path
+
   root includes {{query.file.root}} =>
   root includes some/
 
@@ -267,12 +313,11 @@ Explanation of this Tasks code block query:
   filename includes {{query.file.filename}} =>
   filename includes file path.md
 
+  filename includes {{query.file.filenameWithoutExtension}} =>
+  filename includes file path
+
   description includes Some Cryptic String {{! Inline comments are removed before search }} =>
   description includes Some Cryptic String
-
-  No grouping instructions supplied.
-
-  No sorting instructions supplied.
 ```
 <!-- endSnippet -->
 

@@ -103,14 +103,12 @@
         },
         "tag": "#task"
       }
-    ],
-    "v": 1
+    ]
   },
   "fileContents": "# link_is_broken\n\n- [ ] #task Task in 'link_is_broken' [[broken link - do not fix me]]\n",
   "filePath": "Test Data/link_is_broken.md",
   "getAllTags": [
     "#task"
   ],
-  "obsidianApiVersion": "1.7.7",
   "parseFrontMatterTags": null
 }

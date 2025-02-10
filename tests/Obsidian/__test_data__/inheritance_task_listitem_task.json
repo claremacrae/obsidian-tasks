@@ -65,12 +65,10 @@
         },
         "type": "list"
       }
-    ],
-    "v": 1
+    ]
   },
   "fileContents": "- [ ] parent task\n    - child list item\n        - [ ] grandchild task\n",
   "filePath": "Test Data/inheritance_task_listitem_task.md",
   "getAllTags": [],
-  "obsidianApiVersion": "1.7.7",
   "parseFrontMatterTags": null
 }

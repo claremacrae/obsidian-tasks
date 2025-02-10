@@ -3,9 +3,11 @@
  */
 import moment from 'moment';
 import type { Task } from 'Task/Task';
+import { GlobalFilter } from '../../src/Config/GlobalFilter';
 import { State } from '../../src/Obsidian/Cache';
 import { QueryResultsRenderer } from '../../src/Renderer/QueryResultsRenderer';
 import { TasksFile } from '../../src/Scripting/TasksFile';
+import inheritance_non_task_child from '../Obsidian/__test_data__/inheritance_non_task_child.json';
 import inheritance_rendering_sample from '../Obsidian/__test_data__/inheritance_rendering_sample.json';
 import inheritance_task_2listitem_3task from '../Obsidian/__test_data__/inheritance_task_2listitem_3task.json';
 import { readTasksFromSimulatedFile } from '../Obsidian/SimulatedFile';
@@ -24,18 +26,23 @@ beforeEach(() => {
 
 afterEach(() => {
     jest.useRealTimers();
+    GlobalFilter.getInstance().reset();
 });
+
+function makeQueryResultsRenderer(source: string, tasksFile: TasksFile) {
+    return new QueryResultsRenderer(
+        'block-language-tasks',
+        source,
+        tasksFile,
+        () => Promise.resolve(),
+        null,
+        mockHTMLRenderer,
+    );
+}
 
 describe('QueryResultsRenderer tests', () => {
     async function verifyRenderedTasksHTML(allTasks: Task[], source: string = '') {
-        const renderer = new QueryResultsRenderer(
-            'block-language-tasks',
-            source,
-            new TasksFile('query.md'),
-            () => Promise.resolve(),
-            null,
-            mockHTMLRenderer,
-        );
+        const renderer = makeQueryResultsRenderer(source, new TasksFile('query.md'));
         const queryRendererParameters = {
             allTasks,
             allMarkdownFiles: [],
@@ -88,5 +95,26 @@ ${toMarkdown(allTasks)}
         // example chosen to match subtasks whose parents do not match the query
         const allTasks = readTasksFromSimulatedFile(inheritance_task_2listitem_3task);
         await verifyRenderedTasksHTML(allTasks, showTree + 'description includes grandchild');
+    });
+
+    it('should render non task check box when global filter is enabled', async () => {
+        GlobalFilter.getInstance().set('#task');
+        const allTasks = readTasksFromSimulatedFile(inheritance_non_task_child);
+        await verifyRenderedTasksHTML(allTasks, showTree);
+    });
+});
+
+describe('QueryResultsRenderer - responding to file edits', () => {
+    it('should update the query its file path is changed', () => {
+        // Arrange
+        const source = 'path includes {{query.file.path}}';
+        const renderer = makeQueryResultsRenderer(source, new TasksFile('oldPath.md'));
+        expect(renderer.query.explainQuery()).toContain('path includes oldPath.md');
+
+        // Act
+        renderer.setTasksFile(new TasksFile('newPath.md'));
+
+        // Assert
+        expect(renderer.query.explainQuery()).toContain('path includes newPath.md');
     });
 });
