@@ -17,8 +17,8 @@ import type { TasksEvents } from '../Obsidian/TasksEvents';
 import { TasksFile } from '../Scripting/TasksFile';
 import { DateFallback } from '../DateTime/DateFallback';
 import type { Task } from '../Task/Task';
-import { PriorityMenu } from '../ui/Menus/PriorityMenu';
-import { defaultTaskSaver } from '../ui/Menus/TaskEditingMenu';
+// import { PriorityMenu } from '../ui/Menus/PriorityMenu';
+// import { defaultTaskSaver } from '../ui/Menus/TaskEditingMenu';
 import { QueryResultsRenderer } from './QueryResultsRenderer';
 import { createAndAppendElement } from './TaskLineRenderer';
 
@@ -160,7 +160,7 @@ class QueryRenderChild extends MarkdownRenderChild {
             backlinksClickHandler,
             backlinksMousedownHandler,
             editTaskPencilClickHandler,
-            editTaskPencilRightClickHandler,
+            // editTaskPencilRightClickHandler,
         });
 
         this.containerEl.firstChild?.replaceWith(content);
@@ -194,12 +194,14 @@ function editTaskPencilClickHandler(event: MouseEvent, task: Task, allTasks: Tas
     taskModal.open();
 }
 
+/* Comment out until develop3 branch is merged
 async function editTaskPencilRightClickHandler(ev: MouseEvent, task: Task, editTaskPencil: HTMLAnchorElement) {
     ev.preventDefault(); // suppress the default context menu
     ev.stopPropagation(); // suppress further event propagation
     const menu = new PriorityMenu(task, defaultTaskSaver, editTaskPencil);
     menu.showAtPosition({ x: ev.clientX, y: ev.clientY });
 }
+*/
 
 async function backlinksClickHandler(ev: MouseEvent, task: Task) {
     const result = await getTaskLineAndFile(task, app.vault);
