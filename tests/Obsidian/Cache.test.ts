@@ -495,6 +495,7 @@ describe('cache', () => {
             "-  [ ] #task task parent
                 - [ ] #task task child
                 - [ ] non-task child
+                - [x] non-task child status x
                 - list item child
 
             \`\`\`tasks
@@ -510,9 +511,16 @@ describe('cache', () => {
             "-  [ ] #task task parent : Task
                 - [ ] #task task child : Task
                 - [ ] non-task child : ListItem
+                - [x] non-task child status x : ListItem
                 - list item child : ListItem
             "
         `);
+
+        const task = tasks[0];
+        expect(task.taskLocation.lineNumber).toEqual(0);
+        expect(task.children[0].taskLocation.lineNumber).toEqual(1);
+        expect(task.children[1].taskLocation.lineNumber).toEqual(2);
+        expect(task.children[2].taskLocation.lineNumber).toEqual(3);
     });
 
     it('callout', () => {
