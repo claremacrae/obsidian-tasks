@@ -65,6 +65,8 @@ show urgency
 short mode
 limit 50
 limit groups 3
+
+ignore global query
 `;
 
     it('all types of instruction - not indented', () => {
@@ -73,7 +75,9 @@ limit groups 3
 
         const query = new Query(sampleOfAllInstructionTypes, new TasksFile('sample.md'));
         expect(explainer.explainQuery(query)).toMatchInlineSnapshot(`
-            "filter by function \\
+            "ignore global query
+
+            filter by function \\
                  task.path === '{{query.file.path}}'
              =>
             filter by function task.path === '{{query.file.path}}' =>
@@ -106,6 +110,10 @@ limit groups 3
 
             sort by path
 
+            show urgency
+
+            short mode
+
             At most 50 tasks.
 
             At most 3 tasks per group (if any "group by" options are supplied).
@@ -122,7 +130,9 @@ limit groups 3
         const query = new Query(sampleOfAllInstructionTypes, new TasksFile('sample.md'));
         const indentedExplainer = new Explainer('  ');
         expect(indentedExplainer.explainQuery(query)).toMatchInlineSnapshot(`
-            "  filter by function \\
+            "  ignore global query
+
+              filter by function \\
                    task.path === '{{query.file.path}}'
                =>
               filter by function task.path === '{{query.file.path}}' =>
@@ -154,6 +164,10 @@ limit groups 3
               sort by description reverse
 
               sort by path
+
+              show urgency
+
+              short mode
 
               At most 50 tasks.
 
@@ -309,6 +323,36 @@ describe('explain sorters', () => {
         expect(query.sorting[0].instruction).toEqual(
             'sort by function const priorities = [..."🟥🟧🟨🟩🟦"]; for (let i = 0; i < priorities.length; i++) { if (task.description.includes(priorities[i])) return i; } return 999;',
         );
+    });
+});
+
+describe('explain layout instructions', () => {
+    function explainLayout(source: string) {
+        const query = new Query(source);
+        return explainer.explainLayout(query);
+    }
+
+    it('should explain hide due date', () => {
+        expect(explainLayout('hide due date')).toEqual('hide due date\n');
+    });
+
+    it('should explain show tree', () => {
+        expect(explainLayout('show tree')).toEqual('show tree\n');
+    });
+
+    it('should explain short mode', () => {
+        expect(explainLayout('short')).toEqual('short\n');
+        expect(explainLayout('short mode')).toEqual('short mode\n');
+    });
+
+    it('should explain full mode', () => {
+        expect(explainLayout('full')).toEqual('full\n');
+        expect(explainLayout('full mode')).toEqual('full mode\n');
+    });
+
+    it('should NOT explain explain', () => {
+        // Intentionally do not explain the 'explain' instruction, as it just clutters up the documentation.
+        expect(explainLayout('explain')).toEqual('');
     });
 });
 

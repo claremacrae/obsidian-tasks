@@ -1,5 +1,6 @@
 import { getSettings } from '../../Config/Settings';
 import type { Query } from '../Query';
+import type { Statement } from '../Statement';
 
 export class Explainer {
     private readonly indentation: string;
@@ -32,9 +33,11 @@ export class Explainer {
          *     - end with a single newline.
          */
         const results: string[] = [];
+        results.push(this.explainIgnoreGlobalQuery(query));
         results.push(this.explainFilters(query));
         results.push(this.explainGroups(query));
         results.push(this.explainSorters(query));
+        results.push(this.explainLayout(query));
         results.push(this.explainQueryLimits(query));
         results.push(this.explainDebugSettings());
 
@@ -48,6 +51,13 @@ export class Explainer {
         return result;
     }
 
+    private explainIgnoreGlobalQuery(query: Query) {
+        if (!query.ignoreGlobalQuery) {
+            return '';
+        }
+        return this.indent('ignore global query\n');
+    }
+
     public explainFilters(query: Query) {
         if (query.filters.length === 0) {
             return this.indent('No filters supplied. All tasks will match the query.\n');
@@ -57,19 +67,15 @@ export class Explainer {
     }
 
     public explainGroups(query: Query) {
-        if (query.grouping.length === 0) {
-            return '';
-        }
-
-        return query.grouping.map((group) => group.statement.explainStatement(this.indentation)).join('\n\n') + '\n';
+        return this.explainStatements(query.grouping.map((group) => group.statement));
     }
 
     public explainSorters(query: Query) {
-        if (query.sorting.length === 0) {
-            return '';
-        }
+        return this.explainStatements(query.sorting.map((sort) => sort.statement));
+    }
 
-        return query.sorting.map((sort) => sort.statement.explainStatement(this.indentation)).join('\n\n') + '\n';
+    public explainLayout(query: Query) {
+        return this.explainStatements(query.layoutStatements);
     }
 
     public explainQueryLimits(query: Query) {
@@ -105,6 +111,14 @@ export class Explainer {
             );
         }
         return result;
+    }
+
+    private explainStatements(statements: Statement[]) {
+        if (statements.length === 0) {
+            return '';
+        }
+
+        return statements.map((statement) => statement.explainStatement(this.indentation)).join('\n\n') + '\n';
     }
 
     private indent(description: string) {
