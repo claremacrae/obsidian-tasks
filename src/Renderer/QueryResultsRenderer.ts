@@ -6,7 +6,6 @@ import type { IQuery } from '../IQuery';
 import { QueryLayout } from '../Layout/QueryLayout';
 import { TaskLayout } from '../Layout/TaskLayout';
 import { PerformanceTracker } from '../lib/PerformanceTracker';
-import { replaceTaskWithTasks } from '../Obsidian/File';
 import { explainResults, getQueryForQueryRenderer } from '../Query/QueryRendererHelper';
 import { State } from '../Obsidian/Cache';
 import type { GroupDisplayHeading } from '../Query/Group/GroupDisplayHeading';
@@ -355,61 +354,16 @@ export class QueryResultsRenderer {
             return await this.addTask(taskList, taskLineRenderer, listItem, taskIndex, queryRendererParameters);
         }
 
-        return await this.addListItem(taskList, listItem, taskIndex);
+        return await this.addListItem(taskList, taskLineRenderer, listItem, taskIndex);
     }
 
-    private async addListItem(taskList: HTMLUListElement, listItem: ListItem, listItemIndex: number) {
-        const li = createAndAppendElement('li', taskList);
-
-        if (listItem.statusCharacter) {
-            const checkbox = createAndAppendElement('input', li);
-            checkbox.classList.add('task-list-item-checkbox');
-            checkbox.type = 'checkbox';
-
-            checkbox.addEventListener('click', (event: MouseEvent) => {
-                event.preventDefault();
-                // It is required to stop propagation so that obsidian won't write the file with the
-                // checkbox (un)checked. Obsidian would write after us and overwrite our change.
-                event.stopPropagation();
-
-                // Should be re-rendered as enabled after update in file.
-                checkbox.disabled = true;
-
-                const checkedOrUncheckedListItem = listItem.checkOrUncheck();
-                replaceTaskWithTasks({ originalTask: listItem, newTasks: checkedOrUncheckedListItem });
-            });
-
-            if (listItem.statusCharacter !== ' ') {
-                checkbox.checked = true;
-                li.classList.add('is-checked');
-            }
-
-            li.classList.add('task-list-item');
-
-            // Set these to be compatible with stock obsidian lists:
-            li.setAttribute('data-task', listItem.statusCharacter.trim());
-            // Trim to ensure empty attribute for space. Same way as obsidian.
-            li.setAttribute('data-line', listItemIndex.toString());
-        }
-
-        const span = createAndAppendElement('span', li);
-        await this.textRenderer(
-            listItem.description,
-            span,
-            listItem.findClosestParentTask()?.path ?? '',
-            this.obsidianComponent,
-        );
-
-        // Unwrap the p-tag that was created by the MarkdownRenderer:
-        const pElement = span.querySelector('p');
-        if (pElement !== null) {
-            while (pElement.firstChild) {
-                span.insertBefore(pElement.firstChild, pElement);
-            }
-            pElement.remove();
-        }
-
-        return li;
+    private async addListItem(
+        taskList: HTMLUListElement,
+        taskLineRenderer: TaskLineRenderer,
+        listItem: ListItem,
+        listItemIndex: number,
+    ) {
+        return await taskLineRenderer.renderListItem(taskList, listItem, listItemIndex);
     }
 
     private async addTask(
@@ -420,7 +374,9 @@ export class QueryResultsRenderer {
         queryRendererParameters: QueryRendererParameters,
     ) {
         const isFilenameUnique = this.isFilenameUnique({ task }, queryRendererParameters.allMarkdownFiles);
-        const listItem = await taskLineRenderer.renderTaskLine(task, taskIndex, isFilenameUnique);
+        const processedTask = this.processTaskLinks(task);
+
+        const listItem = await taskLineRenderer.renderTaskLine(processedTask, taskIndex, isFilenameUnique);
 
         // Remove all footnotes. They don't re-appear in another document.
         const footnotes = listItem.querySelectorAll('[data-footnote-id]');
@@ -556,6 +512,44 @@ export class QueryResultsRenderer {
         if (!shortMode) {
             backLink.append(')');
         }
+    }
+
+    private processTaskLinks(task: Task): Task {
+        // Skip if task is from the same file as the query
+        if (this.filePath === task.path) {
+            return task;
+        }
+
+        const linkCache = task.file.cachedMetadata.links;
+        if (!linkCache) return task;
+
+        // Find links in the task description
+        const taskLinks = linkCache.filter((link) => {
+            return (
+                link.position.start.line === task.taskLocation.lineNumber &&
+                task.description.includes(link.original) &&
+                link.link.startsWith('#')
+            );
+        });
+        if (taskLinks.length === 0) return task;
+
+        let description = task.description;
+
+        // a task can only be from one file, so we can replace all the internal links
+        //in the description with the new file path
+        for (const link of taskLinks) {
+            const fullLink = `[[${task.path}${link.link}|${link.displayText}]]`;
+            // Replace the first instance of this link:
+            description = description.replace(link.original, fullLink);
+        }
+
+        // Return a new Task with the updated description
+        return new Task({
+            ...task,
+            description,
+            // Preserve the original task's location information
+            taskLocation: task.taskLocation,
+        });
     }
 
     private addPostponeButton(listItem: HTMLElement, task: Task, shortMode: boolean) {

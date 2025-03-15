@@ -7,32 +7,82 @@ export class ListItem {
     // The original line read from file.
     public readonly originalMarkdown: string;
 
-    public readonly parent: ListItem | null = null;
+    public readonly parent: ListItem | null;
     public readonly children: ListItem[] = [];
-    public readonly indentation: string = '';
-    public readonly listMarker: string = '';
+    public readonly indentation: string;
+    public readonly listMarker: string;
     public readonly description: string;
-    public readonly statusCharacter: string | null = null;
+    public readonly statusCharacter: string | null;
 
     public readonly taskLocation: TaskLocation;
 
-    constructor(originalMarkdown: string, parent: ListItem | null, taskLocation: TaskLocation) {
-        this.description = originalMarkdown.replace(TaskRegularExpressions.listItemRegex, '').trim();
-        const nonTaskMatch = RegExp(TaskRegularExpressions.nonTaskRegex).exec(originalMarkdown);
-        if (nonTaskMatch) {
-            this.indentation = nonTaskMatch[1];
-            this.listMarker = nonTaskMatch[2];
-            this.description = nonTaskMatch[5].trim();
-            this.statusCharacter = nonTaskMatch[4] ?? null;
-        }
+    constructor({
+        originalMarkdown,
+        indentation,
+        listMarker,
+        statusCharacter,
+        description,
+        parent,
+        taskLocation,
+    }: {
+        originalMarkdown: string;
+        indentation: string;
+        listMarker: string;
+        statusCharacter: string | null;
+        description: string;
+        parent: ListItem | null;
+        taskLocation: TaskLocation;
+    }) {
+        this.indentation = indentation;
+        this.listMarker = listMarker;
+        this.statusCharacter = statusCharacter;
+        this.description = description;
         this.originalMarkdown = originalMarkdown;
-        this.parent = parent;
 
+        this.parent = parent;
         if (parent !== null) {
             parent.children.push(this);
         }
 
         this.taskLocation = taskLocation;
+    }
+
+    /**
+     * Takes the given line from an Obsidian note and returns a ListItem object.
+     *
+     * @static
+     * @param {string} originalMarkdown - The full line in the note to parse.
+     * @param {ListItem | null} parent - The optional parent Task or ListItem of the new instance.
+     * @param {TaskLocation} taskLocation - The location of the ListItem.
+     * @return {ListItem | null}
+     * @see Task.fromLine
+     */
+    public static fromListItemLine(
+        originalMarkdown: string,
+        parent: ListItem | null,
+        taskLocation: TaskLocation,
+    ): ListItem | null {
+        const nonTaskMatch = RegExp(TaskRegularExpressions.nonTaskRegex).exec(originalMarkdown);
+        let indentation = '';
+        let listMarker = '';
+        let statusCharacter = null;
+        let description = '';
+        if (nonTaskMatch) {
+            indentation = nonTaskMatch[1];
+            listMarker = nonTaskMatch[2];
+            statusCharacter = nonTaskMatch[4] ?? null;
+            description = nonTaskMatch[5].trim();
+        }
+
+        return new ListItem({
+            originalMarkdown,
+            indentation,
+            listMarker,
+            statusCharacter,
+            description,
+            taskLocation,
+            parent,
+        });
     }
 
     /**
@@ -99,23 +149,16 @@ export class ListItem {
             return false;
         }
 
-        // Note: sectionStart changes every time a line is added or deleted before
+        // Note: taskLocation changes every time a line is added or deleted before
         //       any of the tasks in a file. This does mean that redrawing of tasks blocks
         //       happens more often than is ideal.
-        const args: Array<keyof ListItem> = [
-            'originalMarkdown',
-            'description',
-            'statusCharacter',
-            'path',
-            'lineNumber',
-            'sectionStart',
-            'sectionIndex',
-            'precedingHeader',
-        ];
+        const args: Array<keyof ListItem> = ['description', 'statusCharacter', 'indentation', 'listMarker'];
 
         for (const el of args) {
             if (this[el]?.toString() !== other[el]?.toString()) return false;
         }
+
+        if (!this.taskLocation.identicalTo(other.taskLocation)) return false;
 
         return ListItem.listsAreIdentical(this.children, other.children);
     }
@@ -178,13 +221,25 @@ export class ListItem {
     }
 
     public checkOrUncheck(): ListItem {
+        if (this.statusCharacter === null) {
+            return this;
+        }
+
         const newStatusCharacter = this.statusCharacter === ' ' ? 'x' : ' ';
         const newMarkdown = this.originalMarkdown.replace(
             RegExp(TaskRegularExpressions.checkboxRegex),
             `[${newStatusCharacter}]`,
         );
 
-        return new ListItem(newMarkdown, null, this.taskLocation);
+        return new ListItem({
+            ...this,
+            originalMarkdown: newMarkdown,
+            statusCharacter: newStatusCharacter,
+            // The purpose of this method is just to update the status character on one single line in the file.
+            // This will trigger an update, making Cache re-read the whole file,
+            // which will then identify and re-create any parent-child relationships.
+            parent: null,
+        });
     }
 
     public toFileLineString(): string {

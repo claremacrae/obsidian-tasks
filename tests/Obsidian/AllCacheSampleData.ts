@@ -7,6 +7,7 @@ import callout_custom from './__test_data__/callout_custom.json';
 import callout_labelled from './__test_data__/callout_labelled.json';
 import callouts_nested_issue_2890_labelled from './__test_data__/callouts_nested_issue_2890_labelled.json';
 import callouts_nested_issue_2890_unlabelled from './__test_data__/callouts_nested_issue_2890_unlabelled.json';
+import code_block_in_task from './__test_data__/code_block_in_task.json';
 import comments_html_style from './__test_data__/comments_html_style.json';
 import comments_markdown_style from './__test_data__/comments_markdown_style.json';
 import docs_sample_for_explain_query_file_defaults from './__test_data__/docs_sample_for_explain_query_file_defaults.json';
@@ -34,6 +35,7 @@ import inheritance_task_listitem from './__test_data__/inheritance_task_listitem
 import inheritance_task_listitem_mixed_grandchildren from './__test_data__/inheritance_task_listitem_mixed_grandchildren.json';
 import inheritance_task_listitem_task from './__test_data__/inheritance_task_listitem_task.json';
 import inheritance_task_mixed_children from './__test_data__/inheritance_task_mixed_children.json';
+import internal_heading_links from './__test_data__/internal_heading_links.json';
 import jason_properties from './__test_data__/jason_properties.json';
 import link_in_file_body from './__test_data__/link_in_file_body.json';
 import link_in_file_body_with_custom_display_text from './__test_data__/link_in_file_body_with_custom_display_text.json';
@@ -84,6 +86,7 @@ export function allCacheSampleData() {
         callout_labelled,
         callouts_nested_issue_2890_labelled,
         callouts_nested_issue_2890_unlabelled,
+        code_block_in_task,
         comments_html_style,
         comments_markdown_style,
         docs_sample_for_explain_query_file_defaults,
@@ -111,6 +114,7 @@ export function allCacheSampleData() {
         inheritance_task_listitem_mixed_grandchildren,
         inheritance_task_listitem_task,
         inheritance_task_mixed_children,
+        internal_heading_links,
         jason_properties,
         link_in_file_body,
         link_in_file_body_with_custom_display_text,
