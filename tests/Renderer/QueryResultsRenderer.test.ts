@@ -158,6 +158,7 @@ For more info: https://publish.obsidian.md/tasks-contributing/Testing/Using+Obsi
             backlinksClickHandler: () => Promise.resolve(),
             backlinksMousedownHandler: () => Promise.resolve(),
             editTaskPencilClickHandler: () => Promise.resolve(),
+            editTaskPencilRightClickHandler: () => Promise.resolve(),
         };
         const container = document.createElement('div');
 
