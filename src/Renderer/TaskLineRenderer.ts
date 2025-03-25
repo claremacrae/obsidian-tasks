@@ -127,18 +127,28 @@ export class TaskLineRenderer {
      * @note Output is based on the {@link DefaultTaskSerializer}'s format, with default (emoji) symbols
      * @param task The task to be rendered.
      * @param taskIndex Task's index in the list. This affects `data-line` data attributes of the list item.
+     * @param isTaskInQueryFile
      * @param isFilenameUnique Whether the name of the file that contains the task is unique in the vault.
      *                         If it is undefined, the outcome will be the same as with a unique file name:
      *                         the file name only. If set to `true`, the full path will be returned.
      */
-    public async renderTaskLine(task: Task, taskIndex: number, isFilenameUnique?: boolean): Promise<HTMLLIElement> {
+    public async renderTaskLine({
+        task,
+        taskIndex,
+        isTaskInQueryFile,
+        isFilenameUnique,
+    }: {
+        task: Task;
+        taskIndex: number;
+        isTaskInQueryFile: boolean;
+        isFilenameUnique?: boolean;
+    }): Promise<HTMLLIElement> {
         const li = createAndAppendElement('li', this.parentUlElement);
-
         li.classList.add('task-list-item', 'plugin-tasks-list-item');
 
         const textSpan = createAndAppendElement('span', li);
         textSpan.classList.add('tasks-list-text');
-        await this.taskToHtml(task, textSpan, li);
+        await this.taskToHtml(task, textSpan, li, isTaskInQueryFile);
 
         // NOTE: this area is mentioned in `CONTRIBUTING.md` under "How does Tasks handle status changes". When
         // moving the code, remember to update that reference too.
@@ -193,7 +203,12 @@ export class TaskLineRenderer {
         return li;
     }
 
-    private async taskToHtml(task: Task, parentElement: HTMLElement, li: HTMLLIElement): Promise<void> {
+    private async taskToHtml(
+        task: Task,
+        parentElement: HTMLElement,
+        li: HTMLLIElement,
+        isTaskInQueryFile: boolean,
+    ): Promise<void> {
         const fieldRenderer = new TaskFieldRenderer();
         const emojiSerializer = TASK_FORMATS.tasksPluginEmoji.taskSerializer;
         // Render and build classes for all the task's visible components
@@ -212,7 +227,7 @@ export class TaskLineRenderer {
                 // to differentiate between the container of the text and the text itself, so it will be possible
                 // to do things like surrounding only the text (rather than its whole placeholder) with a highlight
                 const internalSpan = createAndAppendElement('span', span);
-                await this.renderComponentText(internalSpan, componentString, component, task);
+                await this.renderComponentText(internalSpan, componentString, component, task, isTaskInQueryFile);
                 this.addInternalClasses(component, internalSpan);
 
                 // Add the component's CSS class describing what this component is (priority, due date etc.)
@@ -269,47 +284,87 @@ export class TaskLineRenderer {
         componentString: string,
         component: TaskLayoutComponent,
         task: Task,
+        isTaskInQueryFile: boolean,
     ) {
         if (component === TaskLayoutComponent.Description) {
-            componentString = GlobalFilter.getInstance().removeAsWordFromDependingOnSettings(componentString);
+            return await this.renderDescription(task, span, isTaskInQueryFile);
+        }
+        span.innerHTML = componentString;
+    }
 
-            const { debugSettings } = getSettings();
-            if (debugSettings.showTaskHiddenData) {
-                // Add some debug output to enable hidden information in the task to be inspected.
-                componentString += `<br>🐛 <b>${task.lineNumber}</b> . ${task.sectionStart} . ${task.sectionIndex} . '<code>${task.originalMarkdown}</code>'<br>'<code>${task.path}</code>' > '<code>${task.precedingHeader}</code>'<br>`;
+    private async renderDescription(task: Task, span: HTMLSpanElement, isTaskInQueryFile: boolean) {
+        let description = this.adjustRelativeLinksInDescription(task, isTaskInQueryFile);
+        description = GlobalFilter.getInstance().removeAsWordFromDependingOnSettings(description);
+
+        const { debugSettings } = getSettings();
+        if (debugSettings.showTaskHiddenData) {
+            // Add some debug output to enable hidden information in the task to be inspected.
+            description += `<br>🐛 <b>${task.lineNumber}</b> . ${task.sectionStart} . ${task.sectionIndex} . '<code>${task.originalMarkdown}</code>'<br>'<code>${task.path}</code>' > '<code>${task.precedingHeader}</code>'<br>`;
+        }
+        await this.textRenderer(description, span, task.path, this.obsidianComponent);
+
+        // If the task is a block quote, the block quote wraps the p-tag that contains the content.
+        // In that case, we need to unwrap the p-tag *inside* the surrounding block quote.
+        // Otherwise, we unwrap the p-tag as a direct descendant of the span.
+        const blockQuote = span.querySelector('blockquote');
+        const directParentOfPTag = blockQuote ?? span;
+
+        // Unwrap the p-tag that was created by the MarkdownRenderer:
+        const pElement = directParentOfPTag.querySelector('p');
+        if (pElement !== null) {
+            while (pElement.firstChild) {
+                directParentOfPTag.insertBefore(pElement.firstChild, pElement);
             }
-            await this.textRenderer(componentString, span, task.path, this.obsidianComponent);
+            pElement.remove();
+        }
 
-            // If the task is a block quote, the block quote wraps the p-tag that contains the content.
-            // In that case, we need to unwrap the p-tag *inside* the surrounding block quote.
-            // Otherwise, we unwrap the p-tag as a direct descendant of the span.
-            const blockQuote = span.querySelector('blockquote');
-            const directParentOfPTag = blockQuote ?? span;
-
-            // Unwrap the p-tag that was created by the MarkdownRenderer:
-            const pElement = directParentOfPTag.querySelector('p');
-            if (pElement !== null) {
-                while (pElement.firstChild) {
-                    directParentOfPTag.insertBefore(pElement.firstChild, pElement);
-                }
+        // Remove an empty trailing p-tag that the MarkdownRenderer appends when there is a block link:
+        span.querySelectorAll('p').forEach((pElement) => {
+            if (!pElement.hasChildNodes()) {
                 pElement.remove();
             }
+        });
 
-            // Remove an empty trailing p-tag that the MarkdownRenderer appends when there is a block link:
-            span.querySelectorAll('p').forEach((pElement) => {
-                if (!pElement.hasChildNodes()) {
-                    pElement.remove();
-                }
-            });
-
-            // Remove the footnote that the MarkdownRenderer appends when there is a footnote in the task:
-            span.querySelectorAll('.footnotes').forEach((footnoteElement) => {
-                footnoteElement.remove();
-            });
-        } else {
-            span.innerHTML = componentString;
-        }
+        // Remove the footnote that the MarkdownRenderer appends when there is a footnote in the task:
+        span.querySelectorAll('.footnotes').forEach((footnoteElement) => {
+            footnoteElement.remove();
+        });
     }
+
+    private adjustRelativeLinksInDescription(task: Task, isTaskInQueryFile: boolean) {
+        // Skip if task is from the same file as the query
+        if (isTaskInQueryFile) {
+            return task.description;
+        }
+
+        // Skip if the task is in a file with no links
+        const linkCache = task.file.cachedMetadata.links;
+        if (!linkCache) {
+            return task.description;
+        }
+
+        // Find links in the task description
+        const taskLinks = linkCache.filter((link) => {
+            return (
+                link.position.start.line === task.taskLocation.lineNumber &&
+                task.description.includes(link.original) &&
+                link.link.startsWith('#')
+            );
+        });
+
+        let description = task.description;
+        if (taskLinks.length !== 0) {
+            // a task can only be from one file, so we can replace all the internal links
+            //in the description with the new file path
+            for (const link of taskLinks) {
+                const fullLink = `[[${task.path}${link.link}|${link.displayText}]]`;
+                // Replace the first instance of this link:
+                description = description.replace(link.original, fullLink);
+            }
+        }
+        return description;
+    }
+
     /*
      * Adds internal classes for various components (right now just tags actually), meaning that we modify the existing
      * rendered element to add classes inside it.
