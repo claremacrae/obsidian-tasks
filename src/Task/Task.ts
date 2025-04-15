@@ -377,7 +377,8 @@ export class Task extends ListItem {
             return [toggledTask];
         }
 
-        const nextOccurrence = this.recurrence.next(today);
+        const { removeScheduledDateOnRecurrence } = getSettings();
+        const nextOccurrence = this.recurrence.next(today, removeScheduledDateOnRecurrence);
         if (nextOccurrence === null) {
             return [toggledTask];
         }
