@@ -109,6 +109,13 @@ export default class TasksPlugin extends Plugin {
         }
     }
 
+    public getState(): State {
+        if (this.cache === undefined) {
+            return State.Cold;
+        }
+        return this.cache.getState();
+    }
+
     /**
      * Add {@link QueryFileDefaults} properties to the Obsidian vault's types.json file,
      * so that they are available via auto-complete in the File Properties panel.
