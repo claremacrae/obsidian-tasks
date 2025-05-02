@@ -8,13 +8,14 @@ import { expandPlaceholders } from '../Scripting/ExpandPlaceholders';
 import { makeQueryContext } from '../Scripting/QueryContext';
 import type { Task } from '../Task/Task';
 import type { OptionalTasksFile } from '../Scripting/TasksFile';
+import { unknownIncludeErrorMessage } from '../Scripting/Includes';
 import { Explainer } from './Explain/Explainer';
 import type { Filter } from './Filter/Filter';
 import * as FilterParser from './FilterParser';
 import type { Grouper } from './Group/Grouper';
 import { TaskGroups } from './Group/TaskGroups';
 import { QueryResult } from './QueryResult';
-import { continueLines } from './Scanner';
+import { continueLines, splitSourceHonouringLineContinuations } from './Scanner';
 import { SearchInfo } from './SearchInfo';
 import { Sort } from './Sort/Sort';
 import type { Sorter } from './Sort/Sorter';
@@ -447,20 +448,31 @@ ${statement.explainStatement('    ')}
         return false;
     }
 
-    private parseInclude(_line: string, _statement: Statement) {
-        const include = this.includeRegexp.exec(_line);
+    private parseInclude(line: string, statement: Statement) {
+        const include = this.includeRegexp.exec(line);
         if (include) {
             const includeName = include[1].trim();
-            const includeValue = getSettings().includes[includeName];
+            const { includes } = getSettings();
+            const includeValue = includes[includeName];
             if (!includeValue) {
-                this.setError(`Cannot find include "${includeName}" in the Tasks settings`, _statement);
+                this.setError(unknownIncludeErrorMessage(includeName, includes), statement);
                 return;
             }
 
-            includeValue.split('\n').forEach((instruction) => {
-                const statement = new Statement(_statement.rawInstruction, _statement.anyContinuationLinesRemoved);
-                statement.recordExpandedPlaceholders(instruction);
-                this.parseLine(statement);
+            if (includeValue.includes('{{')) {
+                this.setError(
+                    `Cannot yet include instructions containing placeholders.
+You can use a placeholder line instead, like this:
+  {{includes.${includeName}}}`,
+                    statement,
+                );
+                return;
+            }
+
+            splitSourceHonouringLineContinuations(includeValue).forEach((instruction) => {
+                const newStatement = new Statement(statement.rawInstruction, statement.anyContinuationLinesRemoved);
+                newStatement.recordExpandedPlaceholders(instruction);
+                this.parseLine(newStatement);
             });
         }
     }
