@@ -177,13 +177,35 @@ ${source}`;
             }
         }
 
-        // TODO Do not complain about any placeholder errors in comment lines
+        const isAComment = this.commentRegexp.test(source);
+        if (isAComment) {
+            // If it's a comment, we return the line un-changed, to avoid:
+            // 1. pointless error messages for any harmless unknown placeholders,
+            // 2. accidentally processing the second-and-subsequent lines of multi-line placeholders.
+            return [statement];
+        }
+
         // TODO Give user error info if they try and put a string in a regex search
         let expandedSource: string = source;
         if (tasksFile) {
             const queryContext = makeQueryContext(tasksFile);
+            let previousExpandedSource: string = '';
             try {
-                expandedSource = expandPlaceholders(source, queryContext);
+                // Keep expanding placeholders until no more changes occur or max iterations reached.
+                const maxIterations = 10; // Prevent infinite loops if there are any circular references.
+                let iterations = 0;
+
+                while (expandedSource !== previousExpandedSource && iterations < maxIterations) {
+                    previousExpandedSource = expandedSource;
+                    expandedSource = expandPlaceholders(previousExpandedSource, queryContext);
+                    iterations++;
+                }
+
+                if (expandedSource !== source) {
+                    expandedSource = continueLines(expandedSource)
+                        .map((statement) => statement.anyContinuationLinesRemoved)
+                        .join('\n');
+                }
             } catch (error) {
                 if (error instanceof Error) {
                     this._error = error.message;
@@ -459,21 +481,21 @@ ${statement.explainStatement('    ')}
                 return;
             }
 
-            if (includeValue.includes('{{')) {
-                this.setError(
-                    `Cannot yet include instructions containing placeholders.
-You can use a placeholder line instead, like this:
-  {{includes.${includeName}}}`,
-                    statement,
-                );
-                return;
-            }
-
-            splitSourceHonouringLineContinuations(includeValue).forEach((instruction) => {
+            // Process the included text with placeholder expansion
+            const instructions = splitSourceHonouringLineContinuations(includeValue);
+            for (const instruction of instructions) {
                 const newStatement = new Statement(statement.rawInstruction, statement.anyContinuationLinesRemoved);
                 newStatement.recordExpandedPlaceholders(instruction);
+
+                // Apply placeholder expansion again if needed
+                if (instruction.includes('{{') && instruction.includes('}}') && this.tasksFile) {
+                    const queryContext = makeQueryContext(this.tasksFile);
+                    const expandedInstruction = expandPlaceholders(instruction, queryContext);
+                    newStatement.recordExpandedPlaceholders(expandedInstruction);
+                }
+
                 this.parseLine(newStatement);
-            });
+            }
         }
     }
 

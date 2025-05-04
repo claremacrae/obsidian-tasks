@@ -23,7 +23,7 @@ export function makeIncludes(...entries: [string, string][]): IncludesMap {
     return Object.fromEntries(entries);
 }
 
-const tasksFile = new TasksFile('stuff.md');
+const tasksFile = new TasksFile('root/folder/stuff.md');
 
 function createQuery(source: string, includes: IncludesMap) {
     updateSettings({ includes });
@@ -111,22 +111,122 @@ describe('include tests', () => {
         it('includes placeholder should expand placeholder in include value', () => {
             const source = '{{includes.this_path}}';
             const query = createValidQuery(source, includes);
-            expectExpandedStatementToBe(query.filters[0].statement, 'path includes stuff.md');
+            expectExpandedStatementToBe(query.filters[0].statement, 'path includes root/folder/stuff.md');
         });
 
-        it('include instruction DOES NOT YET expand placeholder in include value', () => {
+        it('include instruction should expand placeholder in include value', () => {
             const source = 'include this_path';
+            const query = createValidQuery(source, includes);
+            expectExpandedStatementToBe(query.filters[0].statement, 'path includes root/folder/stuff.md');
+        });
+    });
+
+    describe('multi-line placeholders inside includes', () => {
+        const includes = makeIncludes(
+            ['two_lines', 'has due date\nhas created date'],
+            ['two_lines_as_placeholder', '{{includes.two_lines}}'],
+        );
+
+        it('includes placeholder should detect both lines in included value', () => {
+            const source = '{{includes.two_lines_as_placeholder}}';
+            const query = createValidQuery(source, includes);
+            expect(query.filters.length).toEqual(2);
+        });
+
+        it('includes placeholders should be ignored in comments', () => {
+            const source = '# {{includes.two_lines_as_placeholder}}';
+            const query = createValidQuery(source, includes);
+            // Error: only the first line is commented-out. The second line is parsed.
+            expect(query.filters.length).toEqual(0);
+        });
+
+        it('include instruction should detect both lines in included value BUT DOES NOT', () => {
+            // TODO Handle expanding multi-line placeholders
+            const source = 'include two_lines_as_placeholder';
             const query = createQuery(source, includes);
-            // This would currently generate an instruction containing an unexpanded placeholder:
-            //      'path includes {{query.file.path}}'
-            // which is not what users would intend, and which silently matches no tasks.
-            // So for now, Query's handing of the include instruction refuses to act on any
-            // Includes that contain placeholder text.
             expect(query.error).toMatchInlineSnapshot(`
-                "Cannot yet include instructions containing placeholders.
-                You can use a placeholder line instead, like this:
-                  {{includes.this_path}}
-                Problem line: "include this_path""
+                "do not understand query
+                Problem statement:
+                    include two_lines_as_placeholder =>
+                    has due date
+                has created date
+                "
+            `);
+        });
+    });
+
+    describe('placeholders inside placeholders', () => {
+        const includes = makeIncludes(
+            // 3 includes that each contain 1 query.file placeholder:
+            ['this_path', 'path includes {{query.file.path}}'],
+            ['this_folder', 'folder includes {{query.file.folder}}'],
+            ['this_root', 'root includes {{query.file.root}}'],
+            // 2-level include:
+            ['this_everything', '{{includes.this_path}}\n{{includes.this_folder}}\n{{includes.this_root}}'],
+            // 3-level include:
+            ['this_everything_indirect', '{{includes.this_everything}}'],
+        );
+
+        const expectedFilterLines = [
+            'path includes root/folder/stuff.md',
+            'folder includes root/folder/',
+            'root includes root/',
+        ];
+
+        it('includes placeholder should support placeholders inside simple instructions', () => {
+            const source = '{{includes.this_path}}\n{{includes.this_folder}}\n{{includes.this_root}}';
+            const query = createValidQuery(source, includes);
+            expect(query.filters.map((filter) => filter.statement.anyPlaceholdersExpanded)).toEqual(
+                expectedFilterLines,
+            );
+            expect(query.explainQuery()).toMatchInlineSnapshot(`
+                "{{includes.this_path}} =>
+                path includes root/folder/stuff.md
+
+                {{includes.this_folder}} =>
+                folder includes root/folder/
+
+                {{includes.this_root}} =>
+                root includes root/
+                "
+            `);
+        });
+
+        it('includes placeholder should support one-level nested placeholders', () => {
+            const source = '{{includes.this_everything}}';
+            const query = createValidQuery(source, includes);
+            expect(query.filters.map((filter) => filter.statement.anyPlaceholdersExpanded)).toEqual(
+                expectedFilterLines,
+            );
+            expect(query.explainQuery()).toMatchInlineSnapshot(`
+                "{{includes.this_everything}}: statement 1 after expansion of placeholder =>
+                path includes root/folder/stuff.md
+
+                {{includes.this_everything}}: statement 2 after expansion of placeholder =>
+                folder includes root/folder/
+
+                {{includes.this_everything}}: statement 3 after expansion of placeholder =>
+                root includes root/
+                "
+            `);
+        });
+
+        it('includes placeholder should support two-level nested placeholders', () => {
+            const source = '{{includes.this_everything_indirect}}';
+            const query = createValidQuery(source, includes);
+            expect(query.filters.map((filter) => filter.statement.anyPlaceholdersExpanded)).toEqual(
+                expectedFilterLines,
+            );
+            expect(query.explainQuery()).toMatchInlineSnapshot(`
+                "{{includes.this_everything_indirect}}: statement 1 after expansion of placeholder =>
+                path includes root/folder/stuff.md
+
+                {{includes.this_everything_indirect}}: statement 2 after expansion of placeholder =>
+                folder includes root/folder/
+
+                {{includes.this_everything_indirect}}: statement 3 after expansion of placeholder =>
+                root includes root/
+                "
             `);
         });
     });
@@ -138,25 +238,10 @@ return "Hello World";`;
 
         const expectedStatement = 'group by function return "Hello World";';
 
-        it('includes placeholder DOES NOT YET SUPPORT line continuations in include value', () => {
-            // Just as TQ_extra_instructions (in Query File Defaults) does not work with line continuations,
-            // so includes in placeholders do not.
-            // This is because line continuations are applied only once, before the placeholders
-            // are expanded.
-
+        it('includes placeholder supports line continuations in include value', () => {
             const source = '{{includes.instruction_with_continuation_lines}}';
-            const query = createQuery(source, includes);
-            expect(query.error).toMatchInlineSnapshot(`
-                "Could not interpret the following instruction as a Boolean combination:
-                    return "Hello World";
-
-                The error message is:
-                    All filters in a Boolean instruction must be inside one of these pairs of delimiter characters: (...) or [...] or {...} or "...". Combinations of those delimiters are no longer supported.
-                Problem statement:
-                    {{includes.instruction_with_continuation_lines}}: statement 2 after expansion of placeholder =>
-                    return "Hello World";
-                "
-            `);
+            const query = createValidQuery(source, includes);
+            expectExpandedStatementToBe(query.grouping[0].statement, expectedStatement);
         });
 
         it('include instruction supports line continuations in include value', () => {
@@ -314,6 +399,47 @@ describe('include - error messages', () => {
                     include out =>
                     apple sauce
                 "
+            `);
+        });
+    });
+
+    describe('infinite recursion of instruction', () => {
+        const includes = makeIncludes(
+            ['self_reference_1', '{{includes.self_reference_1}}'],
+            ['self_reference_2', 'include self_reference_2'],
+        );
+
+        it('includes placeholder should give meaningful error message about self-referencing instructions BUT DOES NOT', () => {
+            // TODO Better error error message for '{{includes.self_reference}}'
+            const query = createQuery('{{includes.self_reference_1}}', includes);
+            expect(query.error).toMatchInlineSnapshot(`
+                "Could not interpret the following instruction as a Boolean combination:
+                    {{includes.self_reference_1}}
+
+                The error message is:
+                    couldn't parse sub-expression 'includes.self_reference_1'
+
+                The instruction was converted to the following simplified line:
+                    ((f1))
+
+                Where the sub-expressions in the simplified line are:
+                    'f1': 'includes.self_reference_1'
+                        => ERROR:
+                           do not understand query
+
+                For help, see:
+                    https://publish.obsidian.md/tasks/Queries/Combining+Filters
+
+                Problem line: "{{includes.self_reference_1}}""
+            `);
+        });
+
+        it('include instruction should give meaningful error message about self-referencing instructions BUT DOES NOT', () => {
+            // TODO Better error error message for 'include self_reference'
+            const query = createQuery('include self_reference_2', includes);
+            expect(query.error).toMatchInlineSnapshot(`
+                "Maximum call stack size exceeded
+                Problem line: "include self_reference_2""
             `);
         });
     });
