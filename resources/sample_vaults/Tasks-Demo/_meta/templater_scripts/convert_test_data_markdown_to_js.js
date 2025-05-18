@@ -52,7 +52,15 @@ async function convertMarkdownFileToTestFunction(filePath, tp) {
     const tFile = vault.getAbstractFileByPath(filePath);
 
     const fileContents = await vault.read(tFile);
+
     const cachedMetadata = app.metadataCache.getFileCache(tFile);
+    if (cachedMetadata && cachedMetadata.v !== undefined) {
+        // Obsidian intermittently adds '"v": 1' values to the cache, which clutters up the diffs.
+        // It's possible to remove them by doing "Rebuild cache vault" in Obsidian Settings > "Files and Settings",
+        // and re-running this script, but it's easier for us to just delete them here:
+        delete cachedMetadata.v;
+    }
+
     const getAllTags = tp.obsidian.getAllTags(cachedMetadata);
     const parseFrontMatterTags = tp.obsidian.parseFrontMatterTags(cachedMetadata.frontmatter);
     const data = { filePath, fileContents, cachedMetadata, getAllTags, parseFrontMatterTags };
@@ -86,9 +94,20 @@ async function writeListOfAllTestFunctions(files) {
     const content = `// DO NOT EDIT!
 // This file is machine-generated in the test vault, by convert_test_data_markdown_to_js.js.
 
+import type { SimulatedFile } from './SimulatedFile';
+
 ${imports.join('\n')}
 
-export function allCacheSampleData() {
+/**
+ * All the sample data in \`resources/sample_vaults/Tasks-Demo/Test Data\`.
+ *
+ * Related code that uses some or all of this data:
+ * - {@link SimulatedFile}
+ * - {@link readTasksFromSimulatedFile}
+ * - {@link getTasksFileFromMockData}
+ * - {@link listPathAndData}
+ */
+export function allCacheSampleData(): SimulatedFile[] {
     return [
 ${functions.join('\n')}
     ];
