@@ -12,8 +12,7 @@
     .tasks-includes-setting {
         // Name input field (left column)
         .tasks-includes-key {
-            width: 200px;
-            flex-shrink: 0;
+            grid-area: key;
 
             // Error state styling
             &.has-error {
@@ -24,7 +23,8 @@
 
         // Value textarea (right column)
         .tasks-includes-value {
-            flex-grow: 1;
+            grid-area: value;
+
             min-width: 300px;
             min-height: 3em;
             font-family: var(--font-monospace);
@@ -36,19 +36,32 @@
             white-space: pre;        // Preserve formatting
         }
 
+        .tasks-includes-delete-button {
+            grid-area: delete;
+        }
+
         // Control alignment adjustment
         .setting-item-control {
+            justify-content: start;
+            display: grid;
+            grid-template-columns: 200px 1fr auto;
+            grid-template-areas: "key value delete";
+
             align-items: unset;
+
+            // Put a border around the elements for each Include, to make structure easier
+            // to see.
+            border: 1px solid var(--background-modifier-border) !important;
+            padding: 0.5em !important;
+            background-color: var(--background-secondary) !important;
+            border-radius: 4px !important;
 
             // Force wrapping behavior on narrow screens
             @container (max-width: 600px) {
-                flex-wrap: wrap;
-
-                // Put a border around the elements for each Include, to make structure easier
-                // to see when in single-column mode.
-                border: 1px solid var(--background-modifier-border) !important;
-                padding: 0.5em !important;
-                border-radius: 4px !important;
+                grid-template-columns: 5fr 1fr;
+                grid-template-areas:
+                  "key delete"
+                  "value value";
 
                 .tasks-includes-key {
                     // Make the Name input field full-width.
