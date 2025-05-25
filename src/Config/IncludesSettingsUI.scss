@@ -2,58 +2,68 @@
 /* Includes section                               */
 /* ---------------------------------------------- */
 
-/* Container for each setting row */
-.tasks-settings .tasks-includes-wrapper {
-    width: 100%;
-}
-
-/* Flex layout for each row */
-.tasks-settings .tasks-includes-setting.setting-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 1em;
-    flex-wrap: wrap;
-    width: 100%;
-}
-
-/* Input for key */
-.tasks-settings .tasks-includes-setting .tasks-includes-key {
-    width: 200px;
-    flex-shrink: 0;
-}
-
-/* Textarea for value */
-.tasks-settings .tasks-includes-setting .tasks-includes-value {
-    flex-grow: 1;
-    min-width: 300px;
-    min-height: 3em;
-    font-family: monospace;
-    resize: horizontal;      // allow horizontal resizing
-    overflow-x: auto;        // allow horizontal scrolling
-    overflow-y: hidden;      // hide vertical scrollbar
-    white-space: pre;        // prevent wrapping
-}
-
-/* Responsive: stack in narrow view */
-@media (max-width: 600px) {
-    .tasks-settings .tasks-includes-setting.setting-item {
-        flex-direction: column;
-        align-items: stretch;
-    }
-}
-
-.tasks-includes-setting {
-    .setting-item-info:has(.setting-item-name:empty):has(.setting-item-description:empty) {
-        display: none;
+.tasks-settings {
+    // Main wrapper for includes section
+    .tasks-includes-wrapper {
+        width: 100%;
     }
 
-    .setting-item-control {
-        align-items: unset;
-    }
-}
+    // Individual setting row
+    .tasks-includes-setting {
+        // Name input field (left column)
+        .tasks-includes-key {
+            width: 200px;
+            flex-shrink: 0;
 
-/* Error state for invalid input */
-.tasks-settings .tasks-includes-setting .tasks-includes-key.has-error {
-    border-color: var(--text-error);
-    border-width: 2px;
+            // Error state styling
+            &.has-error {
+                border-color: var(--text-error);
+                border-width: 2px;
+            }
+        }
+
+        // Value textarea (right column)
+        .tasks-includes-value {
+            flex-grow: 1;
+            min-width: 300px;
+            min-height: 3em;
+            font-family: var(--font-monospace);
+
+            // Horizontal-only resizing and scrolling
+            resize: horizontal;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: pre;        // Preserve formatting
+        }
+
+        // Control alignment adjustment
+        .setting-item-control {
+            align-items: unset;
+
+            // Force wrapping behavior on narrow screens
+            @container (max-width: 600px) {
+                flex-wrap: wrap;
+
+                // Put a border around the elements for each Include, to make structure easier
+                // to see when in single-column mode.
+                border: 1px solid var(--background-modifier-border) !important;
+                padding: 0.5em !important;
+                border-radius: 4px !important;
+
+                .tasks-includes-key {
+                    // Make the Name input field full-width.
+                    // The value textarea will take up most of the width, with the Delete button to its right.
+                    width: 100%;
+                }
+            }
+
+            @container (max-width: 500px) {
+                .tasks-includes-value {
+                    // Make the Value textarea full-width, forcing the Delete button on to the third row.
+                    width: 100%;
+                    min-width: 0;
+                }
+            }
+        }
+    }
 }
