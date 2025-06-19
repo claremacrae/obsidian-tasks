@@ -1,4 +1,4 @@
-import type { IncludesMap } from '../Config/Settings';
+import type { PresetsMap } from '../Config/Settings';
 
 function summariseInstruction(instructions: string) {
     let result = instructions;
@@ -24,19 +24,19 @@ function summariseInstruction(instructions: string) {
     return result;
 }
 
-export function unknownIncludeErrorMessage(includeName: string, includes: IncludesMap) {
-    let message = `Cannot find include "${includeName}" in the Tasks settings`;
+export function unknownPresetErrorMessage(presentName: string, presets: PresetsMap) {
+    let message = `Cannot find preset "${presentName}" in the Tasks settings`;
 
-    const isIncludesEmpty = Object.keys(includes).length === 0;
-    if (isIncludesEmpty) {
-        message += `\nYou can define the instruction(s) for "${includeName}" in the Tasks settings.`;
+    const isPresetsEmpty = Object.keys(presets).length === 0;
+    if (isPresetsEmpty) {
+        message += `\nYou can define the instruction(s) for "${presentName}" in the Tasks settings.`;
     } else {
-        const maxKeyLength = Math.max(...Object.keys(includes).map((key) => key.length));
-        const availableNames = Object.entries(includes)
+        const maxKeyLength = Math.max(...Object.keys(presets).map((key) => key.length));
+        const availableNames = Object.entries(presets)
             .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
             .map(([key, value]) => `${key.padEnd(maxKeyLength)}: ${summariseInstruction(value)}`)
             .join('\n  ');
-        message += `\nThe following includes are defined in the Tasks settings:\n  ${availableNames}`;
+        message += `\nThe following presets are defined in the Tasks settings:\n  ${availableNames}`;
     }
 
     return message;

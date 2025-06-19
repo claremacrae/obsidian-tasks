@@ -1,17 +1,49 @@
 /* ---------------------------------------------- */
-/* Includes section                               */
+/* Presets section                               */
 /* ---------------------------------------------- */
 
 .tasks-settings {
-    // Main wrapper for includes section
-    .tasks-includes-wrapper {
+    // Main wrapper for presets section
+    .tasks-presets-wrapper {
         width: 100%;
+        position: relative;
+        transition: all 0.2s ease;
+
+        // Drag visual state
+        &.tasks-presets-dragging {
+            opacity: 0.5;
+            transform: rotate(2deg);
+        }
+
+        &.tasks-presets-drop-above::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: var(--interactive-accent);
+            border-radius: 2px;
+            z-index: 10;
+        }
+
+        &.tasks-presets-drop-below::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: var(--interactive-accent);
+            border-radius: 2px;
+            z-index: 10;
+        }
     }
 
     // Individual setting row
-    .tasks-includes-setting {
+    .tasks-presets-setting {
         // Name input field (left column)
-        .tasks-includes-key {
+        .tasks-presets-key {
             grid-area: key;
 
             // Error state styling
@@ -22,7 +54,7 @@
         }
 
         // Value textarea (right column)
-        .tasks-includes-value {
+        .tasks-presets-value {
             grid-area: value;
 
             min-width: 300px;
@@ -36,7 +68,16 @@
             white-space: pre;        // Preserve formatting
         }
 
-        .tasks-includes-delete-button {
+        .tasks-presets-drag-handle {
+            grid-area: drag;
+            color: var(--text-muted);
+
+            &:hover {
+                color: var(--text-normal);
+            }
+        }
+
+        .tasks-presets-delete-button {
             grid-area: delete;
         }
 
@@ -44,12 +85,13 @@
         .setting-item-control {
             justify-content: start;
             display: grid;
-            grid-template-columns: 200px 1fr auto;
-            grid-template-areas: "key value delete";
+            grid-template-columns: 200px 1fr auto auto;
+            grid-template-areas: "key value drag delete";
+            gap: 4px;
 
             align-items: unset;
 
-            // Put a border around the elements for each Include, to make structure easier
+            // Put a border around the elements for each Preset, to make structure easier
             // to see.
             border: 1px solid var(--background-modifier-border) !important;
             padding: 0.5em !important;
@@ -58,23 +100,15 @@
 
             // Force wrapping behavior on narrow screens
             @container (max-width: 600px) {
-                grid-template-columns: 5fr 1fr;
+                grid-template-columns: 5fr 1fr 1fr;
                 grid-template-areas:
-                  "key delete"
-                  "value value";
+                  "key drag delete"
+                  "value value value";
 
-                .tasks-includes-key {
+                .tasks-presets-key {
                     // Make the Name input field full-width.
                     // The value textarea will take up most of the width, with the Delete button to its right.
                     width: 100%;
-                }
-            }
-
-            @container (max-width: 500px) {
-                .tasks-includes-value {
-                    // Make the Value textarea full-width, forcing the Delete button on to the third row.
-                    width: 100%;
-                    min-width: 0;
                 }
             }
         }
