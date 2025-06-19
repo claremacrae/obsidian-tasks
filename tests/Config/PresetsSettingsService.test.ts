@@ -1,9 +1,5 @@
-import {
-    IncludesSettingsService,
-    RenameResult,
-    type RenamesInProgress,
-} from '../../src/Config/IncludesSettingsService';
-import type { IncludesMap } from '../../src/Config/Settings';
+import { PresetsSettingsService, RenameResult, type RenamesInProgress } from '../../src/Config/PresetsSettingsService';
+import type { PresetsMap } from '../../src/Config/Settings';
 
 function expectToBeValid(result: RenameResult) {
     expect(result.isValid).toBe(true);
@@ -15,23 +11,23 @@ function expectToGiveError(result: RenameResult, errorMessage: string) {
     expect(result.errorMessage).toBe(errorMessage);
 }
 
-describe('IncludesSettingsService', () => {
-    let service: IncludesSettingsService;
-    let testIncludes: IncludesMap;
+describe('PresetsSettingsService', () => {
+    let service: PresetsSettingsService;
+    let testPresets: PresetsMap;
 
     beforeEach(() => {
-        service = new IncludesSettingsService();
-        testIncludes = {
+        service = new PresetsSettingsService();
+        testPresets = {
             key1: 'value1',
             key2: 'value2',
         };
     });
 
-    describe('IncludesSettingsService - validateMultipleIncludeNames', () => {
-        let service: IncludesSettingsService;
+    describe('PresetsSettingsService - validateMultipleIncludeNames', () => {
+        let service: PresetsSettingsService;
 
         beforeEach(() => {
-            service = new IncludesSettingsService();
+            service = new PresetsSettingsService();
         });
 
         it('should validate all keys as valid when there are no duplicates', () => {
@@ -57,8 +53,8 @@ describe('IncludesSettingsService', () => {
 
             const result = service.validateRenames(keyMap);
 
-            expectToGiveError(result['original_key_1'], 'An include with this name already exists');
-            expectToGiveError(result['original_key_2'], 'An include with this name already exists');
+            expectToGiveError(result['original_key_1'], 'A preset with this name already exists');
+            expectToGiveError(result['original_key_2'], 'A preset with this name already exists');
             expectToBeValid(result['original_key_3']);
         });
 
@@ -71,8 +67,8 @@ describe('IncludesSettingsService', () => {
 
             const result = service.validateRenames(keyMap);
 
-            expectToGiveError(result['original_key_1'], 'An include with this name already exists');
-            expectToGiveError(result['original_key_2'], 'An include with this name already exists');
+            expectToGiveError(result['original_key_1'], 'A preset with this name already exists');
+            expectToGiveError(result['original_key_2'], 'A preset with this name already exists');
             expectToBeValid(result['original_key_3']);
         });
 
@@ -85,8 +81,8 @@ describe('IncludesSettingsService', () => {
 
             const result = service.validateRenames(keyMap);
 
-            expectToGiveError(result['original_key_1'], 'Include name cannot be empty or all whitespace');
-            expectToGiveError(result['original_key_2'], 'Include name cannot be empty or all whitespace');
+            expectToGiveError(result['original_key_1'], 'Preset name cannot be empty or all whitespace');
+            expectToGiveError(result['original_key_2'], 'Preset name cannot be empty or all whitespace');
             expectToBeValid(result['original_key_3']);
         });
 
@@ -105,59 +101,59 @@ describe('IncludesSettingsService', () => {
         });
     });
 
-    describe('IncludesSettingsService - validateIncludeName', () => {
+    describe('PresetsSettingsService - validateRename', () => {
         it('should recognise valid new name', () => {
-            expectToBeValid(service.validateRename(testIncludes, 'key1', 'new-name'));
+            expectToBeValid(service.validateRename(testPresets, 'key1', 'new-name'));
         });
 
         it('should reject an empty new name', () => {
-            const result = service.validateRename(testIncludes, 'key1', '');
-            expectToGiveError(result, 'Include name cannot be empty or all whitespace');
+            const result = service.validateRename(testPresets, 'key1', '');
+            expectToGiveError(result, 'Preset name cannot be empty or all whitespace');
         });
 
         it('should reject an new name with only whitespaces', () => {
-            const result = service.validateRename(testIncludes, 'key1', ' \t');
-            expectToGiveError(result, 'Include name cannot be empty or all whitespace');
+            const result = service.validateRename(testPresets, 'key1', ' \t');
+            expectToGiveError(result, 'Preset name cannot be empty or all whitespace');
         });
 
         it('should reject a new name if it already exists', () => {
-            const result = service.validateRename(testIncludes, 'key1', 'key2');
-            expectToGiveError(result, 'An include with this name already exists');
+            const result = service.validateRename(testPresets, 'key1', 'key2');
+            expectToGiveError(result, 'A preset with this name already exists');
         });
 
         it('should reject a new name if it already exists, without ending spaces', () => {
-            const result = service.validateRename(testIncludes, 'key1', 'key2  ');
-            expectToGiveError(result, 'An include with this name already exists');
+            const result = service.validateRename(testPresets, 'key1', 'key2  ');
+            expectToGiveError(result, 'A preset with this name already exists');
         });
 
         it('should reject a new name if it already exists, with surrounding spaces', () => {
-            testIncludes = {
+            testPresets = {
                 key1: 'value1',
                 ' key2 ': 'value2',
             };
 
-            const result = service.validateRename(testIncludes, 'key1', 'key2');
-            expectToGiveError(result, 'An include with this name already exists');
+            const result = service.validateRename(testPresets, 'key1', 'key2');
+            expectToGiveError(result, 'A preset with this name already exists');
         });
 
         it('should treat renaming to self as valid', () => {
-            expectToBeValid(service.validateRename(testIncludes, 'key1', 'key1'));
+            expectToBeValid(service.validateRename(testPresets, 'key1', 'key1'));
         });
     });
 
-    describe('IncludesSettingsService - addInclude', () => {
+    describe('PresetsSettingsService - addPreset', () => {
         it('should add a new include with a unique key', () => {
-            const result = service.addInclude(testIncludes);
+            const result = service.addPreset(testPresets);
 
             expect(result.newKey).toBe('new_key_1');
-            expect(result.includes['new_key_1']).toBe('');
-            expect(Object.keys(result.includes).length).toBe(3);
+            expect(result.presets['new_key_1']).toBe('');
+            expect(Object.keys(result.presets).length).toBe(3);
         });
     });
 
-    describe('IncludesSettingsService - renameInclude', () => {
+    describe('PresetsSettingsService - renamePreset', () => {
         it('should rename a key and preserve order', () => {
-            const result = service.renameInclude(testIncludes, 'key1', 'newName');
+            const result = service.renamePreset(testPresets, 'key1', 'newName');
 
             expect(result).not.toBeNull();
             expect(Object.keys(result!)[0]).toBe('newName');
@@ -166,7 +162,7 @@ describe('IncludesSettingsService', () => {
         });
 
         it('should trim spaces from a unique new name', () => {
-            const result = service.renameInclude(testIncludes, 'key2', '  renamed_key2  ');
+            const result = service.renamePreset(testPresets, 'key2', '  renamed_key2  ');
 
             expect(result).not.toBeNull();
             expect(Object.keys(result!)[1]).toBe('renamed_key2');
@@ -175,27 +171,27 @@ describe('IncludesSettingsService', () => {
         });
 
         it('should return null for duplicate keys', () => {
-            const result = service.renameInclude(testIncludes, 'key1', 'key2');
+            const result = service.renamePreset(testPresets, 'key1', 'key2');
 
             expect(result).toBeNull();
         });
 
         it('should return null for empty new key', () => {
-            const result = service.renameInclude(testIncludes, 'key1', '');
+            const result = service.renamePreset(testPresets, 'key1', '');
 
             expect(result).toBeNull();
         });
 
         it('should return null for empty key containing only whitespace', () => {
-            const result = service.renameInclude(testIncludes, 'key1', '\t ');
+            const result = service.renamePreset(testPresets, 'key1', '\t ');
 
             expect(result).toBeNull();
         });
     });
 
-    describe('IncludesSettingsService - deleteInclude', () => {
+    describe('PresetsSettingsService - deletePreset', () => {
         it('should remove a key', () => {
-            const result = service.deleteInclude(testIncludes, 'key1');
+            const result = service.deletePreset(testPresets, 'key1');
 
             expect(Object.keys(result).length).toBe(1);
             expect(result['key1']).toBeUndefined();
@@ -203,20 +199,20 @@ describe('IncludesSettingsService', () => {
         });
     });
 
-    describe('IncludesSettingsService - updateIncludeValue', () => {
+    describe('PresetsSettingsService - updateIncludeValue', () => {
         it('should update the value of an include', () => {
-            const result = service.updateIncludeValue(testIncludes, 'key1', 'new value');
+            const result = service.updatePresetValue(testPresets, 'key1', 'new value');
 
             expect(result['key1']).toBe('new value');
         });
     });
 
-    describe('IncludesSettingsService - wouldCreateDuplicateKey', () => {
-        let service: IncludesSettingsService;
-        let testIncludes: IncludesMap;
+    describe('PresetsSettingsService - wouldCreateDuplicateKey', () => {
+        let service: PresetsSettingsService;
+        let testIncludes: PresetsMap;
 
         beforeEach(() => {
-            service = new IncludesSettingsService();
+            service = new PresetsSettingsService();
             testIncludes = {
                 key1: 'value1',
                 key2: 'value2',
@@ -251,7 +247,7 @@ describe('IncludesSettingsService', () => {
         });
 
         it('should normalize both new key and existing keys by trimming whitespace', () => {
-            // Add a key with leading/trailing whitespace to the includes map
+            // Add a key with leading/trailing whitespace to the presets map
             const includesWithSpacedKey = {
                 ...testIncludes,
                 '  spacedKey  ': 'value4',
@@ -341,6 +337,82 @@ describe('IncludesSettingsService', () => {
 
             // Should not detect a duplicate with slightly different special characters
             expect(service.wouldCreateDuplicateKey(includesWithSpecialChars, 'key1', 'special!@')).toBe(false);
+        });
+    });
+
+    describe('PresetsSettingsService - reorderPreset', () => {
+        let service: PresetsSettingsService;
+        let testIncludes: PresetsMap;
+
+        beforeEach(() => {
+            service = new PresetsSettingsService();
+            testIncludes = {
+                first: 'value1',
+                second: 'value2',
+                third: 'value3',
+                fourth: 'value4',
+                fifth: 'value5',
+            };
+        });
+
+        it('should move an item to a new position', () => {
+            // Move 'fourth' to position 1 (second position, 0-indexed)
+            const result = service.reorderPreset(testIncludes, 'fourth', 1);
+
+            expect(result).not.toBeNull();
+            const keys = Object.keys(result!);
+            expect(keys).toEqual(['first', 'fourth', 'second', 'third', 'fifth']);
+        });
+
+        it('should move an item from beginning to end', () => {
+            // Move 'first' to the last position
+            const result = service.reorderPreset(testIncludes, 'first', 4);
+
+            expect(result).not.toBeNull();
+            const keys = Object.keys(result!);
+            expect(keys).toEqual(['second', 'third', 'fourth', 'fifth', 'first']);
+        });
+
+        it('should move an item from end to beginning', () => {
+            // Move 'fifth' to the first position
+            const result = service.reorderPreset(testIncludes, 'fifth', 0);
+
+            expect(result).not.toBeNull();
+            const keys = Object.keys(result!);
+            expect(keys).toEqual(['fifth', 'first', 'second', 'third', 'fourth']);
+        });
+
+        it('should return null for invalid key', () => {
+            const result = service.reorderPreset(testIncludes, 'nonexistent', 1);
+            expect(result).toBeNull();
+        });
+
+        it('should return null for invalid target position (negative)', () => {
+            const result = service.reorderPreset(testIncludes, 'second', -1);
+            expect(result).toBeNull();
+        });
+
+        it('should return null for invalid target position (too high)', () => {
+            const result = service.reorderPreset(testIncludes, 'second', 10);
+            expect(result).toBeNull();
+        });
+
+        it('should handle moving to the same position (no change)', () => {
+            // 'third' is currently at index 2, move it to index 2
+            const result = service.reorderPreset(testIncludes, 'third', 2);
+
+            expect(result).not.toBeNull();
+            const keys = Object.keys(result!);
+            expect(keys).toEqual(['first', 'second', 'third', 'fourth', 'fifth']);
+        });
+
+        it('should handle complex reordering correctly', () => {
+            // Move 'second' (index 1) to index 3
+            const result = service.reorderPreset(testIncludes, 'second', 3);
+
+            expect(result).not.toBeNull();
+            const keys = Object.keys(result!);
+            expect(keys).toEqual(['first', 'third', 'fourth', 'second', 'fifth']);
         });
     });
 });

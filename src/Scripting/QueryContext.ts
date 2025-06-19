@@ -1,4 +1,4 @@
-import { type IncludesMap, getSettings } from '../Config/Settings';
+import { type PresetsMap, getSettings } from '../Config/Settings';
 import type { Task } from '../Task/Task';
 import type { TasksFile } from './TasksFile';
 
@@ -25,7 +25,7 @@ export interface QueryContext {
         allTasks: Readonly<Task[]>;
         searchCache: Record<string, any>; // Added caching capability
     };
-    includes: IncludesMap;
+    preset: PresetsMap;
 }
 
 /**
@@ -59,6 +59,6 @@ export function makeQueryContextWithTasks(tasksFile: TasksFile, allTasks: Readon
             allTasks: allTasks,
             searchCache: {}, // Added for caching
         },
-        includes: { ...getSettings().includes },
+        preset: { ...getSettings().presets },
     };
 }

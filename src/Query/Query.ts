@@ -8,7 +8,7 @@ import { expandPlaceholders } from '../Scripting/ExpandPlaceholders';
 import { makeQueryContext } from '../Scripting/QueryContext';
 import type { Task } from '../Task/Task';
 import type { OptionalTasksFile } from '../Scripting/TasksFile';
-import { unknownIncludeErrorMessage } from '../Scripting/Includes';
+import { unknownPresetErrorMessage } from '../Scripting/Presets';
 import { Explainer } from './Explain/Explainer';
 import type { Filter } from './Filter/Filter';
 import * as FilterParser from './FilterParser';
@@ -59,7 +59,7 @@ export class Query implements IQuery {
     private readonly limitRegexp = /^limit (groups )?(to )?(\d+)( tasks?)?/i;
 
     private readonly commentRegexp = /^#.*/;
-    private readonly includeRegexp = /^include +(.*)/i;
+    private readonly presetRegexp = /^preset +(.*)/i;
 
     constructor(source: string, tasksFile: OptionalTasksFile = undefined) {
         this._queryId = this.generateQueryId(10);
@@ -119,8 +119,8 @@ export class Query implements IQuery {
     private parseLine(statement: Statement) {
         const line = statement.anyPlaceholdersExpanded;
         switch (true) {
-            case this.includeRegexp.test(line):
-                this.parseInclude(line, statement);
+            case this.presetRegexp.test(line):
+                this.parsePreset(line, statement);
                 break;
             case this.shortModeRegexp.test(line):
                 this._queryLayoutOptions.shortMode = true;
@@ -470,19 +470,19 @@ ${statement.explainStatement('    ')}
         return false;
     }
 
-    private parseInclude(line: string, statement: Statement) {
-        const include = this.includeRegexp.exec(line);
-        if (include) {
-            const includeName = include[1].trim();
-            const { includes } = getSettings();
-            const includeValue = includes[includeName];
-            if (!includeValue) {
-                this.setError(unknownIncludeErrorMessage(includeName, includes), statement);
+    private parsePreset(line: string, statement: Statement) {
+        const preset = this.presetRegexp.exec(line);
+        if (preset) {
+            const presetName = preset[1].trim();
+            const { presets } = getSettings();
+            const presetValue = presets[presetName];
+            if (!presetValue) {
+                this.setError(unknownPresetErrorMessage(presetName, presets), statement);
                 return;
             }
 
-            // Process the included text with placeholder expansion
-            const instructions = splitSourceHonouringLineContinuations(includeValue);
+            // Process the preset text with placeholder expansion
+            const instructions = splitSourceHonouringLineContinuations(presetValue);
             for (const instruction of instructions) {
                 const newStatement = new Statement(statement.rawInstruction, statement.anyContinuationLinesRemoved);
                 newStatement.recordExpandedPlaceholders(instruction);
