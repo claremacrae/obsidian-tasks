@@ -158,10 +158,21 @@ export class SettingsTab extends PluginSettingTab {
 
         // ---------------------------------------------------------------------------
         new Setting(containerEl)
-            .setName('Presets')
+            .setName(i18n.t('settings.presets.name'))
             .setHeading()
             .setDesc(
-                'You can define named instructions here, that you can re-use in multiple queries. They can be used with "{{preset.name}}" and "preset name".',
+                SettingsTab.createFragmentWithHTML(
+                    '<p>' +
+                        i18n.t('settings.presets.line1', {
+                            name: '<code>name</code>',
+                            instruction1: '<code>preset name</code>',
+                            instruction2: '<code>{{preset.name}}</code>',
+                        }) +
+                        '</p><p>' +
+                        i18n.t('settings.presets.line2') +
+                        '</p>' +
+                        this.seeTheDocumentation('https://publish.obsidian.md/tasks/Queries/Presets'),
+                ),
             );
         // ---------------------------------------------------------------------------
         this.presetsSettingsUI.renderPresetsSettings(containerEl);

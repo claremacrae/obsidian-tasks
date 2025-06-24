@@ -189,6 +189,11 @@
         "placeholder": "Например...\npath does not include _templates/\nlimit 300\nshow urgency"
       }
     },
+    "presets": {
+      "line1": "",
+      "line2": "",
+      "name": ""
+    },
     "recurringTasks": {
       "heading": "Повторяющиеся задачи",
       "nextLine": {

@@ -45,7 +45,7 @@ function sortInstructionLines(filters: ReadonlyArray<string>) {
 
 function isValidQueryFilter(filter: string) {
     // Arrange
-    const query = new Query(filter);
+    const query = new Query(filter, new TasksFile('anywhere.md'));
 
     // Assert
     expect(query.error).toBeUndefined();
@@ -129,6 +129,7 @@ description includes \
         '"due this week" AND "description includes Hello World"',
         '(due this week) AND (description includes Hello World)',
         '[due this week] AND [description includes Hello World]',
+        '{{preset.this_file}}',
         '{due this week} AND {description includes Hello World}',
         'cancelled after 2021-12-27',
         'cancelled before 2021-12-27',
@@ -160,7 +161,8 @@ description includes \
         'due this week',
         'exclude sub-items',
         'filename includes wibble',
-        'filter by function task.isDone', // This cannot contain any () because of issue #1500
+        'filter by function task.due.formatAsDate().includes("2024");', // The trailing ';' prevents 'Could not interpret the following instruction as a Boolean combination'
+        'filter by function task.isDone',
         'folder does not include some/path',
         'folder includes AND', // Verify Query doesn't confuse this with a boolean query
         'folder includes some/path',
@@ -206,6 +208,7 @@ description includes \
         'path does not include some/path',
         'path includes AND', // Verify Query doesn't confuse this with a boolean query
         'path includes some/path',
+        'preset this_folder',
         'priority is above none',
         'priority is below none',
         'priority is high',
@@ -242,6 +245,14 @@ description includes \
         'tags include sometag',
     ];
 
+    const notValidWhenCapitalised: ReadonlyArray<string> = filters.filter((line) =>
+        ['preset ', '{{preset.'].some((prefix) => line.startsWith(prefix)),
+    );
+
+    const notValidInBoolean: ReadonlyArray<string> = filters.filter((line) =>
+        ['preset '].some((prefix) => line.startsWith(prefix)),
+    );
+
     /**
      * As more and more filters are added via the Field class, and tested
      * outside of this test file, there is the chance that someone thinks that
@@ -257,6 +268,11 @@ description includes \
     describe('should recognise every supported filter', () => {
         test.concurrent.each<string>(filters)('recognises %j', (filter) => {
             isValidQueryFilter(filter);
+
+            if (notValidWhenCapitalised.includes(filter)) {
+                return;
+            }
+
             isValidQueryFilter(filter.toUpperCase());
         });
 
@@ -299,6 +315,10 @@ description includes \
         });
         const searchInfo = SearchInfo.fromAllTasks([task]);
         test.concurrent.each<string>(filters)('sub-query %j is recognized inside a boolean query', (filter) => {
+            if (notValidInBoolean.includes(filter)) {
+                return;
+            }
+
             // Arrange
             // For every sub-query from the filters list above, compose a boolean query that is always
             // true, in the format (expression) OR NOT (expression)
