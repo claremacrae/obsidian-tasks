@@ -1,8 +1,10 @@
 ---
 publish: true
+aliases:
+  - Support and Help/Missing tags, aliases and cssclasses in Obsidian some 1.9.x versions
 ---
 
-# Missing tags, aliases and cssclasses in Obsidian some 1.9.x versions
+# Missing tags, aliases and cssclasses in some Obsidian 1.9.x versions
 
 ## Obsidian 1.9.0 reads properties strictly
 
@@ -30,6 +32,8 @@ Editing _any_ properties using **File Properties** or any other Obsidian propert
 Unless you have version-controlled your vault, and you regularly check for differences, it's very possible your vault will lose values that previously were read.
 
 The following sections show how you can fix and fix most of the problem cases.
+
+## Find and fix your properties using Obsidian
 
 ### Find and rename old `tag`, `alias`, `cssclass` and properties
 
@@ -128,3 +132,9 @@ Here is one way to fix them.
         cssclasses: [value-1-of-2-on-one-line, value-2-of-2-on-one-line]
         ---
         ```
+
+## Other ways to find and fix your properties
+
+- Check to see if the [Obsidian Linter](https://github.com/platers/obsidian-linter) plugin has provided a way to find and fix problem properties.
+- A Discord user reported:
+    > I thought I'd just raise awareness of this little python app written by someone in the Obsidian user community - it can bulk edit YAML properties - I used it myself to get all my YAML consistent to help with using Bases in my vault...it works really well! It has a dry run mode so you can test a change before committing it: <https://github.com/fussbanana/obsidian-frontmatter-tool>

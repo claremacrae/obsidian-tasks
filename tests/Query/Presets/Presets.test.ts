@@ -3,10 +3,11 @@
  */
 
 import moment from 'moment';
-import { type PresetsMap, getSettings, resetSettings, updateSettings } from '../../src/Config/Settings';
-import { Query } from '../../src/Query/Query';
-import { TasksFile } from '../../src/Scripting/TasksFile';
-import type { Statement } from '../../src/Query/Statement';
+import { getSettings, resetSettings, updateSettings } from '../../../src/Config/Settings';
+import { Query } from '../../../src/Query/Query';
+import { TasksFile } from '../../../src/Scripting/TasksFile';
+import type { Statement } from '../../../src/Query/Statement';
+import { type PresetsMap, defaultPresets } from '../../../src/Query/Presets/Presets';
 
 window.moment = moment;
 
@@ -525,9 +526,45 @@ describe('include - error messages', () => {
 });
 
 describe('include settings tests', () => {
-    it('should have an empty include field', () => {
+    it('should have useful default presets values', () => {
         const settings = getSettings();
 
-        expect(settings.presets).toEqual({});
+        expect(settings.presets).toMatchInlineSnapshot(`
+            {
+              "hide_date_fields": "# Hide any values for all date fields
+            hide due date
+            hide scheduled date
+            hide start date
+            hide created date
+            hide done date
+            hide cancelled date",
+              "hide_everything": "# Hide everything except description and any tags
+            preset hide_date_fields
+            preset hide_non_date_fields
+            preset hide_query_elements",
+              "hide_non_date_fields": "# Hide all the non-date fields, but not tags
+            hide id
+            hide depends on
+            hide recurrence rule
+            hide on completion
+            hide priority",
+              "hide_query_elements": "# Hide postpone, edit and backinks
+            hide postpone button
+            hide edit button
+            hide backlinks",
+              "this_file": "path includes {{query.file.path}}",
+              "this_folder": "folder includes {{query.file.folder}}",
+              "this_folder_only": "filter by function task.file.folder === query.file.folder",
+              "this_root": "root includes {{query.file.root}}",
+            }
+        `);
+    });
+
+    it.each(Object.entries(defaultPresets))('should handle preset "%s"', (name, instructions) => {
+        expect(name).toBeDefined();
+        expect(instructions).toBeDefined();
+
+        const query = new Query(instructions, new TasksFile('anywhere.md'));
+        expect(query.error).toBeUndefined();
     });
 });
