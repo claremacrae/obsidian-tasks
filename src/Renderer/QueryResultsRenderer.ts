@@ -1,4 +1,4 @@
-import type { Component, TFile } from 'obsidian';
+import type { App, Component, TFile } from 'obsidian';
 import { GlobalFilter } from '../Config/GlobalFilter';
 import { GlobalQuery } from '../Config/GlobalQuery';
 import { postponeButtonTitle, shouldShowPostponeButton } from '../DateTime/Postponer';
@@ -69,19 +69,28 @@ export class QueryResultsRenderer {
     // Renders the group heading in this class:
     private readonly renderMarkdown;
     private readonly obsidianComponent: Component | null;
+    private readonly obsidianApp: App;
 
     constructor(
         className: string,
         source: string,
         tasksFile: TasksFile,
-        renderMarkdown: (markdown: string, el: HTMLElement, sourcePath: string, component: Component) => Promise<void>,
+        renderMarkdown: (
+            app: App,
+            markdown: string,
+            el: HTMLElement,
+            sourcePath: string,
+            component: Component,
+        ) => Promise<void>,
         obsidianComponent: Component | null,
+        obsidianApp: App,
         textRenderer: TextRenderer = TaskLineRenderer.obsidianMarkdownRenderer,
     ) {
         this.source = source;
         this._tasksFile = tasksFile;
         this.renderMarkdown = renderMarkdown;
         this.obsidianComponent = obsidianComponent;
+        this.obsidianApp = obsidianApp;
         this.textRenderer = textRenderer;
 
         // The engine is chosen on the basis of the code block language. Currently,
@@ -259,6 +268,7 @@ export class QueryResultsRenderer {
 
         const taskLineRenderer = new TaskLineRenderer({
             textRenderer: this.textRenderer,
+            obsidianApp: this.obsidianApp,
             obsidianComponent: this.obsidianComponent,
             parentUlElement: taskList,
             taskLayoutOptions: this.query.taskLayoutOptions,
@@ -482,7 +492,7 @@ export class QueryResultsRenderer {
             return;
         }
         const heading = group.displayName + ' ' + taskCountDescription;
-        await this.renderMarkdown(heading, headerEl, this.tasksFile.path, this.obsidianComponent);
+        await this.renderMarkdown(this.obsidianApp, heading, headerEl, this.tasksFile.path, this.obsidianComponent);
     }
 
     private addBacklinks(
