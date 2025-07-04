@@ -28,7 +28,7 @@ export default class TasksPlugin extends Plugin {
     public queryRenderer: QueryRenderer | undefined;
 
     get apiV1() {
-        return tasksApiV1(this.app);
+        return tasksApiV1(this);
     }
 
     async onload() {
@@ -63,7 +63,7 @@ export default class TasksPlugin extends Plugin {
             events,
         });
 
-        this.inlineRenderer = new InlineRenderer({ plugin: this });
+        this.inlineRenderer = new InlineRenderer({ plugin: this, app: this.app });
         this.queryRenderer = new QueryRenderer({ plugin: this, events });
 
         // Update types.json.
