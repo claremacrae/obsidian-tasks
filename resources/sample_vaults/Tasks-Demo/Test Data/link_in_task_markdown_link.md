@@ -10,11 +10,11 @@
 
 ## Link with Path
 
-- [ ] #task Link with Path [link_in_task_markdown_link](path/link_in_task_markdown_link.md)
+- [ ] #task Link with Path [link_in_task_markdown_link](Test%20Data/link_in_task_markdown_link.md)
 
 ## Link with Path Heading Link
 
-- [ ] #task Link with Heading Reference Link [heading_link](path/link_in_task_markdown_link.md#heading_link)
+- [ ] #task Link with Heading Reference Link [heading_link](Test%20Data/link_in_task_markdown_link.md#heading)
 
 ## Link with Alias
 
@@ -22,7 +22,7 @@
 
 ## Link with Nested Path and Alias
 
-- [ ] #task Link with Nested Path and Alias [alias](path/path/link_in_task_markdown_link.md)
+- [ ] #task Link with Nested Path and Alias [alias](Test%20Data/link_in_task_markdown_link.md)
 
 ## Link with Hash in Path
 
@@ -42,10 +42,10 @@
 
 ## Link with Spaces
 
-- [ ] Link with spaces everywhere[spaces everywhere](Test%20Data/spaced%20filename%20link.md#spaced%20heading)
-
+- [ ] Link with spaces everywhere[spaces everywhere](Manual%20Testing/Smoke%20Testing%20the%20Tasks%20Plugin#How%20the%20tests%20work)
 ## Empty Links That Aren't Processed
 
 - [ ] #task Link with empty link []()
 - [ ] #task Link with empty link [alias]()
 
+## heading

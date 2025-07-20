@@ -56,12 +56,12 @@
           "end": {
             "col": 30,
             "line": 10,
-            "offset": 252
+            "offset": 257
           },
           "start": {
             "col": 0,
             "line": 10,
-            "offset": 222
+            "offset": 227
           }
         }
       },
@@ -72,28 +72,28 @@
           "end": {
             "col": 18,
             "line": 14,
-            "offset": 358
+            "offset": 368
           },
           "start": {
             "col": 0,
             "line": 14,
-            "offset": 340
+            "offset": 350
           }
         }
       },
       {
-        "heading": "Link with Nested Path and Alias",
+        "heading": "Link with Path and Alias",
         "level": 2,
         "position": {
           "end": {
-            "col": 34,
+            "col": 27,
             "line": 18,
-            "offset": 456
+            "offset": 459
           },
           "start": {
             "col": 0,
             "line": 18,
-            "offset": 422
+            "offset": 432
           }
         }
       },
@@ -104,12 +104,12 @@
           "end": {
             "col": 25,
             "line": 22,
-            "offset": 571
+            "offset": 574
           },
           "start": {
             "col": 0,
             "line": 22,
-            "offset": 546
+            "offset": 549
           }
         }
       },
@@ -120,12 +120,12 @@
           "end": {
             "col": 36,
             "line": 26,
-            "offset": 683
+            "offset": 686
           },
           "start": {
             "col": 0,
             "line": 26,
-            "offset": 647
+            "offset": 650
           }
         }
       },
@@ -136,12 +136,12 @@
           "end": {
             "col": 21,
             "line": 30,
-            "offset": 783
+            "offset": 786
           },
           "start": {
             "col": 0,
             "line": 30,
-            "offset": 762
+            "offset": 765
           }
         }
       },
@@ -152,12 +152,12 @@
           "end": {
             "col": 41,
             "line": 34,
-            "offset": 878
+            "offset": 881
           },
           "start": {
             "col": 0,
             "line": 34,
-            "offset": 837
+            "offset": 840
           }
         }
       },
@@ -168,12 +168,28 @@
           "end": {
             "col": 35,
             "line": 38,
-            "offset": 954
+            "offset": 957
           },
           "start": {
             "col": 0,
             "line": 38,
-            "offset": 919
+            "offset": 922
+          }
+        }
+      },
+      {
+        "heading": "heading_link",
+        "level": 2,
+        "position": {
+          "end": {
+            "col": 15,
+            "line": 44,
+            "offset": 1103
+          },
+          "start": {
+            "col": 0,
+            "line": 44,
+            "offset": 1088
           }
         }
       }
@@ -214,14 +230,14 @@
         }
       },
       {
-        "displayText": "path/link_in_task_wikilink",
-        "link": "path/link_in_task_wikilink",
-        "original": "[[path/link_in_task_wikilink]]",
+        "displayText": "Test Data/link_in_task_wikilink",
+        "link": "Test Data/link_in_task_wikilink",
+        "original": "[[Test Data/link_in_task_wikilink]]",
         "position": {
           "end": {
-            "col": 65,
+            "col": 70,
             "line": 8,
-            "offset": 220
+            "offset": 225
           },
           "start": {
             "col": 35,
@@ -231,19 +247,19 @@
         }
       },
       {
-        "displayText": "path/link_in_task_wikilink > heading_link",
-        "link": "path/link_in_task_wikilink#heading_link",
-        "original": "[[path/link_in_task_wikilink#heading_link]]",
+        "displayText": "Test Data/link_in_task_wikilink > heading_link",
+        "link": "Test Data/link_in_task_wikilink#heading_link",
+        "original": "[[Test Data/link_in_task_wikilink#heading_link]]",
         "position": {
           "end": {
-            "col": 84,
+            "col": 89,
             "line": 12,
-            "offset": 338
+            "offset": 348
           },
           "start": {
             "col": 41,
             "line": 12,
-            "offset": 295
+            "offset": 300
           }
         }
       },
@@ -255,29 +271,29 @@
           "end": {
             "col": 60,
             "line": 16,
-            "offset": 420
+            "offset": 430
           },
           "start": {
             "col": 29,
             "line": 16,
-            "offset": 389
+            "offset": 399
           }
         }
       },
       {
         "displayText": "alias",
-        "link": "path/path/link_in_task_wikilink",
-        "original": "[[path/path/link_in_task_wikilink|alias]]",
+        "link": "Test Data/link_in_task_wikilink",
+        "original": "[[Test Data/link_in_task_wikilink|alias]]",
         "position": {
           "end": {
             "col": 86,
             "line": 20,
-            "offset": 544
+            "offset": 547
           },
           "start": {
             "col": 45,
             "line": 20,
-            "offset": 503
+            "offset": 506
           }
         }
       },
@@ -289,12 +305,12 @@
           "end": {
             "col": 72,
             "line": 24,
-            "offset": 645
+            "offset": 648
           },
           "start": {
             "col": 36,
             "line": 24,
-            "offset": 609
+            "offset": 612
           }
         }
       },
@@ -306,12 +322,12 @@
           "end": {
             "col": 75,
             "line": 28,
-            "offset": 760
+            "offset": 763
           },
           "start": {
             "col": 47,
             "line": 28,
-            "offset": 732
+            "offset": 735
           }
         }
       },
@@ -323,12 +339,12 @@
           "end": {
             "col": 50,
             "line": 32,
-            "offset": 835
+            "offset": 838
           },
           "start": {
             "col": 32,
             "line": 32,
-            "offset": 817
+            "offset": 820
           }
         }
       },
@@ -340,12 +356,12 @@
           "end": {
             "col": 38,
             "line": 40,
-            "offset": 994
+            "offset": 997
           },
           "start": {
             "col": 33,
             "line": 40,
-            "offset": 989
+            "offset": 992
           }
         }
       },
@@ -357,12 +373,12 @@
           "end": {
             "col": 43,
             "line": 41,
-            "offset": 1038
+            "offset": 1041
           },
           "start": {
             "col": 33,
             "line": 41,
-            "offset": 1028
+            "offset": 1031
           }
         }
       },
@@ -374,12 +390,12 @@
           "end": {
             "col": 44,
             "line": 42,
-            "offset": 1083
+            "offset": 1086
           },
           "start": {
             "col": 33,
             "line": 42,
-            "offset": 1072
+            "offset": 1075
           }
         }
       }
@@ -405,9 +421,9 @@
         "parent": -8,
         "position": {
           "end": {
-            "col": 65,
+            "col": 70,
             "line": 8,
-            "offset": 220
+            "offset": 225
           },
           "start": {
             "col": 0,
@@ -421,14 +437,14 @@
         "parent": -12,
         "position": {
           "end": {
-            "col": 84,
+            "col": 89,
             "line": 12,
-            "offset": 338
+            "offset": 348
           },
           "start": {
             "col": 0,
             "line": 12,
-            "offset": 254
+            "offset": 259
           }
         },
         "task": " "
@@ -439,12 +455,12 @@
           "end": {
             "col": 60,
             "line": 16,
-            "offset": 420
+            "offset": 430
           },
           "start": {
             "col": 0,
             "line": 16,
-            "offset": 360
+            "offset": 370
           }
         },
         "task": " "
@@ -455,12 +471,12 @@
           "end": {
             "col": 86,
             "line": 20,
-            "offset": 544
+            "offset": 547
           },
           "start": {
             "col": 0,
             "line": 20,
-            "offset": 458
+            "offset": 461
           }
         },
         "task": " "
@@ -471,12 +487,12 @@
           "end": {
             "col": 72,
             "line": 24,
-            "offset": 645
+            "offset": 648
           },
           "start": {
             "col": 0,
             "line": 24,
-            "offset": 573
+            "offset": 576
           }
         },
         "task": " "
@@ -487,12 +503,12 @@
           "end": {
             "col": 75,
             "line": 28,
-            "offset": 760
+            "offset": 763
           },
           "start": {
             "col": 0,
             "line": 28,
-            "offset": 685
+            "offset": 688
           }
         },
         "task": " "
@@ -503,12 +519,12 @@
           "end": {
             "col": 50,
             "line": 32,
-            "offset": 835
+            "offset": 838
           },
           "start": {
             "col": 0,
             "line": 32,
-            "offset": 785
+            "offset": 788
           }
         },
         "task": " "
@@ -519,12 +535,12 @@
           "end": {
             "col": 37,
             "line": 36,
-            "offset": 917
+            "offset": 920
           },
           "start": {
             "col": 0,
             "line": 36,
-            "offset": 880
+            "offset": 883
           }
         },
         "task": " "
@@ -535,12 +551,12 @@
           "end": {
             "col": 38,
             "line": 40,
-            "offset": 994
+            "offset": 997
           },
           "start": {
             "col": 0,
             "line": 40,
-            "offset": 956
+            "offset": 959
           }
         },
         "task": " "
@@ -551,12 +567,12 @@
           "end": {
             "col": 43,
             "line": 41,
-            "offset": 1038
+            "offset": 1041
           },
           "start": {
             "col": 0,
             "line": 41,
-            "offset": 995
+            "offset": 998
           }
         },
         "task": " "
@@ -567,12 +583,12 @@
           "end": {
             "col": 44,
             "line": 42,
-            "offset": 1083
+            "offset": 1086
           },
           "start": {
             "col": 0,
             "line": 42,
-            "offset": 1039
+            "offset": 1042
           }
         },
         "task": " "
@@ -642,9 +658,9 @@
       {
         "position": {
           "end": {
-            "col": 65,
+            "col": 70,
             "line": 8,
-            "offset": 220
+            "offset": 225
           },
           "start": {
             "col": 0,
@@ -659,12 +675,12 @@
           "end": {
             "col": 30,
             "line": 10,
-            "offset": 252
+            "offset": 257
           },
           "start": {
             "col": 0,
             "line": 10,
-            "offset": 222
+            "offset": 227
           }
         },
         "type": "heading"
@@ -672,14 +688,14 @@
       {
         "position": {
           "end": {
-            "col": 84,
+            "col": 89,
             "line": 12,
-            "offset": 338
+            "offset": 348
           },
           "start": {
             "col": 0,
             "line": 12,
-            "offset": 254
+            "offset": 259
           }
         },
         "type": "list"
@@ -689,12 +705,12 @@
           "end": {
             "col": 18,
             "line": 14,
-            "offset": 358
+            "offset": 368
           },
           "start": {
             "col": 0,
             "line": 14,
-            "offset": 340
+            "offset": 350
           }
         },
         "type": "heading"
@@ -704,12 +720,12 @@
           "end": {
             "col": 60,
             "line": 16,
-            "offset": 420
+            "offset": 430
           },
           "start": {
             "col": 0,
             "line": 16,
-            "offset": 360
+            "offset": 370
           }
         },
         "type": "list"
@@ -717,14 +733,14 @@
       {
         "position": {
           "end": {
-            "col": 34,
+            "col": 27,
             "line": 18,
-            "offset": 456
+            "offset": 459
           },
           "start": {
             "col": 0,
             "line": 18,
-            "offset": 422
+            "offset": 432
           }
         },
         "type": "heading"
@@ -734,12 +750,12 @@
           "end": {
             "col": 86,
             "line": 20,
-            "offset": 544
+            "offset": 547
           },
           "start": {
             "col": 0,
             "line": 20,
-            "offset": 458
+            "offset": 461
           }
         },
         "type": "list"
@@ -749,12 +765,12 @@
           "end": {
             "col": 25,
             "line": 22,
-            "offset": 571
+            "offset": 574
           },
           "start": {
             "col": 0,
             "line": 22,
-            "offset": 546
+            "offset": 549
           }
         },
         "type": "heading"
@@ -764,12 +780,12 @@
           "end": {
             "col": 72,
             "line": 24,
-            "offset": 645
+            "offset": 648
           },
           "start": {
             "col": 0,
             "line": 24,
-            "offset": 573
+            "offset": 576
           }
         },
         "type": "list"
@@ -779,12 +795,12 @@
           "end": {
             "col": 36,
             "line": 26,
-            "offset": 683
+            "offset": 686
           },
           "start": {
             "col": 0,
             "line": 26,
-            "offset": 647
+            "offset": 650
           }
         },
         "type": "heading"
@@ -794,12 +810,12 @@
           "end": {
             "col": 75,
             "line": 28,
-            "offset": 760
+            "offset": 763
           },
           "start": {
             "col": 0,
             "line": 28,
-            "offset": 685
+            "offset": 688
           }
         },
         "type": "list"
@@ -809,12 +825,12 @@
           "end": {
             "col": 21,
             "line": 30,
-            "offset": 783
+            "offset": 786
           },
           "start": {
             "col": 0,
             "line": 30,
-            "offset": 762
+            "offset": 765
           }
         },
         "type": "heading"
@@ -824,12 +840,12 @@
           "end": {
             "col": 50,
             "line": 32,
-            "offset": 835
+            "offset": 838
           },
           "start": {
             "col": 0,
             "line": 32,
-            "offset": 785
+            "offset": 788
           }
         },
         "type": "list"
@@ -839,12 +855,12 @@
           "end": {
             "col": 41,
             "line": 34,
-            "offset": 878
+            "offset": 881
           },
           "start": {
             "col": 0,
             "line": 34,
-            "offset": 837
+            "offset": 840
           }
         },
         "type": "heading"
@@ -854,12 +870,12 @@
           "end": {
             "col": 37,
             "line": 36,
-            "offset": 917
+            "offset": 920
           },
           "start": {
             "col": 0,
             "line": 36,
-            "offset": 880
+            "offset": 883
           }
         },
         "type": "list"
@@ -869,12 +885,12 @@
           "end": {
             "col": 35,
             "line": 38,
-            "offset": 954
+            "offset": 957
           },
           "start": {
             "col": 0,
             "line": 38,
-            "offset": 919
+            "offset": 922
           }
         },
         "type": "heading"
@@ -884,15 +900,45 @@
           "end": {
             "col": 44,
             "line": 42,
-            "offset": 1083
+            "offset": 1086
           },
           "start": {
             "col": 0,
             "line": 40,
-            "offset": 956
+            "offset": 959
           }
         },
         "type": "list"
+      },
+      {
+        "position": {
+          "end": {
+            "col": 15,
+            "line": 44,
+            "offset": 1103
+          },
+          "start": {
+            "col": 0,
+            "line": 44,
+            "offset": 1088
+          }
+        },
+        "type": "heading"
+      },
+      {
+        "position": {
+          "end": {
+            "col": 38,
+            "line": 46,
+            "offset": 1143
+          },
+          "start": {
+            "col": 0,
+            "line": 46,
+            "offset": 1105
+          }
+        },
+        "type": "paragraph"
       }
     ],
     "tags": [
@@ -931,12 +977,12 @@
           "end": {
             "col": 12,
             "line": 12,
-            "offset": 266
+            "offset": 271
           },
           "start": {
             "col": 7,
             "line": 12,
-            "offset": 261
+            "offset": 266
           }
         },
         "tag": "#task"
@@ -946,12 +992,12 @@
           "end": {
             "col": 12,
             "line": 16,
-            "offset": 372
+            "offset": 382
           },
           "start": {
             "col": 7,
             "line": 16,
-            "offset": 367
+            "offset": 377
           }
         },
         "tag": "#task"
@@ -961,12 +1007,12 @@
           "end": {
             "col": 12,
             "line": 20,
-            "offset": 470
+            "offset": 473
           },
           "start": {
             "col": 7,
             "line": 20,
-            "offset": 465
+            "offset": 468
           }
         },
         "tag": "#task"
@@ -976,12 +1022,12 @@
           "end": {
             "col": 12,
             "line": 24,
-            "offset": 585
+            "offset": 588
           },
           "start": {
             "col": 7,
             "line": 24,
-            "offset": 580
+            "offset": 583
           }
         },
         "tag": "#task"
@@ -991,12 +1037,12 @@
           "end": {
             "col": 12,
             "line": 28,
-            "offset": 697
+            "offset": 700
           },
           "start": {
             "col": 7,
             "line": 28,
-            "offset": 692
+            "offset": 695
           }
         },
         "tag": "#task"
@@ -1006,12 +1052,12 @@
           "end": {
             "col": 12,
             "line": 32,
-            "offset": 797
+            "offset": 800
           },
           "start": {
             "col": 7,
             "line": 32,
-            "offset": 792
+            "offset": 795
           }
         },
         "tag": "#task"
@@ -1021,12 +1067,12 @@
           "end": {
             "col": 11,
             "line": 36,
-            "offset": 891
+            "offset": 894
           },
           "start": {
             "col": 6,
             "line": 36,
-            "offset": 886
+            "offset": 889
           }
         },
         "tag": "#task"
@@ -1036,12 +1082,12 @@
           "end": {
             "col": 11,
             "line": 40,
-            "offset": 967
+            "offset": 970
           },
           "start": {
             "col": 6,
             "line": 40,
-            "offset": 962
+            "offset": 965
           }
         },
         "tag": "#task"
@@ -1051,12 +1097,12 @@
           "end": {
             "col": 11,
             "line": 41,
-            "offset": 1006
+            "offset": 1009
           },
           "start": {
             "col": 6,
             "line": 41,
-            "offset": 1001
+            "offset": 1004
           }
         },
         "tag": "#task"
@@ -1066,19 +1112,19 @@
           "end": {
             "col": 11,
             "line": 42,
-            "offset": 1050
+            "offset": 1053
           },
           "start": {
             "col": 6,
             "line": 42,
-            "offset": 1045
+            "offset": 1048
           }
         },
         "tag": "#task"
       }
     ]
   },
-  "fileContents": "# link_in_task_wikilink\n\n## Multiple\n\n- [ ]  #task Link with Multiple Wikilinks [[link_in_task_wikilink]] [[multiple_headings]]\n\n## Link with Simple Path\n\n- [ ]  #task Link with Simple Path [[path/link_in_task_wikilink]]\n\n## Link with Heading Reference\n\n- [ ]  #task Link with Heading Reference [[path/link_in_task_wikilink#heading_link]]\n\n## Link with Alias\n\n- [ ]  #task Link with Alias [[link_in_task_wikilink|alias]]\n\n## Link with Nested Path and Alias\n\n- [ ]  #task Link with Nested Path and Alias [[path/path/link_in_task_wikilink|alias]]\n\n## Link with Hash in Path\n\n- [ ]  #task Link with Hash in Path [[pa#th/path/link_in_task_wikilink]]\n\n## Link with Markdown File Extension\n\n- [ ]  #task Link with Markdown File Extension [[link_in_task_wikilink.md]]\n\n## Link with PDF File\n\n- [ ]  #task Link with PDF File [[a_pdf_file.pdf]]\n\n## Empty Link That Obsidian Doesn't Parse\n\n- [ ] #task Link with empty link [[]]\n\n## Empty Links That Obsidian Parses\n\n- [ ] #task Link with empty link [[|]]\n- [ ] #task Link with empty link [[|alias]]\n- [ ] #task Link with empty link [[|#alias]]\n",
+  "fileContents": "# link_in_task_wikilink\n\n## Multiple\n\n- [ ]  #task Link with Multiple Wikilinks [[link_in_task_wikilink]] [[multiple_headings]]\n\n## Link with Simple Path\n\n- [ ]  #task Link with Simple Path [[Test Data/link_in_task_wikilink]]\n\n## Link with Heading Reference\n\n- [ ]  #task Link with Heading Reference [[Test Data/link_in_task_wikilink#heading_link]]\n\n## Link with Alias\n\n- [ ]  #task Link with Alias [[link_in_task_wikilink|alias]]\n\n## Link with Path and Alias\n\n- [ ]  #task Link with Nested Path and Alias [[Test Data/link_in_task_wikilink|alias]]\n\n## Link with Hash in Path\n\n- [ ]  #task Link with Hash in Path [[pa#th/path/link_in_task_wikilink]]\n\n## Link with Markdown File Extension\n\n- [ ]  #task Link with Markdown File Extension [[link_in_task_wikilink.md]]\n\n## Link with PDF File\n\n- [ ]  #task Link with PDF File [[a_pdf_file.pdf]]\n\n## Empty Link That Obsidian Doesn't Parse\n\n- [ ] #task Link with empty link [[]]\n\n## Empty Links That Obsidian Parses\n\n- [ ] #task Link with empty link [[|]]\n- [ ] #task Link with empty link [[|alias]]\n- [ ] #task Link with empty link [[|#alias]]\n\n## heading_link\n\nExample text in section `heading_link`\n",
   "filePath": "Test Data/link_in_task_wikilink.md",
   "getAllTags": [
     "#task",

@@ -51,10 +51,24 @@ export class TasksFile {
     }
 
     /**
+     * Return an array of {@link Link} all the links in the file - both in frontmatter and in the file body.
+     */
+    get outlinks(): Link[] {
+        return [...this.outlinksInProperties, ...this.outlinksInBody];
+    }
+
+    /**
+     * Return an array of {@link Link} in the file's properties/frontmatter.
+     */
+    get outlinksInProperties(): Link[] {
+        return this.cachedMetadata.frontmatterLinks?.map((link) => new Link(link, this.path)) ?? [];
+    }
+
+    /**
      * Return an array of {@link Link} in the body of the file.
      */
-    get outLinks(): Link[] {
-        return this.cachedMetadata?.links?.map((link) => new Link(link, this.filenameWithoutExtension)) ?? [];
+    get outlinksInBody(): Link[] {
+        return this.cachedMetadata?.links?.map((link) => new Link(link, this.path)) ?? [];
     }
 
     /**

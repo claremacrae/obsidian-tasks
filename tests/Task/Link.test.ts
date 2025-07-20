@@ -1,14 +1,19 @@
-import { Link } from '../../src/Task/Link';
 import { TasksFile } from '../../src/Scripting/TasksFile';
+import { Link } from '../../src/Task/Link';
+import internal_heading_links from '../Obsidian/__test_data__/internal_heading_links.json';
+import link_in_task_markdown_link from '../Obsidian/__test_data__/link_in_task_markdown_link.json';
+import link_in_task_wikilink from '../Obsidian/__test_data__/link_in_task_wikilink.json';
 
 import links_everywhere from '../Obsidian/__test_data__/links_everywhere.json';
-import internal_heading_links from '../Obsidian/__test_data__/internal_heading_links.json';
-import link_in_task_wikilink from '../Obsidian/__test_data__/link_in_task_wikilink.json';
-import link_in_task_markdown_link from '../Obsidian/__test_data__/link_in_task_markdown_link.json';
+import { allCacheSampleData } from '../Obsidian/AllCacheSampleData';
+import type { SimulatedFile } from '../Obsidian/SimulatedFile';
+import { addBackticks, formatToRepresentType } from '../Scripting/ScriptingTestHelpers';
+import { getTasksFileFromMockData } from '../TestingTools/MockDataHelpers';
+import { verifyMarkdown } from '../TestingTools/VerifyMarkdown';
 
 function getLink(data: any, index: number) {
     const rawLink = data.cachedMetadata.links[index];
-    return new Link(rawLink, new TasksFile(data.filePath).filenameWithoutExtension);
+    return new Link(rawLink, data.filePath);
 }
 
 describe('linkClass', () => {
@@ -19,10 +24,30 @@ describe('linkClass', () => {
         expect(link.originalMarkdown).toEqual('[[link_in_file_body]]');
         expect(link.destination).toEqual('link_in_file_body');
         expect(link.displayText).toEqual('link_in_file_body');
-        expect(link.destinationFilename).toEqual('link_in_file_body');
+        expect(link.markdown).toEqual(link.originalMarkdown);
+        expect(link.isLinkTo('link_in_file_body')).toEqual(true);
+        expect(link.isLinkTo('link_in_file_body.md')).toEqual(true);
     });
 
-    describe('.destinationFilename()', () => {
+    describe('return markdown to navigate to a link', () => {
+        // These links are useful
+        it('should return the filename if simple [[filename]]', () => {
+            const link = getLink(link_in_task_wikilink, 0);
+
+            expect(link.originalMarkdown).toEqual('[[link_in_task_wikilink]]');
+            expect(link.markdown).toEqual('[[link_in_task_wikilink]]');
+        });
+
+        // For more test examples, see QueryResultsRenderer.test.ts
+        it('should return a working link to [[#heading]]', () => {
+            const link = getLink(internal_heading_links, 0);
+
+            expect(link.originalMarkdown).toEqual('[[#Basic Internal Links]]');
+            expect(link.markdown).toEqual(
+                '[[Test Data/internal_heading_links.md#Basic Internal Links|Basic Internal Links]]',
+            );
+        });
+
         // ================================
         // WIKILINK TESTS
         // ================================
@@ -32,14 +57,18 @@ describe('linkClass', () => {
             const link = getLink(internal_heading_links, 0);
 
             expect(link.originalMarkdown).toEqual('[[#Basic Internal Links]]');
-            expect(link.destinationFilename).toEqual('internal_heading_links');
+            expect(link.markdown).toEqual(
+                '[[Test Data/internal_heading_links.md#Basic Internal Links|Basic Internal Links]]',
+            );
         });
 
         it('should return the filename of the containing note if the link is internal and has an alias [[#heading|display text]]', () => {
             const link = getLink(internal_heading_links, 6);
 
             expect(link.originalMarkdown).toEqual('[[#Header Links With File Reference]]');
-            expect(link.destinationFilename).toEqual('internal_heading_links');
+            expect(link.markdown).toEqual(
+                '[[Test Data/internal_heading_links.md#Header Links With File Reference|Header Links With File Reference]]',
+            );
         });
 
         // Tests checking against __link_in_task_wikilink__
@@ -47,35 +76,35 @@ describe('linkClass', () => {
             const link = getLink(link_in_task_wikilink, 0);
 
             expect(link.originalMarkdown).toEqual('[[link_in_task_wikilink]]');
-            expect(link.destinationFilename).toEqual('link_in_task_wikilink');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         it('should return the filename if link has a path [[path/filename]]', () => {
             const link = getLink(link_in_task_wikilink, 2);
 
-            expect(link.originalMarkdown).toEqual('[[path/link_in_task_wikilink]]');
-            expect(link.destinationFilename).toEqual('link_in_task_wikilink');
+            expect(link.originalMarkdown).toEqual('[[Test Data/link_in_task_wikilink]]');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         it('should return the filename if link has a path and a heading link [[path/filename#heading]]', () => {
             const link = getLink(link_in_task_wikilink, 3);
 
-            expect(link.originalMarkdown).toEqual('[[path/link_in_task_wikilink#heading_link]]');
-            expect(link.destinationFilename).toEqual('link_in_task_wikilink');
+            expect(link.originalMarkdown).toEqual('[[Test Data/link_in_task_wikilink#heading_link]]');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         it('should return the filename if link has an alias [[filename|alias]]', () => {
             const link = getLink(link_in_task_wikilink, 4);
 
             expect(link.originalMarkdown).toEqual('[[link_in_task_wikilink|alias]]');
-            expect(link.destinationFilename).toEqual('link_in_task_wikilink');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         it('should return the filename if link has a path and an alias [[path/path/filename|alias]]', () => {
             const link = getLink(link_in_task_wikilink, 5);
 
-            expect(link.originalMarkdown).toEqual('[[path/path/link_in_task_wikilink|alias]]');
-            expect(link.destinationFilename).toEqual('link_in_task_wikilink');
+            expect(link.originalMarkdown).toEqual('[[Test Data/link_in_task_wikilink|alias]]');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         // # is a valid character in a filename or a path but Obsidian does not support it in links
@@ -83,7 +112,7 @@ describe('linkClass', () => {
             const link = getLink(link_in_task_wikilink, 6);
 
             expect(link.originalMarkdown).toEqual('[[pa#th/path/link_in_task_wikilink]]');
-            expect(link.destinationFilename).toEqual('pa');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         // When grouping a Wikilink link expect [[file.md]] to be grouped with [[file]].
@@ -91,14 +120,14 @@ describe('linkClass', () => {
             const link = getLink(link_in_task_wikilink, 7);
 
             expect(link.originalMarkdown).toEqual('[[link_in_task_wikilink.md]]');
-            expect(link.destinationFilename).toEqual('link_in_task_wikilink');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         it('should return a filename with corresponding file extension if not markdown [[a_pdf_file.pdf]]', () => {
             const link = getLink(link_in_task_wikilink, 8);
 
             expect(link.originalMarkdown).toEqual('[[a_pdf_file.pdf]]');
-            expect(link.destinationFilename).toEqual('a_pdf_file.pdf');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         // Empty Wikilink Tests
@@ -108,21 +137,21 @@ describe('linkClass', () => {
             const link = getLink(link_in_task_wikilink, 9);
 
             expect(link.originalMarkdown).toEqual('[[|]]');
-            expect(link.destinationFilename).toEqual('|');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         it('should provide no special functionality for [[|alias]]; returns "|alias".)', () => {
             const link = getLink(link_in_task_wikilink, 10);
 
             expect(link.originalMarkdown).toEqual('[[|alias]]');
-            expect(link.destinationFilename).toEqual('|alias');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         it('should provide no special functionality for [[|#alias]]; returns "|".)', () => {
             const link = getLink(link_in_task_wikilink, 11);
 
             expect(link.originalMarkdown).toEqual('[[|#alias]]');
-            expect(link.destinationFilename).toEqual('|');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         // ================================
@@ -135,42 +164,44 @@ describe('linkClass', () => {
             const link = getLink(link_in_task_markdown_link, 8);
 
             expect(link.originalMarkdown).toEqual('[heading](#heading)');
-            expect(link.destinationFilename).toEqual('link_in_task_markdown_link');
+            expect(link.markdown).toEqual('[[Test Data/link_in_task_markdown_link.md#heading|heading]]');
         });
 
         it('should return the filename when a simple markdown link [display name](filename)', () => {
             const link = getLink(link_in_task_markdown_link, 2);
 
             expect(link.originalMarkdown).toEqual('[link_in_task_markdown_link](link_in_task_markdown_link.md)');
-            expect(link.destinationFilename).toEqual('link_in_task_markdown_link');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         it('should return the filename if link has a path [link_in_task_markdown_link](path/filename.md)', () => {
             const link = getLink(link_in_task_markdown_link, 3);
 
-            expect(link.originalMarkdown).toEqual('[link_in_task_markdown_link](path/link_in_task_markdown_link.md)');
-            expect(link.destinationFilename).toEqual('link_in_task_markdown_link');
+            expect(link.originalMarkdown).toEqual(
+                '[link_in_task_markdown_link](Test%20Data/link_in_task_markdown_link.md)',
+            );
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         it('should return the filename if link has a path and a heading link [heading_link](path/filename.md#heading)', () => {
             const link = getLink(link_in_task_markdown_link, 4);
 
-            expect(link.originalMarkdown).toEqual('[heading_link](path/link_in_task_markdown_link.md#heading_link)');
-            expect(link.destinationFilename).toEqual('link_in_task_markdown_link');
+            expect(link.originalMarkdown).toEqual('[heading_link](Test%20Data/link_in_task_markdown_link.md#heading)');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         it('should return the filename if link has an alias [alias](filename.md)', () => {
             const link = getLink(link_in_task_markdown_link, 5);
 
             expect(link.originalMarkdown).toEqual('[alias](link_in_task_markdown_link.md)');
-            expect(link.destinationFilename).toEqual('link_in_task_markdown_link');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         it('should return the filename if link has a path and an alias [alias](path/path/filename.md)', () => {
             const link = getLink(link_in_task_markdown_link, 6);
 
-            expect(link.originalMarkdown).toEqual('[alias](path/path/link_in_task_markdown_link.md)');
-            expect(link.destinationFilename).toEqual('link_in_task_markdown_link');
+            expect(link.originalMarkdown).toEqual('[alias](Test%20Data/link_in_task_markdown_link.md)');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         // # is a valid character in a filename or a path but Obsidian does not support it in links
@@ -180,7 +211,7 @@ describe('linkClass', () => {
             expect(link.originalMarkdown).toEqual(
                 '[link_in_task_markdown_link](pa#th/path/link_in_task_markdown_link.md)',
             );
-            expect(link.destinationFilename).toEqual('pa');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         // When grouping a Wikilink link expect [[file.md]] to be grouped with [[file]].
@@ -188,26 +219,119 @@ describe('linkClass', () => {
             const link = getLink(link_in_task_markdown_link, 9);
 
             expect(link.originalMarkdown).toEqual('[link_in_task_markdown_link](link_in_task_markdown_link)');
-            expect(link.destinationFilename).toEqual('link_in_task_markdown_link');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         it('should return a filename with corresponding file extension if not markdown [a_pdf_file](a_pdf_file.pdf)', () => {
             const link = getLink(link_in_task_markdown_link, 10);
 
             expect(link.originalMarkdown).toEqual('[a_pdf_file](a_pdf_file.pdf)');
-            expect(link.destinationFilename).toEqual('a_pdf_file.pdf');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         it('should handle spaces in the path, filename, and heading link [heading link](path/filename with spaces.md#heading link)', () => {
             const link = getLink(link_in_task_markdown_link, 11);
 
             expect(link.originalMarkdown).toEqual(
-                '[spaces everywhere](Test%20Data/spaced%20filename%20link.md#spaced%20heading)',
+                '[spaces everywhere](Manual%20Testing/Smoke%20Testing%20the%20Tasks%20Plugin#How%20the%20tests%20work)',
             );
-            expect(link.destinationFilename).toEqual('spaced filename link');
+            expect(link.markdown).toEqual(link.originalMarkdown);
         });
 
         // Empty Markdown Link Tests
         // []() and [alias]() are not detected by the obsidian parser as a link
+    });
+
+    describe('isLinkTo() tests', () => {
+        it('matches filenames', () => {
+            const link = getLink(links_everywhere, 0);
+
+            expect(link.isLinkTo('link_in_file_body')).toEqual(true);
+            expect(link.isLinkTo('link_in_file_body.md')).toEqual(true);
+
+            expect(link.isLinkTo('somewhere_else')).toEqual(false);
+
+            expect(link.isLinkTo('link_in_file_body_but_different')).toEqual(false);
+            expect(link.isLinkTo('link_in_file_')).toEqual(false);
+        });
+
+        it('matches without folders', () => {
+            const linkToAFile = getLink(link_in_task_wikilink, 0);
+            expect(linkToAFile.originalMarkdown).toMatchInlineSnapshot('"[[link_in_task_wikilink]]"');
+
+            expect(linkToAFile.isLinkTo('link_in_task_wikilink')).toEqual(true);
+        });
+
+        it('matches with folders', () => {
+            const linkToAFolder = getLink(link_in_task_wikilink, 2);
+            expect(linkToAFolder.originalMarkdown).toMatchInlineSnapshot('"[[Test Data/link_in_task_wikilink]]"');
+
+            expect(linkToAFolder.isLinkTo('link_in_task_wikilink')).toEqual(true);
+            expect(linkToAFolder.isLinkTo('Test Data/link_in_task_wikilink')).toEqual(true);
+            expect(linkToAFolder.isLinkTo('Test Data/link_in_task_wikilink.md')).toEqual(true);
+        });
+
+        it('matches TasksFile', () => {
+            const linkToAFolder = getLink(link_in_task_wikilink, 2);
+            expect(linkToAFolder.originalMarkdown).toMatchInlineSnapshot('"[[Test Data/link_in_task_wikilink]]"');
+
+            expect(linkToAFolder.isLinkTo(new TasksFile('Test Data/link_in_task_wikilink.md'))).toEqual(true);
+            expect(linkToAFolder.isLinkTo(new TasksFile('link_in_task_wikilink.md'))).toEqual(true);
+            expect(linkToAFolder.isLinkTo(new TasksFile('Wrong Test Data/link_in_task_wikilink.md'))).toEqual(false);
+            expect(linkToAFolder.isLinkTo(new TasksFile('something_obviously_different.md'))).toEqual(false);
+        });
+    });
+});
+
+describe('visualise links', () => {
+    function createRow(field: string, value: string | undefined): string {
+        // We use NBSP - non-breaking spaces - so that the approved file content
+        // is correctly aligned when viewed in Obsidian:
+        return addBackticks(field.padEnd(26, ' ')) + ': ' + addBackticks(formatToRepresentType(value)) + '\n';
+    }
+
+    function visualiseLinks(outlinks: Link[], file: SimulatedFile) {
+        let output = '';
+
+        if (outlinks.length === 0) {
+            return output;
+        }
+
+        output += `## ${file.filePath}\n\n`;
+        outlinks.forEach((link) => {
+            output += createRow('link.originalMarkdown', link.originalMarkdown);
+            output += createRow('link.markdown', link.markdown);
+            output += createRow('link.destination', link.destination);
+            output += createRow('link.displayText', link.displayText);
+            output += '\n';
+        });
+        return output;
+    }
+
+    it('note bodies', () => {
+        let output = '';
+        allCacheSampleData().forEach((file) => {
+            const tasksFile = getTasksFileFromMockData(file);
+            output += visualiseLinks(tasksFile.outlinksInBody, file);
+        });
+        verifyMarkdown(output);
+    });
+
+    it('properties', () => {
+        let output = '';
+        allCacheSampleData().forEach((file) => {
+            const tasksFile = getTasksFileFromMockData(file);
+            output += visualiseLinks(tasksFile.outlinksInProperties, file);
+        });
+        verifyMarkdown(output);
+    });
+
+    it('outlinks', () => {
+        let output = '';
+        allCacheSampleData().forEach((file) => {
+            const tasksFile = getTasksFileFromMockData(file);
+            output += visualiseLinks(tasksFile.outlinks, file);
+        });
+        verifyMarkdown(output);
     });
 });
