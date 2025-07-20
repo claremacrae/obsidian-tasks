@@ -6,7 +6,16 @@ aliases:
 
 # Missing tags, aliases and cssclasses in some Obsidian 1.9.x versions
 
-## Obsidian 1.9.0 reads properties strictly
+## Summary
+
+- **Obsidian 1.9.0 and above** have **breaking changes** that are likely to cause missing `tags`, `aliases`, `cssclasses` values.
+  - See [[#Obsidian 1.9.0 and above read properties strictly]] and [[#What needs to change?]]
+- **Obsidian 1.9.3** introduced a new option in the core **Format converter** plugin to update your notes automatically.
+  - See [[#How to fix unsupported properties]]
+- **Obsidian 1.9.4** behaves more robustly than the earlier 1.9.x versions, although it still has some issues.
+  - See [[#Things discovered whilst exploring this breaking change]]
+
+## Obsidian 1.9.0 and above read properties strictly
 
 > [!Warning] Warning: Breaking changes in Obsidian 1.9.x
 >
@@ -16,124 +25,148 @@ aliases:
 > > [!Quote] Breaking changes
 > > We have officially removed support for the properties `tag`, `alias`, `cssclass` in favor of `tags`, `aliases` and `cssclasses`. In addition, the values of these properties _must_ be a list. If the current value is a text property, it will no longer be recognized by Obsidian.
 
+Consequences of this:
+
+- Searches that use **tags** in properties/frontmatter may no longer find expected, due to tags not being recognised, or being interpreted differently.
+- Notes with **aliases** may no longer be found, as their alias values may be ignored.
+- Notes with **cssclasses** may no longer be rendered as before, as their cssclass(s) values may be ignored.
+
 ## Things discovered whilst exploring this breaking change
 
-All the following were observed and tested in Obsidian 1.9.2.
+### Obsidian 1.9.4
 
-1. Any properties called `tag`, `alias`,  or `cssclass` are now ignored by Obsidian.
-2. Obsidian no longer warns about incorrectly-formatted `tags`, `aliases` and `cssclasses` values, so they are easy to miss.
-3. Any `tags`, `aliases` and `cssclasses` properties with non-list (incorrectly formatter) values will have their values deleted if Obsidian makes any changes to the file's frontmatter.
-4. Obsidian does still support capitalised versions of the correctly spelled names: `TAGS`, `ALIASES` AND `CSSCLASSES`.
+All the following behaviours were observed and tested in Obsidian 1.9.4.
 
-### You should check and fix your vault before using the 'File Properties' UI to edit any properties
+| Properties                                            | Obsidian 1.9.4 behaviour                                                                                                                                                                       |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`tag`, `alias`, `cssclass`**                        | ❌ Ignored by Obsidian: no longer treated as `tags`, `aliases`, `cssclasses`                                                                                                                   |
+| **`tags` that are not proper lists**                  | ✅ Obsidian highlights incorrectly-formatted `tags` in red.<br>✅ Obsidian no longer deletes their values when making any changes to the file's properties.                                    |
+| **`aliases`, `cssclasses` that are not proper lists** | ❌ Obsidian still does not warn about these.<br>✅ Obsidian no longer deletes their values when making any changes to the file's properties.                                                   |
+| **`TAGS`, `ALIASES`, `CSSCLASSES`**                   | ✅ Still treated as `tags`, `aliases`, `cssclasses`                                                                                                                                            |
+| **Finding and fixing formatting problems**            | ✅ New ["Properties" option in the Format Converter core plugin](https://help.obsidian.md/plugins/format-converter#Properties) easily fixes wrongly-named and wrongly-formatted properties.    |
+| **Restoring any lost data**                           | ❌ Because Obsidian 1.9.0, 1.9.1 and 1.9.2 may have already silently deleted mis-formatted list values, you may still notice missing data, and may wish to review a backup copy of your vault. |
 
-Editing _any_ properties using **File Properties** or any other Obsidian properties editing UI causes Obsidian to delete text values for `tags`, `aliases` and `cssclasses`.
+### Obsidian 1.9.0, 1.9.1 and 1.9.2
 
-Unless you have version-controlled your vault, and you regularly check for differences, it's very possible your vault will lose values that previously were read.
+All the following behaviours were observed and tested in Obsidian 1.9.2.
 
-The following sections show how you can fix and fix most of the problem cases.
+| Properties                                                    | Obsidian 1.9.0, 1.9.1 and 1.9.2 behaviours                                                                                              |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **`tag`, `alias`, `cssclass`**                                | ❌ Ignored by Obsidian: no longer treated as `tags`, `aliases`, `cssclasses`                                                            |
+| **`tags`, `aliases`, `cssclasses` that are not proper lists** | ❌ Obsidian no longer warns about these.<br>❌ Obsidian silently deletes their values when making any changes to the file's properties. |
+| **`TAGS`, `ALIASES`, `CSSCLASSES`**                           | ✅ Still treated as `tags`, `aliases`, `cssclasses`                                                                                     |
+| **Finding problems**                                          | ❌ Any problem values have to be **found** by the user, to prevent data loss                                                            |
+| **Fixed problems**                                            | ❌ Any problem values have to be **fixed** by the user                                                                                  |
 
-## Find and fix your properties using Obsidian
+## What needs to change?
 
-### Find and rename old `tag`, `alias`, `cssclass` and properties
+These examples, from the [Obsidian documentation](https://help.obsidian.md/plugins/format-converter#Properties), show the kind of edits needed:
 
-You will need to find all uses of the `tag`, `alias`, `cssclass` properties and manually rename them to `tags`, `aliases` and `cssclasses`, to ensure that Obsidian files these properties, as it did prior to version 1.9.0.
+1. Property names may need updating.
+2. These are all list properties, so each value needs to be on a new line, preceded by a hyphen (`-`).
 
-There doesn't seem to be a way to use [bases](https://help.obsidian.md/bases) to find these values.
+**Aliases:**
 
-So here is one way to do this.
+```yaml
+# Before
 
-> [!Tip]
-> For maximum safety, you will need to be sure you edit the **Source** of the properties.
->
-> - (Temporarily) Change your Obsidian **Editing settings** to:
->   - Properties in document: **Source**
+alias: My Note Title
 
-Steps:
+# After
+
+aliases:
+  - My Note Title
+```
+
+**Tags:**
+
+```yaml
+# Before
+
+tag: project, important
+
+# After
+
+tags:
+  - project
+  - important
+```
+
+**CSS Classes:**
+
+```yaml
+# Before
+
+cssclass: custom-style
+
+# After
+
+cssclasses:
+  - custom-style
+```
+
+## How to fix unsupported properties
+
+### Step 1: Run the Format converter plugin
+
+The Obsidian team has now provided a mechanism to **update entire pre-Obsidian-1.9.0 vaults**.
+
+Here is how to use it.
+
+1. Make a **backup of your vault**.
+2. Make sure you are using **Obsidian 1.9.3 or above**.
+3. Turn on the **[Format converter](https://help.obsidian.md/plugins/format-converter)** core plugin.
+
+    ![Turn on the 'Format converter' core plugin](../images/core-plugin-format-converter.png)
+    <span class="caption">Turn on the 'Format converter' core plugin</span>
+
+4. Run the **Open format converter** command.
+5. Turn on the **[Frontmatter migration](https://help.obsidian.md/plugins/format-converter#Properties)** option.
+6. Click **Start conversion**.
+
+    ![Select 'Frontmatter migration' option, and Start the conversion](../images/core-plugin-format-converter-options.png)
+    <span class="caption">Select 'Frontmatter migration' option, and Start the conversion</span>
+
+### Step 2: Rebuild the cache vault in this and all its synced copies
+
+Anecdotally, we have found that there is a higher-than-usual chance of getting an out-of-date Obsidian cache when a lot of files have changed.
+
+This can result in problems like plugins not being able to find every task in the vault.
+
+So for safety, after the format converter has completed, we would recommend that:
+
+1. You should [**regenerate the Obsidian metadata cache**](https://publish.obsidian.md/tasks/Support+and+Help/Missing+tasks+in+callouts+with+some+Obsidian+1.6.x+versions#The+solution+Regenerate+the+Obsidian+metadata+cache).
+2. If your vault is synchronised with other devices, once each other device has finished syncing, you should repeat the cache regeneration step there too.
+
+## Appendix
+
+Some earlier notes that may still be of interest.
+
+### Find properties that need updating
+
+#### Find old `tag`, `alias`, `cssclass` and properties
+
+If your vault uses the original names `tag`, `alias`, `cssclass` properties, it will benefit from using the Format converter.
+
+Here is how to easily see if you have any old values needing to be updated.
 
 1. In the Obsidian **Search** box, paste in `["alias"]`.
-    - If any values are found, click on each file, and **edit the property name to `aliases`**.
 2. In the Obsidian **Search** box, paste in `["tag"]`.
-    - If any values are found, click on each file, and **edit the property name to `tags`**.
 3. In the Obsidian **Search** box, paste in `["cssclass"]`.
-    - If any values are found, click on each file, and **edit the property name to `cssclasses`**.
 
-### Find and fix the type of `tags`, `aliases` and `cssclasses` with string values
+#### Find any incorrectly typed `tags`, `aliases` and `cssclasses` with string values
 
-`tags`, `aliases` and `cssclasses` properties with string values will be discarded if you use Obsidian's UI to edit any properties in those files.
+`tags`, `aliases` and `cssclasses` properties with string values will be wrongly interpreted by Obsidian 1.9.0 and above.
 
-Here is one way to fix them.
+Here is one way to find them.
 
 1. Download the file **[Check Tags.base](https://github.com/obsidian-tasks-group/obsidian-tasks/tree/main/resources/sample_vaults/Tasks-Demo/How%20To/Find%20properties%20not%20read%20by%20Obsidian%201.9.x)** - and open it in Obsidian 1.9.2 or newer.
-    - Pin the file
-    - Review _all_ the values in the **ErrorsAreTagsValuesNeedingFixing** column.
-    - For every row that has an **⚠︎ Error** value:
-        - Click on the file name
-        - Put a `[` at the **start** of the **values** in the **tags** line
-        - Put a `]` at the **end** of the **values** in the **tags** line
-    - For example, change this:
-
-        ```yaml
-        ---
-        tags: value-1-of-2-on-one-line, value-2-of-2-on-one-line
-        ---
-        ```
-
-    - To this:
-
-        ```yaml
-        ---
-        tags: [value-1-of-2-on-one-line, value-2-of-2-on-one-line]
-        ---
-        ```
 
 2. Download the file **[Check Aliases.base](https://github.com/obsidian-tasks-group/obsidian-tasks/tree/main/resources/sample_vaults/Tasks-Demo/How%20To/Find%20properties%20not%20read%20by%20Obsidian%201.9.x)** - and open it in Obsidian 1.9.2 or newer.
-    - Pin the file
-    - Review _all_ the values in the **ErrorsAreAliasesValuesNeedingFixing** column.
-    - For every row that has an **⚠︎ Error** value:
-        - Click on the file name
-        - Put a `[` at the **start** of the **values** in the **aliases** line
-        - Put a `]` at the **end** of the **values** in the **aliases** line
-    - For example, change this:
-
-        ```yaml
-        ---
-        aliases: value-1-of-2-on-one-line, value-2-of-2-on-one-line
-        ---
-        ```
-
-    - To this:
-
-        ```yaml
-        ---
-        aliases: [value-1-of-2-on-one-line, value-2-of-2-on-one-line]
-        ---
-        ```
 
 3. Download the file **[Check CssClasses.base](https://github.com/obsidian-tasks-group/obsidian-tasks/tree/main/resources/sample_vaults/Tasks-Demo/How%20To/Find%20properties%20not%20read%20by%20Obsidian%201.9.x)** - and open it in Obsidian 1.9.2 or newer.
-    - Pin the file
-    - Review _all_ the values in the **ErrorsAreCssclassesValuesNeedingFixing** column.
-    - For every row that has an **⚠︎ Error** value:
-        - Click on the file name
-        - Put a `[` at the **start** of the **values** in the **cssclasses** line
-        - Put a `]` at the **end** of the **values** in the **cssclasses** line
-    - For example, change this:
 
-        ```yaml
-        ---
-        cssclasses: value-1-of-2-on-one-line, value-2-of-2-on-one-line
-        ---
-        ```
-
-    - To this:
-
-        ```yaml
-        ---
-        cssclasses: [value-1-of-2-on-one-line, value-2-of-2-on-one-line]
-        ---
-        ```
-
-## Other ways to find and fix your properties
+### Other ways to find and fix your properties
 
 - Check to see if the [Obsidian Linter](https://github.com/platers/obsidian-linter) plugin has provided a way to find and fix problem properties.
 - A Discord user reported:
