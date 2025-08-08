@@ -76,7 +76,7 @@ export class Link {
         return this.rawLink.displayText;
     }
 
-    public isLinkTo(destination: string | TasksFile): boolean {
+    public linksTo(destination: string | TasksFile): boolean {
         if (typeof destination === 'string') {
             const removeMd = /\.md$/;
             const thisDestinationWithoutMd = this.destination.replace(removeMd, '');
@@ -95,6 +95,9 @@ export class Link {
             return false;
         }
 
-        return this.isLinkTo(destination.path);
+        // Links only match if they resolve to the full path,
+        // thus distinguishing between multiple identically named files
+        // in different folders in the vault.
+        return this.destinationPath === destination.path;
     }
 }
