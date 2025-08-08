@@ -2,8 +2,10 @@ import type { Reference } from 'obsidian';
 import { TasksFile } from '../../src/Scripting/TasksFile';
 import { Link } from '../../src/Task/Link';
 import internal_heading_links from '../Obsidian/__test_data__/internal_heading_links.json';
+import link_in_heading from '../Obsidian/__test_data__/link_in_heading.json';
 import link_in_task_markdown_link from '../Obsidian/__test_data__/link_in_task_markdown_link.json';
 import link_in_task_wikilink from '../Obsidian/__test_data__/link_in_task_wikilink.json';
+import link_is_broken from '../Obsidian/__test_data__/link_is_broken.json';
 
 import link_in_file_body from '../Obsidian/__test_data__/link_in_file_body.json';
 import links_everywhere from '../Obsidian/__test_data__/links_everywhere.json';
@@ -13,11 +15,12 @@ import { addBackticks, formatToRepresentType } from '../Scripting/ScriptingTestH
 import { getTasksFileFromMockData } from '../TestingTools/MockDataHelpers';
 import { verifyMarkdown } from '../TestingTools/VerifyMarkdown';
 import { LinkResolver } from '../../src/Task/LinkResolver';
-import { getFirstLinkpathDest } from '../__mocks__/obsidian';
+import { getFirstLinkpathDest, getFirstLinkpathDestFromData } from '../__mocks__/obsidian';
 
 function getLink(data: any, index: number) {
     const rawLink = data.cachedMetadata.links[index];
-    return new Link(rawLink, data.filePath);
+    const destinationPath = getFirstLinkpathDestFromData(data, rawLink);
+    return new Link(rawLink, data.filePath, destinationPath);
 }
 
 describe('linkClass', () => {
@@ -29,8 +32,20 @@ describe('linkClass', () => {
         expect(link.destination).toEqual('link_in_file_body');
         expect(link.displayText).toEqual('link_in_file_body');
         expect(link.markdown).toEqual(link.originalMarkdown);
-        expect(link.isLinkTo('link_in_file_body')).toEqual(true);
-        expect(link.isLinkTo('link_in_file_body.md')).toEqual(true);
+        expect(link.linksTo('link_in_file_body')).toEqual(true);
+        expect(link.linksTo('link_in_file_body.md')).toEqual(true);
+    });
+
+    describe('getLink() configures Link.destinationPath automatically', () => {
+        it('should set the full path for a resolved link', () => {
+            const link = getLink(link_in_heading, 0);
+            expect(link.destinationPath).toEqual('Test Data/multiple_headings.md');
+        });
+
+        it('should not set the full path for a broken/unresolved link', () => {
+            const link = getLink(link_is_broken, 0);
+            expect(link.destinationPath).toEqual(null);
+        });
     });
 
     describe('return markdown to navigate to a link', () => {
@@ -271,43 +286,43 @@ describe('linkClass', () => {
         });
     });
 
-    describe('isLinkTo() tests', () => {
+    describe('linksTo() tests', () => {
         it('matches filenames', () => {
             const link = getLink(links_everywhere, 0);
 
-            expect(link.isLinkTo('link_in_file_body')).toEqual(true);
-            expect(link.isLinkTo('link_in_file_body.md')).toEqual(true);
+            expect(link.linksTo('link_in_file_body')).toEqual(true);
+            expect(link.linksTo('link_in_file_body.md')).toEqual(true);
 
-            expect(link.isLinkTo('somewhere_else')).toEqual(false);
+            expect(link.linksTo('somewhere_else')).toEqual(false);
 
-            expect(link.isLinkTo('link_in_file_body_but_different')).toEqual(false);
-            expect(link.isLinkTo('link_in_file_')).toEqual(false);
+            expect(link.linksTo('link_in_file_body_but_different')).toEqual(false);
+            expect(link.linksTo('link_in_file_')).toEqual(false);
         });
 
         it('matches without folders', () => {
             const linkToAFile = getLink(link_in_task_wikilink, 0);
             expect(linkToAFile.originalMarkdown).toMatchInlineSnapshot('"[[link_in_task_wikilink]]"');
 
-            expect(linkToAFile.isLinkTo('link_in_task_wikilink')).toEqual(true);
+            expect(linkToAFile.linksTo('link_in_task_wikilink')).toEqual(true);
         });
 
         it('matches with folders', () => {
             const linkToAFolder = getLink(link_in_task_wikilink, 2);
             expect(linkToAFolder.originalMarkdown).toMatchInlineSnapshot('"[[Test Data/link_in_task_wikilink]]"');
 
-            expect(linkToAFolder.isLinkTo('link_in_task_wikilink')).toEqual(true);
-            expect(linkToAFolder.isLinkTo('Test Data/link_in_task_wikilink')).toEqual(true);
-            expect(linkToAFolder.isLinkTo('Test Data/link_in_task_wikilink.md')).toEqual(true);
+            expect(linkToAFolder.linksTo('link_in_task_wikilink')).toEqual(true);
+            expect(linkToAFolder.linksTo('Test Data/link_in_task_wikilink')).toEqual(true);
+            expect(linkToAFolder.linksTo('Test Data/link_in_task_wikilink.md')).toEqual(true);
         });
 
-        it('matches TasksFile', () => {
+        it('matches TasksFile - only exact paths match', () => {
             const linkToAFolder = getLink(link_in_task_wikilink, 2);
             expect(linkToAFolder.originalMarkdown).toMatchInlineSnapshot('"[[Test Data/link_in_task_wikilink]]"');
 
-            expect(linkToAFolder.isLinkTo(new TasksFile('Test Data/link_in_task_wikilink.md'))).toEqual(true);
-            expect(linkToAFolder.isLinkTo(new TasksFile('link_in_task_wikilink.md'))).toEqual(true);
-            expect(linkToAFolder.isLinkTo(new TasksFile('Wrong Test Data/link_in_task_wikilink.md'))).toEqual(false);
-            expect(linkToAFolder.isLinkTo(new TasksFile('something_obviously_different.md'))).toEqual(false);
+            expect(linkToAFolder.linksTo(new TasksFile('Test Data/link_in_task_wikilink.md'))).toEqual(true);
+            expect(linkToAFolder.linksTo(new TasksFile('link_in_task_wikilink.md'))).toEqual(false);
+            expect(linkToAFolder.linksTo(new TasksFile('Wrong Test Data/link_in_task_wikilink.md'))).toEqual(false);
+            expect(linkToAFolder.linksTo(new TasksFile('something_obviously_different.md'))).toEqual(false);
         });
     });
 });
