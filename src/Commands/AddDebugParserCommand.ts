@@ -307,7 +307,7 @@ function generateMarkdownReport(diagnostics: TaskDiagnostic[]): string {
         if (diagnostic.parsingSteps.length > 0) {
             report += '#### Parsing Steps\n\n';
             report += '| Step | Field | Matched | Value | Input Before | Remaining After |\n';
-            report += '|------|-------|---------|-------|--------------|-----------------||\n';
+            report += '|------|-------|---------|-------|--------------|-----------------|\n';
 
             diagnostic.parsingSteps.forEach((step) => {
                 const inputBefore =
