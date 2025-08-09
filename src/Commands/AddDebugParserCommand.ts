@@ -310,15 +310,8 @@ function generateMarkdownReport(diagnostics: TaskDiagnostic[]): string {
             report += '|------|-------|---------|-------|--------------|-----------------|\n';
 
             diagnostic.parsingSteps.forEach((step) => {
-                const inputBefore =
-                    step.inputBeforeMatch.length > 20
-                        ? '`' + step.inputBeforeMatch.substring(0, 20) + '...`'
-                        : '`' + step.inputBeforeMatch + '`';
-                const remaining = step.remainingAfterMatch
-                    ? step.remainingAfterMatch.length > 20
-                        ? '`' + step.remainingAfterMatch.substring(0, 20) + '...`'
-                        : '`' + step.remainingAfterMatch + '`'
-                    : '_(empty)_';
+                const inputBefore = '`' + step.inputBeforeMatch + '`';
+                const remaining = step.remainingAfterMatch ? '`' + step.remainingAfterMatch + '`' : '_(empty)_';
                 const value = step.extractedValue ? '`' + step.extractedValue + '`' : '—';
                 const matched = step.matched ? '✅' : '❌';
 
