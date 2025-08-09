@@ -203,7 +203,7 @@ function generateMarkdownReport(diagnostics: TaskDiagnostic[]): string {
     // Process each task
     diagnostics.forEach((diagnostic, index) => {
         report += `### Task ${index + 1}\n`;
-        report += '```\n' + diagnostic.originalLine + '\n```\n\n';
+        report += '```text\n' + diagnostic.originalLine + '\n```\n\n';
 
         // Summary
         report += `**Parsed**: ${diagnostic.successfullyParsed ? '✅ Yes' : '❌ No'} | `;
