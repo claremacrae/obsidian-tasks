@@ -305,7 +305,7 @@ function generateMarkdownReport(diagnostics: TaskDiagnostic[]): string {
 
         // Field extraction table
         if (diagnostic.parsingSteps.length > 0) {
-            report += '#### Parsing Steps\n\n';
+            report += `#### Task ${index + 1}: Parsing Steps\n\n`;
             report += '| Step | Field | Matched | Value | Input Before | Remaining After |\n';
             report += '|------|-------|---------|-------|--------------|-----------------|\n';
 
