@@ -3,6 +3,7 @@ import { Plugin, type Reference, getLinkpath } from 'obsidian';
 import type { Task } from 'Task/Task';
 import type { QueryResult } from 'Query/QueryResult';
 import { getQueryForQueryRenderer } from 'Query/QueryRendererHelper';
+import { addDebugParserCommand } from './Commands/AddDebugParserCommand';
 import { i18n, initializeI18n } from './i18n/i18n';
 import { Cache, State } from './Obsidian/Cache';
 import { Commands } from './Commands';
@@ -80,6 +81,7 @@ export default class TasksPlugin extends Plugin {
         this.registerEditorExtension(newLivePreviewExtension());
         this.registerEditorSuggest(new EditorSuggestor(this.app, getSettings(), this));
         new Commands({ plugin: this });
+        addDebugParserCommand(this);
     }
 
     async loadTaskStatuses() {
