@@ -1,9 +1,9 @@
-import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
-import { DefaultTaskSerializer } from '../TaskSerializer';
-import { DEFAULT_SYMBOLS } from '../TaskSerializer/DefaultTaskSerializer';
-import { type CharacterInfo, analyzeCharacters } from '../TaskSerializer/TaskSerializerDiagnostics/AnalyzeCharacters';
-import { runEmojiTests } from './EmojiTests';
-import { runMinimalRegexTests } from './MinimalRegexTests';
+import { TaskRegularExpressions } from '../../Task/TaskRegularExpressions';
+import { DefaultTaskSerializer } from '../index';
+import { DEFAULT_SYMBOLS } from '../DefaultTaskSerializer';
+import { runEmojiTests } from '../../Commands/EmojiTests';
+import { runMinimalRegexTests } from '../../Commands/MinimalRegexTests';
+import { type CharacterInfo, analyzeCharacters } from './AnalyzeCharacters';
 
 export interface ParseStep {
     stepNumber: number;

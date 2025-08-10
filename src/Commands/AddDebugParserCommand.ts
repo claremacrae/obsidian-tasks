@@ -1,7 +1,10 @@
 import { App, Editor, type MarkdownFileInfo, MarkdownView, Modal, Notice, Plugin } from 'obsidian';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
 import type { TaskDetails } from '../TaskSerializer';
-import { type TaskDiagnostic, diagnoseTaskParsing } from './DiagnoseTaskParsing';
+import {
+    type TaskDiagnostic,
+    diagnoseTaskParsing,
+} from '../TaskSerializer/TaskSerializerDiagnostics/DiagnoseTaskParsing';
 import { generateMarkdownReport } from './GenerateMarkdownReport';
 
 // Type augmentation to tell TypeScript about the method we're adding
