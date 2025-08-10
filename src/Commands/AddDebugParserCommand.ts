@@ -292,27 +292,30 @@ function generateMarkdownReport(diagnostics: TaskDiagnostic[]): string {
         report += `**Parsed**: ${diagnostic.successfullyParsed ? '✅ Yes' : '❌ No'} | `;
         report += `**Fields Found**: ${Object.keys(diagnostic.extractedFields).length}\n\n`;
 
-        // Character analysis - only show if there are interesting characters
-        const hasInterestingChars = diagnostic.taskBodyCharacterAnalysis.some(
-            (c) => c.description || c.codePoint > 127 || c.codePoint < 32,
-        );
-
-        if (hasInterestingChars) {
+        // Character analysis - show all characters
+        if (diagnostic.taskBodyCharacterAnalysis.length > 0) {
             report += '#### Character Analysis (Task Body)\n\n';
             report += '| Index | Char | Unicode | Hex | Description |\n';
             report += '|-------|------|---------|-----|-------------|\n';
 
             diagnostic.taskBodyCharacterAnalysis.forEach((char) => {
-                // Only show non-ASCII or special characters
-                if (char.codePoint > 127 || char.codePoint < 32 || char.description) {
-                    const displayChar =
-                        char.codePoint === 0x20 ? '(space)' : char.codePoint < 32 ? '(control)' : char.char;
-                    report += `| ${char.index} | ${displayChar} | ${char.unicode} | ${char.codePointHex} | ${
-                        char.description || ''
-                    } |\n`;
-                }
+                const displayChar =
+                    char.codePoint === 0x20
+                        ? '(space)'
+                        : char.codePoint === 0x09
+                        ? '(tab)'
+                        : char.codePoint < 32
+                        ? '(control)'
+                        : char.char;
+                report += `| ${char.index} | ${displayChar} | ${char.unicode} | ${char.codePointHex} | ${
+                    char.description || ''
+                } |\n`;
             });
             report += '\n';
+
+            // Also show a compact hex string for easy comparison
+            const hexString = diagnostic.taskBodyCharacterAnalysis.map((c) => c.codePointHex).join(' ');
+            report += `**Hex string**: \`${hexString}\`\n\n`;
         }
 
         // Field extraction table
