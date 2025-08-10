@@ -1,8 +1,8 @@
 import { TaskRegularExpressions } from '../../Task/TaskRegularExpressions';
 import { DefaultTaskSerializer } from '../index';
 import { DEFAULT_SYMBOLS } from '../DefaultTaskSerializer';
-import { runEmojiTests } from '../../Commands/EmojiTests';
 import { runMinimalRegexTests } from '../../Commands/MinimalRegexTests';
+import { runEmojiTests } from './EmojiTests';
 import { type CharacterInfo, analyzeCharacters } from './AnalyzeCharacters';
 
 export interface ParseStep {

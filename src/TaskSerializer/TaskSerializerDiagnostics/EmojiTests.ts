@@ -1,4 +1,4 @@
-import { DEFAULT_SYMBOLS } from '../TaskSerializer/DefaultTaskSerializer';
+import { DEFAULT_SYMBOLS } from '../DefaultTaskSerializer';
 
 export function runEmojiTests(text: string): Record<string, boolean> {
     const tests: Record<string, boolean> = {};
