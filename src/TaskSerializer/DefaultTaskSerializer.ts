@@ -8,6 +8,17 @@ import { Priority } from '../Task/Priority';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
 import type { TaskDetails, TaskSerializer } from '.';
 
+// Add this interface near the top of DefaultTaskSerializer.ts
+export interface ParseDiagnostic {
+    step: number;
+    fieldName: string;
+    regex: string;
+    input: string;
+    matched: boolean;
+    extracted?: string;
+    remaining?: string;
+}
+
 /* Interface describing the symbols that {@link DefaultTaskSerializer}
  * uses to serialize and deserialize tasks.
  *
@@ -263,8 +274,13 @@ export class DefaultTaskSerializer implements TaskSerializer {
      *
      * @return {TaskDetails}
      */
-    public deserialize(line: string): TaskDetails {
+    public deserialize(
+        line: string,
+        collectDiagnostics: boolean = false,
+    ): TaskDetails & { diagnostics?: ParseDiagnostic[] } {
         const { TaskFormatRegularExpressions } = this.symbols;
+        const diagnostics: ParseDiagnostic[] = [];
+        let diagnosticStep = 0;
 
         // Keep matching and removing special strings from the end of the
         // description in any order. The loop should only run once if the
@@ -294,11 +310,46 @@ export class DefaultTaskSerializer implements TaskSerializer {
         do {
             // NEW_TASK_FIELD_EDIT_REQUIRED
             matched = false;
+
+            // Priority
+            if (collectDiagnostics) {
+                const beforeMatch = line;
+                const priorityMatch = line.match(TaskFormatRegularExpressions.priorityRegex);
+                diagnostics.push({
+                    step: diagnosticStep++,
+                    fieldName: 'priority',
+                    regex: TaskFormatRegularExpressions.priorityRegex.source,
+                    input: beforeMatch,
+                    matched: priorityMatch !== null,
+                    extracted: priorityMatch?.[0],
+                    remaining: priorityMatch
+                        ? line.replace(TaskFormatRegularExpressions.priorityRegex, '').trim()
+                        : undefined,
+                });
+            }
+
             const priorityMatch = line.match(TaskFormatRegularExpressions.priorityRegex);
             if (priorityMatch !== null) {
                 priority = this.parsePriority(priorityMatch[1]);
                 line = line.replace(TaskFormatRegularExpressions.priorityRegex, '').trim();
                 matched = true;
+            }
+
+            // Done Date
+            if (collectDiagnostics) {
+                const beforeMatch = line;
+                const doneDateMatch = line.match(TaskFormatRegularExpressions.doneDateRegex);
+                diagnostics.push({
+                    step: diagnosticStep++,
+                    fieldName: 'doneDate',
+                    regex: TaskFormatRegularExpressions.doneDateRegex.source,
+                    input: beforeMatch,
+                    matched: doneDateMatch !== null,
+                    extracted: doneDateMatch?.[0],
+                    remaining: doneDateMatch
+                        ? line.replace(TaskFormatRegularExpressions.doneDateRegex, '').trim()
+                        : undefined,
+                });
             }
 
             const doneDateMatch = line.match(TaskFormatRegularExpressions.doneDateRegex);
@@ -308,11 +359,45 @@ export class DefaultTaskSerializer implements TaskSerializer {
                 matched = true;
             }
 
+            // Cancelled Date
+            if (collectDiagnostics) {
+                const beforeMatch = line;
+                const cancelledDateMatch = line.match(TaskFormatRegularExpressions.cancelledDateRegex);
+                diagnostics.push({
+                    step: diagnosticStep++,
+                    fieldName: 'cancelledDate',
+                    regex: TaskFormatRegularExpressions.cancelledDateRegex.source,
+                    input: beforeMatch,
+                    matched: cancelledDateMatch !== null,
+                    extracted: cancelledDateMatch?.[0],
+                    remaining: cancelledDateMatch
+                        ? line.replace(TaskFormatRegularExpressions.cancelledDateRegex, '').trim()
+                        : undefined,
+                });
+            }
+
             const cancelledDateMatch = line.match(TaskFormatRegularExpressions.cancelledDateRegex);
             if (cancelledDateMatch !== null) {
                 cancelledDate = window.moment(cancelledDateMatch[1], TaskRegularExpressions.dateFormat);
                 line = line.replace(TaskFormatRegularExpressions.cancelledDateRegex, '').trim();
                 matched = true;
+            }
+
+            // Due Date
+            if (collectDiagnostics) {
+                const beforeMatch = line;
+                const dueDateMatch = line.match(TaskFormatRegularExpressions.dueDateRegex);
+                diagnostics.push({
+                    step: diagnosticStep++,
+                    fieldName: 'dueDate',
+                    regex: TaskFormatRegularExpressions.dueDateRegex.source,
+                    input: beforeMatch,
+                    matched: dueDateMatch !== null,
+                    extracted: dueDateMatch?.[0],
+                    remaining: dueDateMatch
+                        ? line.replace(TaskFormatRegularExpressions.dueDateRegex, '').trim()
+                        : undefined,
+                });
             }
 
             const dueDateMatch = line.match(TaskFormatRegularExpressions.dueDateRegex);
@@ -322,11 +407,45 @@ export class DefaultTaskSerializer implements TaskSerializer {
                 matched = true;
             }
 
+            // Scheduled Date
+            if (collectDiagnostics) {
+                const beforeMatch = line;
+                const scheduledDateMatch = line.match(TaskFormatRegularExpressions.scheduledDateRegex);
+                diagnostics.push({
+                    step: diagnosticStep++,
+                    fieldName: 'scheduledDate',
+                    regex: TaskFormatRegularExpressions.scheduledDateRegex.source,
+                    input: beforeMatch,
+                    matched: scheduledDateMatch !== null,
+                    extracted: scheduledDateMatch?.[0],
+                    remaining: scheduledDateMatch
+                        ? line.replace(TaskFormatRegularExpressions.scheduledDateRegex, '').trim()
+                        : undefined,
+                });
+            }
+
             const scheduledDateMatch = line.match(TaskFormatRegularExpressions.scheduledDateRegex);
             if (scheduledDateMatch !== null) {
                 scheduledDate = window.moment(scheduledDateMatch[1], TaskRegularExpressions.dateFormat);
                 line = line.replace(TaskFormatRegularExpressions.scheduledDateRegex, '').trim();
                 matched = true;
+            }
+
+            // Start Date
+            if (collectDiagnostics) {
+                const beforeMatch = line;
+                const startDateMatch = line.match(TaskFormatRegularExpressions.startDateRegex);
+                diagnostics.push({
+                    step: diagnosticStep++,
+                    fieldName: 'startDate',
+                    regex: TaskFormatRegularExpressions.startDateRegex.source,
+                    input: beforeMatch,
+                    matched: startDateMatch !== null,
+                    extracted: startDateMatch?.[0],
+                    remaining: startDateMatch
+                        ? line.replace(TaskFormatRegularExpressions.startDateRegex, '').trim()
+                        : undefined,
+                });
             }
 
             const startDateMatch = line.match(TaskFormatRegularExpressions.startDateRegex);
@@ -336,11 +455,45 @@ export class DefaultTaskSerializer implements TaskSerializer {
                 matched = true;
             }
 
+            // Created Date
+            if (collectDiagnostics) {
+                const beforeMatch = line;
+                const createdDateMatch = line.match(TaskFormatRegularExpressions.createdDateRegex);
+                diagnostics.push({
+                    step: diagnosticStep++,
+                    fieldName: 'createdDate',
+                    regex: TaskFormatRegularExpressions.createdDateRegex.source,
+                    input: beforeMatch,
+                    matched: createdDateMatch !== null,
+                    extracted: createdDateMatch?.[0],
+                    remaining: createdDateMatch
+                        ? line.replace(TaskFormatRegularExpressions.createdDateRegex, '').trim()
+                        : undefined,
+                });
+            }
+
             const createdDateMatch = line.match(TaskFormatRegularExpressions.createdDateRegex);
             if (createdDateMatch !== null) {
                 createdDate = window.moment(createdDateMatch[1], TaskRegularExpressions.dateFormat);
                 line = line.replace(TaskFormatRegularExpressions.createdDateRegex, '').trim();
                 matched = true;
+            }
+
+            // Recurrence
+            if (collectDiagnostics) {
+                const beforeMatch = line;
+                const recurrenceMatch = line.match(TaskFormatRegularExpressions.recurrenceRegex);
+                diagnostics.push({
+                    step: diagnosticStep++,
+                    fieldName: 'recurrence',
+                    regex: TaskFormatRegularExpressions.recurrenceRegex.source,
+                    input: beforeMatch,
+                    matched: recurrenceMatch !== null,
+                    extracted: recurrenceMatch?.[0],
+                    remaining: recurrenceMatch
+                        ? line.replace(TaskFormatRegularExpressions.recurrenceRegex, '').trim()
+                        : undefined,
+                });
             }
 
             const recurrenceMatch = line.match(TaskFormatRegularExpressions.recurrenceRegex);
@@ -353,12 +506,44 @@ export class DefaultTaskSerializer implements TaskSerializer {
                 matched = true;
             }
 
+            // On Completion
+            if (collectDiagnostics) {
+                const beforeMatch = line;
+                const onCompletionMatch = line.match(TaskFormatRegularExpressions.onCompletionRegex);
+                diagnostics.push({
+                    step: diagnosticStep++,
+                    fieldName: 'onCompletion',
+                    regex: TaskFormatRegularExpressions.onCompletionRegex.source,
+                    input: beforeMatch,
+                    matched: onCompletionMatch !== null,
+                    extracted: onCompletionMatch?.[0],
+                    remaining: onCompletionMatch
+                        ? line.replace(TaskFormatRegularExpressions.onCompletionRegex, '').trim()
+                        : undefined,
+                });
+            }
+
             const onCompletionMatch = line.match(TaskFormatRegularExpressions.onCompletionRegex);
             if (onCompletionMatch != null) {
                 line = line.replace(TaskFormatRegularExpressions.onCompletionRegex, '').trim();
                 const inputOnCompletionValue = onCompletionMatch[1];
                 onCompletion = parseOnCompletionValue(inputOnCompletionValue);
                 matched = true;
+            }
+
+            // Tags
+            if (collectDiagnostics) {
+                const beforeMatch = line;
+                const tagsMatch = line.match(TaskRegularExpressions.hashTagsFromEnd);
+                diagnostics.push({
+                    step: diagnosticStep++,
+                    fieldName: 'tags',
+                    regex: TaskRegularExpressions.hashTagsFromEnd.source,
+                    input: beforeMatch,
+                    matched: tagsMatch !== null,
+                    extracted: tagsMatch?.[0],
+                    remaining: tagsMatch ? line.replace(TaskRegularExpressions.hashTagsFromEnd, '').trim() : undefined,
+                });
             }
 
             // Match tags from the end to allow users to mix the various task components with
@@ -372,16 +557,46 @@ export class DefaultTaskSerializer implements TaskSerializer {
                 trailingTags = trailingTags.length > 0 ? [tagName, trailingTags].join(' ') : tagName;
             }
 
-            const idMatch = line.match(TaskFormatRegularExpressions.idRegex);
+            // ID
+            if (collectDiagnostics) {
+                const beforeMatch = line;
+                const idMatch = line.match(TaskFormatRegularExpressions.idRegex);
+                diagnostics.push({
+                    step: diagnosticStep++,
+                    fieldName: 'id',
+                    regex: TaskFormatRegularExpressions.idRegex.source,
+                    input: beforeMatch,
+                    matched: idMatch !== null,
+                    extracted: idMatch?.[0],
+                    remaining: idMatch ? line.replace(TaskFormatRegularExpressions.idRegex, '').trim() : undefined,
+                });
+            }
 
+            const idMatch = line.match(TaskFormatRegularExpressions.idRegex);
             if (idMatch != null) {
                 line = line.replace(TaskFormatRegularExpressions.idRegex, '').trim();
                 id = idMatch[1].trim();
                 matched = true;
             }
 
-            const dependsOnMatch = line.match(TaskFormatRegularExpressions.dependsOnRegex);
+            // Depends On
+            if (collectDiagnostics) {
+                const beforeMatch = line;
+                const dependsOnMatch = line.match(TaskFormatRegularExpressions.dependsOnRegex);
+                diagnostics.push({
+                    step: diagnosticStep++,
+                    fieldName: 'dependsOn',
+                    regex: TaskFormatRegularExpressions.dependsOnRegex.source,
+                    input: beforeMatch,
+                    matched: dependsOnMatch !== null,
+                    extracted: dependsOnMatch?.[0],
+                    remaining: dependsOnMatch
+                        ? line.replace(TaskFormatRegularExpressions.dependsOnRegex, '').trim()
+                        : undefined,
+                });
+            }
 
+            const dependsOnMatch = line.match(TaskFormatRegularExpressions.dependsOnRegex);
             if (dependsOnMatch != null) {
                 line = line.replace(TaskFormatRegularExpressions.dependsOnRegex, '').trim();
                 dependsOn = dependsOnMatch[1]
@@ -408,7 +623,7 @@ export class DefaultTaskSerializer implements TaskSerializer {
         if (trailingTags.length > 0) line += ' ' + trailingTags;
 
         // NEW_TASK_FIELD_EDIT_REQUIRED
-        return {
+        const result = {
             description: line,
             priority,
             startDate,
@@ -423,5 +638,12 @@ export class DefaultTaskSerializer implements TaskSerializer {
             dependsOn,
             tags: Task.extractHashtags(line),
         };
+
+        // Add diagnostics if collected
+        if (collectDiagnostics) {
+            return { ...result, diagnostics };
+        }
+
+        return result;
     }
 }
