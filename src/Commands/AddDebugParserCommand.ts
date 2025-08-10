@@ -5,21 +5,13 @@ import {
     type TaskDiagnostic,
     diagnoseTaskParsing,
 } from '../TaskSerializer/TaskSerializerDiagnostics/DiagnoseTaskParsing';
-import { generateMarkdownReport } from '../TaskSerializer/TaskSerializerDiagnostics/GenerateMarkdownReport';
+import { createTaskParsingReport } from '../TaskSerializer/TaskSerializerDiagnostics/TaskParsingReport';
 
 // Type augmentation to tell TypeScript about the method we're adding
 declare module '../TaskSerializer/DefaultTaskSerializer' {
     interface DefaultTaskSerializer {
         deserialize(line: string, collectDiagnostics?: boolean): TaskDetails & { diagnostics?: ParseDiagnostic[] };
     }
-}
-
-function createTaskParsingReport(taskLines: string[]) {
-    const diagnostics = taskLines.map((line) => diagnoseTaskParsing(line));
-
-    // Render as markdown table below the current position
-    const report = generateMarkdownReport(diagnostics);
-    return report;
 }
 
 /**
