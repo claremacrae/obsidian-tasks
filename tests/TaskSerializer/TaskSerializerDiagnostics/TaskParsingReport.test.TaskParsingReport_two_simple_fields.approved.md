@@ -40,7 +40,7 @@ Testing regex patterns with and without $ anchor:
 
 **Parsed**: ✅ Yes | **Fields Found**: 2
 
-#### Character Analysis (Task Body)
+#### Task 1: Character Analysis (Task Body)
 
 | Index | Char | Unicode | Hex | Description |
 |-------|------|---------|-----|-------------|

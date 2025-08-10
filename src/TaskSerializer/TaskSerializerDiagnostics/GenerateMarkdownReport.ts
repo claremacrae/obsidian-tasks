@@ -87,7 +87,7 @@ export function generateMarkdownReport(diagnostics: TaskDiagnostic[]): string {
 
         // Character analysis - show all characters
         if (diagnostic.taskBodyCharacterAnalysis.length > 0) {
-            report += '#### Character Analysis (Task Body)\n\n';
+            report += `#### ${stepLabel}: Character Analysis (Task Body)\n\n`;
             report += '| Index | Char | Unicode | Hex | Description |\n';
             report += '|-------|------|---------|-----|-------------|\n';
 
