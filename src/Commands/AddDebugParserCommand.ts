@@ -367,6 +367,63 @@ function generateMarkdownReport(diagnostics: TaskDiagnostic[]): string {
     report += `- **Time**: ${d.platform.timestamp}\n`;
     report += `- **User Agent**: \`${d.platform.userAgent.substring(0, 50)}...\`\n\n`;
 
+    // Minimal Regex Tests (only in first diagnostic)
+    if (d.minimalRegexTests && d.minimalRegexTests.length > 0) {
+        report += '### Minimal Regex Tests\n\n';
+        report += 'Testing regex patterns with and without $ anchor:\n\n';
+
+        // Group tests by name to show with/without $ side by side
+        const testGroups = new Map<string, any[]>();
+        d.minimalRegexTests.forEach((test) => {
+            if (!testGroups.has(test.testName)) {
+                testGroups.set(test.testName, []);
+            }
+            testGroups.get(test.testName)!.push(test);
+        });
+
+        report += '| Test | Input | Pattern (no $) | Match | Pattern (with $) | Match |\n';
+        report += '|------|-------|----------------|-------|------------------|-------|\n';
+
+        testGroups.forEach((tests, testName) => {
+            const noDollar = tests.find((t) => !t.withDollar);
+            const withDollar = tests.find((t) => t.withDollar);
+
+            if (noDollar && withDollar) {
+                const noDollarPattern =
+                    '`' + noDollar.pattern.substring(0, 30) + (noDollar.pattern.length > 30 ? '...' : '') + '`';
+                const withDollarPattern =
+                    '`' + withDollar.pattern.substring(0, 30) + (withDollar.pattern.length > 30 ? '...' : '') + '`';
+                const input = '`' + noDollar.input + '`';
+
+                report += `| ${testName} | ${input} | ${noDollarPattern} | ${
+                    noDollar.matched ? '✅' : '❌'
+                } | ${withDollarPattern} | ${withDollar.matched ? '✅' : '❌'} |\n`;
+
+                // Highlight differences
+                if (noDollar.matched !== withDollar.matched) {
+                    report += '| ⚠️ **DIFFERS** | | | | | |\n';
+                }
+            }
+        });
+
+        report += '\n';
+
+        // Summary of failures
+        const dollarFailures = d.minimalRegexTests.filter((t) => t.withDollar && !t.matched);
+        const noDollarFailures = d.minimalRegexTests.filter((t) => !t.withDollar && !t.matched);
+
+        if (dollarFailures.length > 0 || noDollarFailures.length > 0) {
+            report += '**Failed tests:**\n';
+            if (dollarFailures.length > 0) {
+                report += `- With $ anchor: ${dollarFailures.length} failures\n`;
+            }
+            if (noDollarFailures.length > 0) {
+                report += `- Without $ anchor: ${noDollarFailures.length} failures\n`;
+            }
+            report += '\n';
+        }
+    }
+
     // Process each task
     diagnostics.forEach((diagnostic, index) => {
         report += `### Task ${index + 1}\n`;
