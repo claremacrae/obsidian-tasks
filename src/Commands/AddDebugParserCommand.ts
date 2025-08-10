@@ -87,6 +87,8 @@ export interface TaskDiagnostic {
         isIOS: boolean;
         safariVersion: string | null;
         timestamp: string;
+        platform?: string;
+        maxTouchPoints?: number;
     };
     originalLine: string;
     taskBody: string;
@@ -102,9 +104,13 @@ function diagnoseTaskParsing(line: string): TaskDiagnostic {
     const diagnostic: TaskDiagnostic = {
         platform: {
             userAgent: navigator.userAgent,
-            isIOS: /iPad|iPhone|iPod/.test(navigator.userAgent),
+            isIOS:
+                /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1),
             safariVersion: getSafariVersion(),
             timestamp: new Date().toISOString(),
+            platform: navigator.platform,
+            maxTouchPoints: navigator.maxTouchPoints,
         },
         originalLine: line,
         taskBody: '',
@@ -209,7 +215,9 @@ function generateMarkdownReport(diagnostics: TaskDiagnostic[]): string {
     // Platform info
     const d = diagnostics[0];
     report += '### Platform\n';
-    report += `- **iOS**: ${d.platform.isIOS ? 'Yes' : 'No'}\n`;
+    report += `- **iOS/iPad**: ${d.platform.isIOS ? 'Yes' : 'No'}\n`;
+    report += `- **Platform**: ${d.platform.platform}\n`;
+    report += `- **Touch Points**: ${d.platform.maxTouchPoints}\n`;
     report += `- **Safari**: ${d.platform.safariVersion || 'N/A'}\n`;
     report += `- **Time**: ${d.platform.timestamp}\n`;
     report += `- **User Agent**: \`${d.platform.userAgent.substring(0, 50)}...\`\n\n`;
