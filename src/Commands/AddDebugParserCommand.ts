@@ -231,16 +231,18 @@ function generateMarkdownReport(diagnostics: TaskDiagnostic[]): string {
         // Field extraction table
         if (diagnostic.parsingSteps.length > 0) {
             report += `#### Task ${index + 1}: Parsing Steps\n\n`;
-            report += '| Step | Field | Matched | Value | Input Before | Remaining After |\n';
-            report += '|------|-------|---------|-------|--------------|-----------------|\n';
+            report += '| Step | Field | Matched | Value | Regex | Input Before | Remaining After |\n';
+            report += '|------|-------|---------|-------|-------|--------------|-----------------|\n';
 
             diagnostic.parsingSteps.forEach((step) => {
                 const inputBefore = '`' + step.inputBeforeMatch + '`';
                 const remaining = step.remainingAfterMatch ? '`' + step.remainingAfterMatch + '`' : '_(empty)_';
                 const value = step.extractedValue ? '`' + step.extractedValue + '`' : '—';
                 const matched = step.matched ? '✅' : '❌';
+                // Escape pipe characters in regex for markdown table
+                const regex = '`' + step.regex.replace(/\|/g, '\\|') + '`';
 
-                report += `| ${step.stepNumber} | ${step.fieldName} | ${matched} | ${value} | ${inputBefore} | ${remaining} |\n`;
+                report += `| ${step.stepNumber} | ${step.fieldName} | ${matched} | ${value} | ${regex} | ${inputBefore} | ${remaining} |\n`;
             });
             report += '\n';
         }
