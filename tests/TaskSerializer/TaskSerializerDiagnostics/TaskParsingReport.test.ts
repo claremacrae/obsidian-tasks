@@ -20,7 +20,7 @@ afterEach(() => {
 });
 
 describe('TaskParsingReport', () => {
-    it('should generate a report for one line', () => {
+    it('two simple fields', () => {
         const line = new TaskBuilder().priority(Priority.High).scheduledDate('2025-08-10').build().originalMarkdown;
         const report = createTaskParsingReport([line]);
         verifyMarkdown(report);
