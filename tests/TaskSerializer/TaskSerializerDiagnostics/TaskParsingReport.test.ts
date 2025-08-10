@@ -27,8 +27,14 @@ describe('TaskParsingReport', () => {
     });
 
     it('fully populated task', () => {
-        const line = TaskBuilder.createFullyPopulatedTask().originalMarkdown.replace(' ^dcf64c', '');
-        const report = createTaskParsingReport([line]);
+        const line = TaskBuilder.createFullyPopulatedTask().originalMarkdown;
+
+        // The parsing code seems to require a line without block ID.
+        // In a slightly hacky move, just remove it manually.
+        const lineWithoutBlockID = line.replace(' ^dcf64c', '');
+        expect(lineWithoutBlockID).not.toContain('^');
+
+        const report = createTaskParsingReport([lineWithoutBlockID]);
         verifyMarkdown(report);
     });
 });
