@@ -43,4 +43,10 @@ describe('TaskParsingReport', () => {
         const report = createTaskParsingReport([lineWithoutBlockID]);
         verifyMarkdown(report);
     });
+
+    it('a non-task', () => {
+        const line = 'i Am nOT a TaSk';
+        const report = createTaskParsingReport([line]);
+        verifyMarkdown(report);
+    });
 });
