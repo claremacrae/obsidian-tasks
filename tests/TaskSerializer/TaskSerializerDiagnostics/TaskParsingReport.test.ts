@@ -44,6 +44,15 @@ describe('TaskParsingReport', () => {
         verifyMarkdown(report);
     });
 
+    it('two tasks', () => {
+        const lines = [
+            '- [ ] task that does not show up 🔁 every day 🛫 2025-08-09',
+            '- [ ] task that does show up 🛫 2025-08-09 🔁 every day',
+        ];
+        const report = createTaskParsingReport(lines);
+        verifyMarkdown(report);
+    });
+
     it('a non-task', () => {
         const line = 'i Am nOT a TaSk';
         const report = createTaskParsingReport([line]);
