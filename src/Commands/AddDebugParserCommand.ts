@@ -5,7 +5,7 @@ import {
     type TaskDiagnostic,
     diagnoseTaskParsing,
 } from '../TaskSerializer/TaskSerializerDiagnostics/DiagnoseTaskParsing';
-import { generateMarkdownReport } from './GenerateMarkdownReport';
+import { generateMarkdownReport } from '../TaskSerializer/TaskSerializerDiagnostics/GenerateMarkdownReport';
 
 // Type augmentation to tell TypeScript about the method we're adding
 declare module '../TaskSerializer/DefaultTaskSerializer' {

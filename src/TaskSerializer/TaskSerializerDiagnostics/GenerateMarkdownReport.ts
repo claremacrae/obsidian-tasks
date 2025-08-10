@@ -1,4 +1,4 @@
-import type { TaskDiagnostic } from '../TaskSerializer/TaskSerializerDiagnostics/DiagnoseTaskParsing';
+import type { TaskDiagnostic } from './DiagnoseTaskParsing';
 
 export function generateMarkdownReport(diagnostics: TaskDiagnostic[]): string {
     let report = '## 🔍 Task Parser Diagnostic Report\n\n';
