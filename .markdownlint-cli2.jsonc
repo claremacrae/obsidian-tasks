@@ -7,6 +7,7 @@
         "!node_modules",
         "!tests",
         "!resources/sample_vaults/Tasks-Demo/_meta/templates",
+        "!resources/sample_vaults/Tasks-Demo/3546 - bug - iOS 18.6 - test file.md",
         "!resources/sample_vaults/Tasks-Demo/Test Data",
         "!resources/sample_vaults/Tasks-Demo/Manual Testing/Smoke test Kanban Integration.md"
     ]
