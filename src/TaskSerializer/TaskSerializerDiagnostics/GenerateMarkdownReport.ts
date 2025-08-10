@@ -72,7 +72,8 @@ export function generateMarkdownReport(diagnostics: TaskDiagnostic[]): string {
 
     // Process each task
     diagnostics.forEach((diagnostic, index) => {
-        report += `### Task ${index + 1}\n`;
+        const stepLabel = `Task ${index + 1}`;
+        report += `### ${stepLabel}\n`;
         report += '```text\n' + diagnostic.originalLine + '\n```\n\n';
 
         // Parse errors
