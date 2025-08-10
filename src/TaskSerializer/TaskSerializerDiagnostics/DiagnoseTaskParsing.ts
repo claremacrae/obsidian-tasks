@@ -1,7 +1,7 @@
 import { TaskRegularExpressions } from '../../Task/TaskRegularExpressions';
 import { DefaultTaskSerializer } from '../index';
 import { DEFAULT_SYMBOLS } from '../DefaultTaskSerializer';
-import { runMinimalRegexTests } from '../../Commands/MinimalRegexTests';
+import { runMinimalRegexTests } from './MinimalRegexTests';
 import { runEmojiTests } from './EmojiTests';
 import { type CharacterInfo, analyzeCharacters } from './AnalyzeCharacters';
 
