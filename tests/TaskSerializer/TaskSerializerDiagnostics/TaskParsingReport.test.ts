@@ -25,4 +25,10 @@ describe('TaskParsingReport', () => {
         const report = createTaskParsingReport([line]);
         verifyMarkdown(report);
     });
+
+    it('fully populated task', () => {
+        const line = TaskBuilder.createFullyPopulatedTask().originalMarkdown.replace(' ^dcf64c', '');
+        const report = createTaskParsingReport([line]);
+        verifyMarkdown(report);
+    });
 });
