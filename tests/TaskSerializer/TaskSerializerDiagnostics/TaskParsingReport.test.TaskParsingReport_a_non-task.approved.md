@@ -29,19 +29,15 @@ Testing regex patterns with and without $ anchor:
 | After replace: triangle then hourglass | `🔺 ⏳ 2025-08-09` | `⏳ \d{4}-\d{2}-\d{2}` | ✅ | `⏳ \d{4}-\d{2}-\d{2}$` | ✅ |
 | After trim: triangle then hourglass | `🔺 ⏳ 2025-08-09` | `⏳ \d{4}-\d{2}-\d{2}` | ✅ | `⏳ \d{4}-\d{2}-\d{2}$` | ✅ |
 | After substring: just hourglass part | `⏳ 2025-08-09` | `⏳ \d{4}-\d{2}-\d{2}` | ✅ | `⏳ \d{4}-\d{2}-\d{2}$` | ✅ |
-| Step 1: Priority match | `Highest 🔺 ⏳ 2025-08-09` | `🔺\uFE0F?` | ✅ | `🔺\uFE0F?$` | ❌ |
-| ⚠️ **DIFFERS** | | | | | |
-| Step 2: After removing priority | `Highest  ⏳ 2025-08-09` | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ |
-| Step 2b: After trim | `Highest ⏳ 2025-08-09` | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ |
+| Step 1: Schedule match at end | `Highest 🔺 ⏳ 2025-08-09` | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ |
+| Step 2: After removing schedule | `Highest 🔺` | `[🔺⏫🔼🔽⏬]\uFE0F?` | ✅ | `[🔺⏫🔼🔽⏬]\uFE0F?$` | ✅ |
+| Step 2b: After trim | `Highest 🔺` | `[🔺⏫🔼🔽⏬]\uFE0F?` | ✅ | `[🔺⏫🔼🔽⏬]\uFE0F?$` | ✅ |
 | Medium priority | `🔼` | `[🔺⏫🔼🔽⏬]\uFE0F?` | ✅ | `[🔺⏫🔼🔽⏬]\uFE0F?$` | ✅ |
 | Low priority | `🔽` | `[🔺⏫🔼🔽⏬]\uFE0F?` | ✅ | `[🔺⏫🔼🔽⏬]\uFE0F?$` | ✅ |
 | After triangle space | ` ⏳ 2025-08-09` | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ |
 | Regular text | `test` | `test` | ✅ | `test$` | ✅ |
 | Text with number | `test123` | `test\d+` | ✅ | `test\d+$` | ✅ |
 | Date alone | `2025-08-09` | `\d{4}-\d{2}-\d{2}` | ✅ | `\d{4}-\d{2}-\d{2}$` | ✅ |
-
-**Failed tests:**
-- With $ anchor: 2 failures
 
 ### Task 1
 ```text

@@ -36,10 +36,10 @@ export function runMinimalRegexTests(): {
         ['After trim: triangle then hourglass', '🔺 ⏳ 2025-08-09'.trim(), '⏳ \\d{4}-\\d{2}-\\d{2}'],
         ['After substring: just hourglass part', '🔺 ⏳ 2025-08-09'.substring(3), '⏳ \\d{4}-\\d{2}-\\d{2}'],
 
-        // Test the ACTUAL parsing scenario - remove priority first, then match scheduled
-        ['Step 1: Priority match', 'Highest 🔺 ⏳ 2025-08-09', '🔺\\uFE0F?'],
-        ['Step 2: After removing priority', 'Highest  ⏳ 2025-08-09', '[⏳⌛]\\uFE0F? *(\\d{4}-\\d{2}-\\d{2})'],
-        ['Step 2b: After trim', 'Highest ⏳ 2025-08-09', '[⏳⌛]\\uFE0F? *(\\d{4}-\\d{2}-\\d{2})'],
+        // Test the ACTUAL parsing scenario - reading from RIGHT to LEFT
+        ['Step 1: Schedule match at end', 'Highest 🔺 ⏳ 2025-08-09', '[⏳⌛]\\uFE0F? *(\\d{4}-\\d{2}-\\d{2})'],
+        ['Step 2: After removing schedule', 'Highest 🔺', '[🔺⏫🔼🔽⏬]\\uFE0F?'],
+        ['Step 2b: After trim', 'Highest 🔺', '[🔺⏫🔼🔽⏬]\\uFE0F?'],
 
         // From actual failing cases
         ['Medium priority', '🔼', '[🔺⏫🔼🔽⏬]\\uFE0F?'],
@@ -101,29 +101,7 @@ export function runMinimalRegexTests(): {
         let line = 'Highest 🔺 ⏳ 2025-08-09';
         const steps: any[] = [];
 
-        // Step 1: Try to match and remove priority
-        const priorityRegex = /([🔺⏫🔼🔽⏬])\uFE0F?$/u;
-        const priorityMatch = line.match(priorityRegex);
-        steps.push({
-            testName: 'Parsing simulation: priority match',
-            input: line,
-            pattern: priorityRegex.source,
-            withDollar: true,
-            matched: !!priorityMatch,
-        });
-
-        if (priorityMatch) {
-            line = line.replace(priorityRegex, '').trim();
-            steps.push({
-                testName: 'Parsing simulation: after priority removed',
-                input: line,
-                pattern: 'N/A - showing line state',
-                withDollar: false,
-                matched: true,
-            });
-        }
-
-        // Step 2: Try to match scheduled date
+        // Step 1: Try to match and remove SCHEDULED DATE (from the end)
         const scheduledRegex = /[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2})$/u;
         const scheduledMatch = line.match(scheduledRegex);
         steps.push({
@@ -132,6 +110,28 @@ export function runMinimalRegexTests(): {
             pattern: scheduledRegex.source,
             withDollar: true,
             matched: !!scheduledMatch,
+        });
+
+        if (scheduledMatch) {
+            line = line.replace(scheduledRegex, '').trim();
+            steps.push({
+                testName: 'Parsing simulation: after scheduled removed',
+                input: line,
+                pattern: 'N/A - showing line state',
+                withDollar: false,
+                matched: true,
+            });
+        }
+
+        // Step 2: Try to match priority
+        const priorityRegex = /([🔺⏫🔼🔽⏬])\uFE0F?$/u;
+        const priorityMatch = line.match(priorityRegex);
+        steps.push({
+            testName: 'Parsing simulation: priority match',
+            input: line,
+            pattern: priorityRegex.source,
+            withDollar: true,
+            matched: !!priorityMatch,
         });
 
         return steps;
