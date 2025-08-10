@@ -14,6 +14,14 @@ declare module '../TaskSerializer/DefaultTaskSerializer' {
     }
 }
 
+function createTaskParsingReport(taskLines: string[]) {
+    const diagnostics = taskLines.map((line) => diagnoseTaskParsing(line));
+
+    // Render as markdown table below the current position
+    const report = generateMarkdownReport(diagnostics);
+    return report;
+}
+
 /**
  * Visual debug command to diagnose regex parsing issues on different platforms
  * Uses the actual Tasks parser with diagnostic output
@@ -41,11 +49,7 @@ export function addDebugParserCommand(plugin: Plugin) {
                 new Notice('No task lines found');
                 return;
             }
-
-            const diagnostics = taskLines.map((line) => diagnoseTaskParsing(line));
-
-            // Render as markdown table below the current position
-            const report = generateMarkdownReport(diagnostics);
+            const report = createTaskParsingReport(taskLines);
 
             // Insert the report below the current selection/line
             const insertLine = selection ? editor.getCursor('to').line + 1 : cursor.line + 1;
