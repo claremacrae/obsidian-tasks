@@ -1,11 +1,12 @@
 import { App, Editor, type MarkdownFileInfo, MarkdownView, Modal, Notice, Plugin } from 'obsidian';
+import type { TaskDetails } from '../TaskSerializer';
 import { DEFAULT_SYMBOLS, DefaultTaskSerializer } from '../TaskSerializer/DefaultTaskSerializer';
 import { TaskRegularExpressions } from '../Task/TaskRegularExpressions';
 
 // Type augmentation to tell TypeScript about the method we're adding
 declare module '../TaskSerializer/DefaultTaskSerializer' {
     interface DefaultTaskSerializer {
-        deserializeWithDiagnostics(line: string): any;
+        deserialize(line: string, collectDiagnostics?: boolean): TaskDetails & { diagnostics?: ParseDiagnostic[] };
     }
 }
 
@@ -125,16 +126,33 @@ function diagnoseTaskParsing(line: string): TaskDiagnostic {
     // Groups: [1]=indentation, [2]=listMarker, [3]=status, [4]=description+fields
     diagnostic.taskBody = taskMatch[4] || '';
 
-    // Create a serializer with diagnostic capabilities
+    // Create a serializer and call the ACTUAL deserialize with diagnostic flag
     const serializer = new DefaultTaskSerializer(DEFAULT_SYMBOLS);
 
-    // Call deserialize with diagnostic flag
-    const result = (serializer as any).deserializeWithDiagnostics(diagnostic.taskBody);
+    const result = serializer.deserialize(diagnostic.taskBody, true);
 
     if (result.diagnostics) {
-        diagnostic.parsingSteps = result.diagnostics;
-        diagnostic.extractedFields = result.extractedFields || {};
-        diagnostic.finalRemainingText = result.finalText || '';
+        // Convert the ParseDiagnostic format to ParseStep format
+        diagnostic.parsingSteps = result.diagnostics.map((d, index) => ({
+            stepNumber: index,
+            fieldName: d.fieldName,
+            regex: d.regex,
+            inputBeforeMatch: d.input,
+            matched: d.matched,
+            extractedValue: d.extracted,
+            remainingAfterMatch: d.remaining,
+        }));
+
+        // Extract the fields that were successfully parsed
+        diagnostic.extractedFields = {};
+        result.diagnostics.forEach((d) => {
+            if (d.matched && d.extracted) {
+                diagnostic.extractedFields[d.fieldName] = d.extracted;
+            }
+        });
+
+        // The final description is what's left after all parsing
+        diagnostic.finalRemainingText = result.description || '';
         diagnostic.successfullyParsed = Object.keys(diagnostic.extractedFields).length > 0;
     }
 
@@ -143,99 +161,6 @@ function diagnoseTaskParsing(line: string): TaskDiagnostic {
 
     return diagnostic;
 }
-
-/**
- * Extended version of DefaultTaskSerializer.deserialize that collects diagnostic information
- * This should ideally be added to DefaultTaskSerializer itself
- */
-export function addDiagnosticDeserializer(serializerClass: typeof DefaultTaskSerializer) {
-    serializerClass.prototype.deserializeWithDiagnostics = function (line: string) {
-        const { TaskFormatRegularExpressions } = this.symbols;
-        const diagnostics: ParseStep[] = [];
-        const extractedFields: Record<string, string> = {};
-
-        let stepNumber = 0;
-        let currentLine = line;
-
-        // The field processing order from the original deserialize method
-        const fields = [
-            { name: 'priority', regex: TaskFormatRegularExpressions.priorityRegex },
-            { name: 'doneDate', regex: TaskFormatRegularExpressions.doneDateRegex },
-            { name: 'cancelledDate', regex: TaskFormatRegularExpressions.cancelledDateRegex },
-            { name: 'dueDate', regex: TaskFormatRegularExpressions.dueDateRegex },
-            { name: 'scheduledDate', regex: TaskFormatRegularExpressions.scheduledDateRegex },
-            { name: 'startDate', regex: TaskFormatRegularExpressions.startDateRegex },
-            { name: 'createdDate', regex: TaskFormatRegularExpressions.createdDateRegex },
-            { name: 'recurrence', regex: TaskFormatRegularExpressions.recurrenceRegex },
-            { name: 'onCompletion', regex: TaskFormatRegularExpressions.onCompletionRegex },
-            { name: 'id', regex: TaskFormatRegularExpressions.idRegex },
-            { name: 'dependsOn', regex: TaskFormatRegularExpressions.dependsOnRegex },
-        ];
-
-        // Also need to handle tags - using the actual Tasks regex
-        const tagRegex = TaskRegularExpressions.hashTagsFromEnd;
-
-        let matched: boolean;
-        const maxRuns = 20;
-        let runs = 0;
-
-        do {
-            matched = false;
-
-            // Try each field regex
-            for (const field of fields) {
-                const match = currentLine.match(field.regex);
-                if (match !== null) {
-                    diagnostics.push({
-                        stepNumber: stepNumber++,
-                        fieldName: field.name,
-                        regex: field.regex.source,
-                        inputBeforeMatch: currentLine,
-                        matched: true,
-                        extractedValue: match[0],
-                        remainingAfterMatch: currentLine.replace(field.regex, '').trim(),
-                    });
-
-                    extractedFields[field.name] = match[0];
-                    currentLine = currentLine.replace(field.regex, '').trim();
-                    matched = true;
-                }
-            }
-
-            // Also check for tags
-            const tagMatch = currentLine.match(tagRegex);
-            if (tagMatch !== null) {
-                diagnostics.push({
-                    stepNumber: stepNumber++,
-                    fieldName: 'tag',
-                    regex: tagRegex.source,
-                    inputBeforeMatch: currentLine,
-                    matched: true,
-                    extractedValue: tagMatch[0],
-                    remainingAfterMatch: currentLine.replace(tagRegex, '').trim(),
-                });
-
-                currentLine = currentLine.replace(tagRegex, '').trim();
-                matched = true;
-            }
-
-            runs++;
-        } while (matched && runs <= maxRuns);
-
-        // Also run the actual deserialize to get the real results
-        const actualResult = this.deserialize(line);
-
-        return {
-            ...actualResult,
-            diagnostics,
-            extractedFields,
-            finalText: currentLine,
-        };
-    };
-}
-
-// Initialize the diagnostic deserializer
-addDiagnosticDeserializer(DefaultTaskSerializer);
 
 function runEmojiTests(text: string): Record<string, boolean> {
     const tests: Record<string, boolean> = {};
