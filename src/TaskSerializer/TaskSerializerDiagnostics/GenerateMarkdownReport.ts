@@ -113,7 +113,7 @@ export function generateMarkdownReport(diagnostics: TaskDiagnostic[]): string {
 
         // Field extraction table
         if (diagnostic.parsingSteps.length > 0) {
-            report += `#### Task ${index + 1}: Parsing Steps\n\n`;
+            report += `#### ${stepLabel}: Parsing Steps\n\n`;
             report += '| Step | Field | Matched | Value | Regex | Input Before | Remaining After |\n';
             report += '|------|-------|---------|-------|-------|--------------|-----------------|\n';
 
