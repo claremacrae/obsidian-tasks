@@ -38,6 +38,13 @@ Testing regex patterns with and without $ anchor:
 | Regular text | `test` | `test` | ✅ | `test$` | ✅ |
 | Text with number | `test123` | `test\d+` | ✅ | `test\d+$` | ✅ |
 | Date alone | `2025-08-09` | `\d{4}-\d{2}-\d{2}` | ✅ | `\d{4}-\d{2}-\d{2}$` | ✅ |
+| NFC: Step 1: Schedule match at end | `Highest 🔺 ⏳ 2025-08-09` | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ |
+| NFD: Step 1: Schedule match at end | `Highest 🔺 ⏳ 2025-08-09` | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ |
+| NFKC: Step 1: Schedule match at end | `Highest 🔺 ⏳ 2025-08-09` | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ |
+| NFKD: Step 1: Schedule match at end | `Highest 🔺 ⏳ 2025-08-09` | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ |
+| NFC: Triangle space hourglass | `🔺 ⏳` | `⏳` | ✅ | `⏳$` | ✅ |
+| NFD: Triangle space hourglass | `🔺 ⏳` | `⏳` | ✅ | `⏳$` | ✅ |
+| Pattern normalized: Schedule match | `Highest 🔺 ⏳ 2025-08-09` | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ | `[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2...` | ✅ |
 
 ### Task 1
 ```text

@@ -50,6 +50,39 @@ export function runMinimalRegexTests(): {
         ['Regular text', 'test', 'test'],
         ['Text with number', 'test123', 'test\\d+'],
         ['Date alone', '2025-08-09', '\\d{4}-\\d{2}-\\d{2}'],
+
+        // Normalization tests
+        [
+            'NFC: Step 1: Schedule match at end',
+            'Highest 🔺 ⏳ 2025-08-09'.normalize('NFC'),
+            '[⏳⌛]\\uFE0F? *(\\d{4}-\\d{2}-\\d{2})',
+        ],
+        [
+            'NFD: Step 1: Schedule match at end',
+            'Highest 🔺 ⏳ 2025-08-09'.normalize('NFD'),
+            '[⏳⌛]\\uFE0F? *(\\d{4}-\\d{2}-\\d{2})',
+        ],
+        [
+            'NFKC: Step 1: Schedule match at end',
+            'Highest 🔺 ⏳ 2025-08-09'.normalize('NFKC'),
+            '[⏳⌛]\\uFE0F? *(\\d{4}-\\d{2}-\\d{2})',
+        ],
+        [
+            'NFKD: Step 1: Schedule match at end',
+            'Highest 🔺 ⏳ 2025-08-09'.normalize('NFKD'),
+            '[⏳⌛]\\uFE0F? *(\\d{4}-\\d{2}-\\d{2})',
+        ],
+
+        // Test individual problem emojis with normalization
+        ['NFC: Triangle space hourglass', '🔺 ⏳'.normalize('NFC'), '⏳'],
+        ['NFD: Triangle space hourglass', '🔺 ⏳'.normalize('NFD'), '⏳'],
+
+        // Test if normalizing the pattern helps
+        [
+            'Pattern normalized: Schedule match',
+            'Highest 🔺 ⏳ 2025-08-09',
+            '[⏳⌛]\\uFE0F? *(\\d{4}-\\d{2}-\\d{2})'.normalize('NFC'),
+        ],
     ];
 
     for (const [testName, input, patternBase] of testCases) {
