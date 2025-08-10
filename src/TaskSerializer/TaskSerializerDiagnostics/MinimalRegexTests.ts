@@ -27,6 +27,20 @@ export function runMinimalRegexTests(): {
         ['Triangle in brackets', '🔺', '([🔺⏫🔼🔽⏬])'],
         ['Triangle with variant selector', '🔺', '[🔺⏫🔼🔽⏬]\\uFE0F?'],
 
+        // CRITICAL TEST: After string manipulation (simulating the parsing loop)
+        [
+            'After replace: triangle then hourglass',
+            '🔺 ⏳ 2025-08-09'.replace(/nothing/, ''),
+            '⏳ \\d{4}-\\d{2}-\\d{2}',
+        ],
+        ['After trim: triangle then hourglass', '🔺 ⏳ 2025-08-09'.trim(), '⏳ \\d{4}-\\d{2}-\\d{2}'],
+        ['After substring: just hourglass part', '🔺 ⏳ 2025-08-09'.substring(3), '⏳ \\d{4}-\\d{2}-\\d{2}'],
+
+        // Test the ACTUAL parsing scenario - remove priority first, then match scheduled
+        ['Step 1: Priority match', 'Highest 🔺 ⏳ 2025-08-09', '🔺\\uFE0F?'],
+        ['Step 2: After removing priority', 'Highest  ⏳ 2025-08-09', '[⏳⌛]\\uFE0F? *(\\d{4}-\\d{2}-\\d{2})'],
+        ['Step 2b: After trim', 'Highest ⏳ 2025-08-09', '[⏳⌛]\\uFE0F? *(\\d{4}-\\d{2}-\\d{2})'],
+
         // From actual failing cases
         ['Medium priority', '🔼', '[🔺⏫🔼🔽⏬]\\uFE0F?'],
         ['Low priority', '🔽', '[🔺⏫🔼🔽⏬]\\uFE0F?'],
@@ -81,6 +95,49 @@ export function runMinimalRegexTests(): {
             });
         }
     }
+
+    // Add a special test that simulates the actual parsing loop
+    const simulateParsingLoop = () => {
+        let line = 'Highest 🔺 ⏳ 2025-08-09';
+        const steps: any[] = [];
+
+        // Step 1: Try to match and remove priority
+        const priorityRegex = /([🔺⏫🔼🔽⏬])\uFE0F?$/u;
+        const priorityMatch = line.match(priorityRegex);
+        steps.push({
+            testName: 'Parsing simulation: priority match',
+            input: line,
+            pattern: priorityRegex.source,
+            withDollar: true,
+            matched: !!priorityMatch,
+        });
+
+        if (priorityMatch) {
+            line = line.replace(priorityRegex, '').trim();
+            steps.push({
+                testName: 'Parsing simulation: after priority removed',
+                input: line,
+                pattern: 'N/A - showing line state',
+                withDollar: false,
+                matched: true,
+            });
+        }
+
+        // Step 2: Try to match scheduled date
+        const scheduledRegex = /[⏳⌛]\uFE0F? *(\d{4}-\d{2}-\d{2})$/u;
+        const scheduledMatch = line.match(scheduledRegex);
+        steps.push({
+            testName: 'Parsing simulation: scheduled match',
+            input: line,
+            pattern: scheduledRegex.source,
+            withDollar: true,
+            matched: !!scheduledMatch,
+        });
+
+        return steps;
+    };
+
+    results.push(...simulateParsingLoop());
 
     return results;
 }
