@@ -115,11 +115,11 @@ Testing regex patterns with and without $ anchor:
 
 | Step | Field | Matched | Value | Regex | Input Before | Remaining After |
 |------|-------|---------|-------|-------|--------------|-----------------|
-| 0 | priority | ❌ | — | `([🔺⏫🔼🔽⏬])️?$` | `task that does not show up 🔁 every day 🛫 2025-08-09` | _(empty)_ |
+| 0 | priority | ❌ | — | `(🔺\|⏫\|🔼\|🔽\|⏬)️?$` | `task that does not show up 🔁 every day 🛫 2025-08-09` | _(empty)_ |
 | 1 | doneDate | ❌ | — | `✅️? *(\d{4}-\d{2}-\d{2})$` | `task that does not show up 🔁 every day 🛫 2025-08-09` | _(empty)_ |
 | 2 | cancelledDate | ❌ | — | `❌️? *(\d{4}-\d{2}-\d{2})$` | `task that does not show up 🔁 every day 🛫 2025-08-09` | _(empty)_ |
-| 3 | dueDate | ❌ | — | `[📅📆🗓]️? *(\d{4}-\d{2}-\d{2})$` | `task that does not show up 🔁 every day 🛫 2025-08-09` | _(empty)_ |
-| 4 | scheduledDate | ❌ | — | `[⏳⌛]️? *(\d{4}-\d{2}-\d{2})$` | `task that does not show up 🔁 every day 🛫 2025-08-09` | _(empty)_ |
+| 3 | dueDate | ❌ | — | `(?:📅\|📆\|🗓)️? *(\d{4}-\d{2}-\d{2})$` | `task that does not show up 🔁 every day 🛫 2025-08-09` | _(empty)_ |
+| 4 | scheduledDate | ❌ | — | `(?:⏳\|⌛)️? *(\d{4}-\d{2}-\d{2})$` | `task that does not show up 🔁 every day 🛫 2025-08-09` | _(empty)_ |
 | 5 | startDate | ✅ | `🛫 2025-08-09` | `🛫️? *(\d{4}-\d{2}-\d{2})$` | `task that does not show up 🔁 every day 🛫 2025-08-09` | `task that does not show up 🔁 every day` |
 | 6 | createdDate | ❌ | — | `➕️? *(\d{4}-\d{2}-\d{2})$` | `task that does not show up 🔁 every day` | _(empty)_ |
 | 7 | recurrence | ✅ | `🔁 every day` | `🔁️? *([a-zA-Z0-9, !]+)$` | `task that does not show up 🔁 every day` | `task that does not show up` |
@@ -127,11 +127,11 @@ Testing regex patterns with and without $ anchor:
 | 9 | tags | ❌ | — | `(^\|\s)#[^ !@#$%^&*(),.?":{}\|<>]+$` | `task that does not show up` | _(empty)_ |
 | 10 | id | ❌ | — | `🆔️? *([a-zA-Z0-9-_]+)$` | `task that does not show up` | _(empty)_ |
 | 11 | dependsOn | ❌ | — | `⛔️? *([a-zA-Z0-9-_]+( *, *[a-zA-Z0-9-_]+ *)*)$` | `task that does not show up` | _(empty)_ |
-| 12 | priority | ❌ | — | `([🔺⏫🔼🔽⏬])️?$` | `task that does not show up` | _(empty)_ |
+| 12 | priority | ❌ | — | `(🔺\|⏫\|🔼\|🔽\|⏬)️?$` | `task that does not show up` | _(empty)_ |
 | 13 | doneDate | ❌ | — | `✅️? *(\d{4}-\d{2}-\d{2})$` | `task that does not show up` | _(empty)_ |
 | 14 | cancelledDate | ❌ | — | `❌️? *(\d{4}-\d{2}-\d{2})$` | `task that does not show up` | _(empty)_ |
-| 15 | dueDate | ❌ | — | `[📅📆🗓]️? *(\d{4}-\d{2}-\d{2})$` | `task that does not show up` | _(empty)_ |
-| 16 | scheduledDate | ❌ | — | `[⏳⌛]️? *(\d{4}-\d{2}-\d{2})$` | `task that does not show up` | _(empty)_ |
+| 15 | dueDate | ❌ | — | `(?:📅\|📆\|🗓)️? *(\d{4}-\d{2}-\d{2})$` | `task that does not show up` | _(empty)_ |
+| 16 | scheduledDate | ❌ | — | `(?:⏳\|⌛)️? *(\d{4}-\d{2}-\d{2})$` | `task that does not show up` | _(empty)_ |
 | 17 | startDate | ❌ | — | `🛫️? *(\d{4}-\d{2}-\d{2})$` | `task that does not show up` | _(empty)_ |
 | 18 | createdDate | ❌ | — | `➕️? *(\d{4}-\d{2}-\d{2})$` | `task that does not show up` | _(empty)_ |
 | 19 | recurrence | ❌ | — | `🔁️? *([a-zA-Z0-9, !]+)$` | `task that does not show up` | _(empty)_ |
@@ -207,11 +207,11 @@ Testing regex patterns with and without $ anchor:
 
 | Step | Field | Matched | Value | Regex | Input Before | Remaining After |
 |------|-------|---------|-------|-------|--------------|-----------------|
-| 0 | priority | ❌ | — | `([🔺⏫🔼🔽⏬])️?$` | `task that does show up 🛫 2025-08-09 🔁 every day` | _(empty)_ |
+| 0 | priority | ❌ | — | `(🔺\|⏫\|🔼\|🔽\|⏬)️?$` | `task that does show up 🛫 2025-08-09 🔁 every day` | _(empty)_ |
 | 1 | doneDate | ❌ | — | `✅️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up 🛫 2025-08-09 🔁 every day` | _(empty)_ |
 | 2 | cancelledDate | ❌ | — | `❌️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up 🛫 2025-08-09 🔁 every day` | _(empty)_ |
-| 3 | dueDate | ❌ | — | `[📅📆🗓]️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up 🛫 2025-08-09 🔁 every day` | _(empty)_ |
-| 4 | scheduledDate | ❌ | — | `[⏳⌛]️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up 🛫 2025-08-09 🔁 every day` | _(empty)_ |
+| 3 | dueDate | ❌ | — | `(?:📅\|📆\|🗓)️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up 🛫 2025-08-09 🔁 every day` | _(empty)_ |
+| 4 | scheduledDate | ❌ | — | `(?:⏳\|⌛)️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up 🛫 2025-08-09 🔁 every day` | _(empty)_ |
 | 5 | startDate | ❌ | — | `🛫️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up 🛫 2025-08-09 🔁 every day` | _(empty)_ |
 | 6 | createdDate | ❌ | — | `➕️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up 🛫 2025-08-09 🔁 every day` | _(empty)_ |
 | 7 | recurrence | ✅ | `🔁 every day` | `🔁️? *([a-zA-Z0-9, !]+)$` | `task that does show up 🛫 2025-08-09 🔁 every day` | `task that does show up 🛫 2025-08-09` |
@@ -219,11 +219,11 @@ Testing regex patterns with and without $ anchor:
 | 9 | tags | ❌ | — | `(^\|\s)#[^ !@#$%^&*(),.?":{}\|<>]+$` | `task that does show up 🛫 2025-08-09` | _(empty)_ |
 | 10 | id | ❌ | — | `🆔️? *([a-zA-Z0-9-_]+)$` | `task that does show up 🛫 2025-08-09` | _(empty)_ |
 | 11 | dependsOn | ❌ | — | `⛔️? *([a-zA-Z0-9-_]+( *, *[a-zA-Z0-9-_]+ *)*)$` | `task that does show up 🛫 2025-08-09` | _(empty)_ |
-| 12 | priority | ❌ | — | `([🔺⏫🔼🔽⏬])️?$` | `task that does show up 🛫 2025-08-09` | _(empty)_ |
+| 12 | priority | ❌ | — | `(🔺\|⏫\|🔼\|🔽\|⏬)️?$` | `task that does show up 🛫 2025-08-09` | _(empty)_ |
 | 13 | doneDate | ❌ | — | `✅️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up 🛫 2025-08-09` | _(empty)_ |
 | 14 | cancelledDate | ❌ | — | `❌️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up 🛫 2025-08-09` | _(empty)_ |
-| 15 | dueDate | ❌ | — | `[📅📆🗓]️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up 🛫 2025-08-09` | _(empty)_ |
-| 16 | scheduledDate | ❌ | — | `[⏳⌛]️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up 🛫 2025-08-09` | _(empty)_ |
+| 15 | dueDate | ❌ | — | `(?:📅\|📆\|🗓)️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up 🛫 2025-08-09` | _(empty)_ |
+| 16 | scheduledDate | ❌ | — | `(?:⏳\|⌛)️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up 🛫 2025-08-09` | _(empty)_ |
 | 17 | startDate | ✅ | `🛫 2025-08-09` | `🛫️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up 🛫 2025-08-09` | `task that does show up` |
 | 18 | createdDate | ❌ | — | `➕️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up` | _(empty)_ |
 | 19 | recurrence | ❌ | — | `🔁️? *([a-zA-Z0-9, !]+)$` | `task that does show up` | _(empty)_ |
@@ -231,11 +231,11 @@ Testing regex patterns with and without $ anchor:
 | 21 | tags | ❌ | — | `(^\|\s)#[^ !@#$%^&*(),.?":{}\|<>]+$` | `task that does show up` | _(empty)_ |
 | 22 | id | ❌ | — | `🆔️? *([a-zA-Z0-9-_]+)$` | `task that does show up` | _(empty)_ |
 | 23 | dependsOn | ❌ | — | `⛔️? *([a-zA-Z0-9-_]+( *, *[a-zA-Z0-9-_]+ *)*)$` | `task that does show up` | _(empty)_ |
-| 24 | priority | ❌ | — | `([🔺⏫🔼🔽⏬])️?$` | `task that does show up` | _(empty)_ |
+| 24 | priority | ❌ | — | `(🔺\|⏫\|🔼\|🔽\|⏬)️?$` | `task that does show up` | _(empty)_ |
 | 25 | doneDate | ❌ | — | `✅️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up` | _(empty)_ |
 | 26 | cancelledDate | ❌ | — | `❌️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up` | _(empty)_ |
-| 27 | dueDate | ❌ | — | `[📅📆🗓]️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up` | _(empty)_ |
-| 28 | scheduledDate | ❌ | — | `[⏳⌛]️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up` | _(empty)_ |
+| 27 | dueDate | ❌ | — | `(?:📅\|📆\|🗓)️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up` | _(empty)_ |
+| 28 | scheduledDate | ❌ | — | `(?:⏳\|⌛)️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up` | _(empty)_ |
 | 29 | startDate | ❌ | — | `🛫️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up` | _(empty)_ |
 | 30 | createdDate | ❌ | — | `➕️? *(\d{4}-\d{2}-\d{2})$` | `task that does show up` | _(empty)_ |
 | 31 | recurrence | ❌ | — | `🔁️? *([a-zA-Z0-9, !]+)$` | `task that does show up` | _(empty)_ |

@@ -65,17 +65,17 @@ describe('validate emoji regular expressions', () => {
     it('regular expressions should have expected source', () => {
         expect(generateRegexApprovalTest()).toMatchInlineSnapshot(`
             "
-            priorityRegex: /([🔺⏫🔼🔽⏬])\\ufe0f?$/u
-            startDateRegex: /🛫\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/u
-            createdDateRegex: /➕\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/u
-            scheduledDateRegex: /[⏳⌛]\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/u
-            dueDateRegex: /[📅📆🗓]\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/u
-            doneDateRegex: /✅\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/u
-            cancelledDateRegex: /❌\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/u
-            recurrenceRegex: /🔁\\ufe0f? *([a-zA-Z0-9, !]+)$/u
-            onCompletionRegex: /🏁\\ufe0f? *([a-zA-Z]+)$/u
-            dependsOnRegex: /⛔\\ufe0f? *([a-zA-Z0-9-_]+( *, *[a-zA-Z0-9-_]+ *)*)$/u
-            idRegex: /🆔\\ufe0f? *([a-zA-Z0-9-_]+)$/u
+            priorityRegex: /(🔺|⏫|🔼|🔽|⏬)\\ufe0f?$/
+            startDateRegex: /🛫\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/
+            createdDateRegex: /➕\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/
+            scheduledDateRegex: /(?:⏳|⌛)\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/
+            dueDateRegex: /(?:📅|📆|🗓)\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/
+            doneDateRegex: /✅\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/
+            cancelledDateRegex: /❌\\ufe0f? *(\\d{4}-\\d{2}-\\d{2})$/
+            recurrenceRegex: /🔁\\ufe0f? *([a-zA-Z0-9, !]+)$/
+            onCompletionRegex: /🏁\\ufe0f? *([a-zA-Z]+)$/
+            dependsOnRegex: /⛔\\ufe0f? *([a-zA-Z0-9-_]+( *, *[a-zA-Z0-9-_]+ *)*)$/
+            idRegex: /🆔\\ufe0f? *([a-zA-Z0-9-_]+)$/
             "
         `);
     });
@@ -348,7 +348,7 @@ describe('diagnostics', () => {
                 "fieldName": "priority",
                 "input": "Stuff 🔁 every week ➕ 2025-08-10 ⏳ 2025-08-08",
                 "matched": false,
-                "regex": "([🔺⏫🔼🔽⏬])️?$",
+                "regex": "(🔺|⏫|🔼|🔽|⏬)️?$",
                 "remaining": undefined,
                 "step": 0,
               },
@@ -375,7 +375,7 @@ describe('diagnostics', () => {
                 "fieldName": "dueDate",
                 "input": "Stuff 🔁 every week ➕ 2025-08-10 ⏳ 2025-08-08",
                 "matched": false,
-                "regex": "[📅📆🗓]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:📅|📆|🗓)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": undefined,
                 "step": 3,
               },
@@ -384,7 +384,7 @@ describe('diagnostics', () => {
                 "fieldName": "scheduledDate",
                 "input": "Stuff 🔁 every week ➕ 2025-08-10 ⏳ 2025-08-08",
                 "matched": true,
-                "regex": "[⏳⌛]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:⏳|⌛)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": "Stuff 🔁 every week ➕ 2025-08-10",
                 "step": 4,
               },
@@ -456,7 +456,7 @@ describe('diagnostics', () => {
                 "fieldName": "priority",
                 "input": "Stuff",
                 "matched": false,
-                "regex": "([🔺⏫🔼🔽⏬])️?$",
+                "regex": "(🔺|⏫|🔼|🔽|⏬)️?$",
                 "remaining": undefined,
                 "step": 12,
               },
@@ -483,7 +483,7 @@ describe('diagnostics', () => {
                 "fieldName": "dueDate",
                 "input": "Stuff",
                 "matched": false,
-                "regex": "[📅📆🗓]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:📅|📆|🗓)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": undefined,
                 "step": 15,
               },
@@ -492,7 +492,7 @@ describe('diagnostics', () => {
                 "fieldName": "scheduledDate",
                 "input": "Stuff",
                 "matched": false,
-                "regex": "[⏳⌛]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:⏳|⌛)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": undefined,
                 "step": 16,
               },
@@ -581,7 +581,7 @@ describe('diagnostics', () => {
                 "fieldName": "priority",
                 "input": "  - [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03 📅 2023-07-04 ❌ 2023-07-06 ✅ 2023-07-05",
                 "matched": false,
-                "regex": "([🔺⏫🔼🔽⏬])️?$",
+                "regex": "(🔺|⏫|🔼|🔽|⏬)️?$",
                 "remaining": undefined,
                 "step": 0,
               },
@@ -608,7 +608,7 @@ describe('diagnostics', () => {
                 "fieldName": "dueDate",
                 "input": "- [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03 📅 2023-07-04",
                 "matched": true,
-                "regex": "[📅📆🗓]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:📅|📆|🗓)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": "- [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03",
                 "step": 3,
               },
@@ -617,7 +617,7 @@ describe('diagnostics', () => {
                 "fieldName": "scheduledDate",
                 "input": "- [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03",
                 "matched": true,
-                "regex": "[⏳⌛]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:⏳|⌛)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": "- [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02",
                 "step": 4,
               },
@@ -689,7 +689,7 @@ describe('diagnostics', () => {
                 "fieldName": "priority",
                 "input": "- [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done",
                 "matched": false,
-                "regex": "([🔺⏫🔼🔽⏬])️?$",
+                "regex": "(🔺|⏫|🔼|🔽|⏬)️?$",
                 "remaining": undefined,
                 "step": 12,
               },
@@ -716,7 +716,7 @@ describe('diagnostics', () => {
                 "fieldName": "dueDate",
                 "input": "- [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done",
                 "matched": false,
-                "regex": "[📅📆🗓]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:📅|📆|🗓)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": undefined,
                 "step": 15,
               },
@@ -725,7 +725,7 @@ describe('diagnostics', () => {
                 "fieldName": "scheduledDate",
                 "input": "- [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done",
                 "matched": false,
-                "regex": "[⏳⌛]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:⏳|⌛)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": undefined,
                 "step": 16,
               },
@@ -797,7 +797,7 @@ describe('diagnostics', () => {
                 "fieldName": "priority",
                 "input": "- [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼",
                 "matched": true,
-                "regex": "([🔺⏫🔼🔽⏬])️?$",
+                "regex": "(🔺|⏫|🔼|🔽|⏬)️?$",
                 "remaining": "- [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123",
                 "step": 24,
               },
@@ -824,7 +824,7 @@ describe('diagnostics', () => {
                 "fieldName": "dueDate",
                 "input": "- [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123",
                 "matched": false,
-                "regex": "[📅📆🗓]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:📅|📆|🗓)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": undefined,
                 "step": 27,
               },
@@ -833,7 +833,7 @@ describe('diagnostics', () => {
                 "fieldName": "scheduledDate",
                 "input": "- [ ] Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123",
                 "matched": false,
-                "regex": "[⏳⌛]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:⏳|⌛)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": undefined,
                 "step": 28,
               },
@@ -905,7 +905,7 @@ describe('diagnostics', () => {
                 "fieldName": "priority",
                 "input": "- [ ] Do exercises #todo #health 🆔 abcdef",
                 "matched": false,
-                "regex": "([🔺⏫🔼🔽⏬])️?$",
+                "regex": "(🔺|⏫|🔼|🔽|⏬)️?$",
                 "remaining": undefined,
                 "step": 36,
               },
@@ -932,7 +932,7 @@ describe('diagnostics', () => {
                 "fieldName": "dueDate",
                 "input": "- [ ] Do exercises #todo #health 🆔 abcdef",
                 "matched": false,
-                "regex": "[📅📆🗓]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:📅|📆|🗓)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": undefined,
                 "step": 39,
               },
@@ -941,7 +941,7 @@ describe('diagnostics', () => {
                 "fieldName": "scheduledDate",
                 "input": "- [ ] Do exercises #todo #health 🆔 abcdef",
                 "matched": false,
-                "regex": "[⏳⌛]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:⏳|⌛)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": undefined,
                 "step": 40,
               },
@@ -1013,7 +1013,7 @@ describe('diagnostics', () => {
                 "fieldName": "priority",
                 "input": "- [ ] Do exercises #todo #health",
                 "matched": false,
-                "regex": "([🔺⏫🔼🔽⏬])️?$",
+                "regex": "(🔺|⏫|🔼|🔽|⏬)️?$",
                 "remaining": undefined,
                 "step": 48,
               },
@@ -1040,7 +1040,7 @@ describe('diagnostics', () => {
                 "fieldName": "dueDate",
                 "input": "- [ ] Do exercises #todo #health",
                 "matched": false,
-                "regex": "[📅📆🗓]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:📅|📆|🗓)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": undefined,
                 "step": 51,
               },
@@ -1049,7 +1049,7 @@ describe('diagnostics', () => {
                 "fieldName": "scheduledDate",
                 "input": "- [ ] Do exercises #todo #health",
                 "matched": false,
-                "regex": "[⏳⌛]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:⏳|⌛)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": undefined,
                 "step": 52,
               },
@@ -1121,7 +1121,7 @@ describe('diagnostics', () => {
                 "fieldName": "priority",
                 "input": "- [ ] Do exercises #todo",
                 "matched": false,
-                "regex": "([🔺⏫🔼🔽⏬])️?$",
+                "regex": "(🔺|⏫|🔼|🔽|⏬)️?$",
                 "remaining": undefined,
                 "step": 60,
               },
@@ -1148,7 +1148,7 @@ describe('diagnostics', () => {
                 "fieldName": "dueDate",
                 "input": "- [ ] Do exercises #todo",
                 "matched": false,
-                "regex": "[📅📆🗓]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:📅|📆|🗓)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": undefined,
                 "step": 63,
               },
@@ -1157,7 +1157,7 @@ describe('diagnostics', () => {
                 "fieldName": "scheduledDate",
                 "input": "- [ ] Do exercises #todo",
                 "matched": false,
-                "regex": "[⏳⌛]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:⏳|⌛)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": undefined,
                 "step": 64,
               },
@@ -1229,7 +1229,7 @@ describe('diagnostics', () => {
                 "fieldName": "priority",
                 "input": "- [ ] Do exercises",
                 "matched": false,
-                "regex": "([🔺⏫🔼🔽⏬])️?$",
+                "regex": "(🔺|⏫|🔼|🔽|⏬)️?$",
                 "remaining": undefined,
                 "step": 72,
               },
@@ -1256,7 +1256,7 @@ describe('diagnostics', () => {
                 "fieldName": "dueDate",
                 "input": "- [ ] Do exercises",
                 "matched": false,
-                "regex": "[📅📆🗓]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:📅|📆|🗓)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": undefined,
                 "step": 75,
               },
@@ -1265,7 +1265,7 @@ describe('diagnostics', () => {
                 "fieldName": "scheduledDate",
                 "input": "- [ ] Do exercises",
                 "matched": false,
-                "regex": "[⏳⌛]️? *(\\d{4}-\\d{2}-\\d{2})$",
+                "regex": "(?:⏳|⌛)️? *(\\d{4}-\\d{2}-\\d{2})$",
                 "remaining": undefined,
                 "step": 76,
               },

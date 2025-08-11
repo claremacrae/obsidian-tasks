@@ -75,11 +75,11 @@ Testing regex patterns with and without $ anchor:
 
 | Step | Field | Matched | Value | Regex | Input Before | Remaining After |
 |------|-------|---------|-------|-------|--------------|-----------------|
-| 0 | priority | ❌ | — | `([🔺⏫🔼🔽⏬])️?$` | `description` | _(empty)_ |
+| 0 | priority | ❌ | — | `(🔺\|⏫\|🔼\|🔽\|⏬)️?$` | `description` | _(empty)_ |
 | 1 | doneDate | ❌ | — | `✅️? *(\d{4}-\d{2}-\d{2})$` | `description` | _(empty)_ |
 | 2 | cancelledDate | ❌ | — | `❌️? *(\d{4}-\d{2}-\d{2})$` | `description` | _(empty)_ |
-| 3 | dueDate | ❌ | — | `[📅📆🗓]️? *(\d{4}-\d{2}-\d{2})$` | `description` | _(empty)_ |
-| 4 | scheduledDate | ❌ | — | `[⏳⌛]️? *(\d{4}-\d{2}-\d{2})$` | `description` | _(empty)_ |
+| 3 | dueDate | ❌ | — | `(?:📅\|📆\|🗓)️? *(\d{4}-\d{2}-\d{2})$` | `description` | _(empty)_ |
+| 4 | scheduledDate | ❌ | — | `(?:⏳\|⌛)️? *(\d{4}-\d{2}-\d{2})$` | `description` | _(empty)_ |
 | 5 | startDate | ❌ | — | `🛫️? *(\d{4}-\d{2}-\d{2})$` | `description` | _(empty)_ |
 | 6 | createdDate | ❌ | — | `➕️? *(\d{4}-\d{2}-\d{2})$` | `description` | _(empty)_ |
 | 7 | recurrence | ❌ | — | `🔁️? *([a-zA-Z0-9, !]+)$` | `description` | _(empty)_ |

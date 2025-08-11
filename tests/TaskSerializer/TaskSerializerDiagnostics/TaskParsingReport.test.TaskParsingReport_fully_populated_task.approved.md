@@ -226,11 +226,11 @@ Testing regex patterns with and without $ anchor:
 
 | Step | Field | Matched | Value | Regex | Input Before | Remaining After |
 |------|-------|---------|-------|-------|--------------|-----------------|
-| 0 | priority | ❌ | — | `([🔺⏫🔼🔽⏬])️?$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03 📅 2023-07-04 ❌ 2023-07-06 ✅ 2023-07-05` | _(empty)_ |
+| 0 | priority | ❌ | — | `(🔺\|⏫\|🔼\|🔽\|⏬)️?$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03 📅 2023-07-04 ❌ 2023-07-06 ✅ 2023-07-05` | _(empty)_ |
 | 1 | doneDate | ✅ | `✅ 2023-07-05` | `✅️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03 📅 2023-07-04 ❌ 2023-07-06 ✅ 2023-07-05` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03 📅 2023-07-04 ❌ 2023-07-06` |
 | 2 | cancelledDate | ✅ | `❌ 2023-07-06` | `❌️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03 📅 2023-07-04 ❌ 2023-07-06` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03 📅 2023-07-04` |
-| 3 | dueDate | ✅ | `📅 2023-07-04` | `[📅📆🗓]️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03 📅 2023-07-04` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03` |
-| 4 | scheduledDate | ✅ | `⏳ 2023-07-03` | `[⏳⌛]️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02` |
+| 3 | dueDate | ✅ | `📅 2023-07-04` | `(?:📅\|📆\|🗓)️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03 📅 2023-07-04` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03` |
+| 4 | scheduledDate | ✅ | `⏳ 2023-07-03` | `(?:⏳\|⌛)️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02 ⏳ 2023-07-03` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02` |
 | 5 | startDate | ✅ | `🛫 2023-07-02` | `🛫️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01 🛫 2023-07-02` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01` |
 | 6 | createdDate | ✅ | `➕ 2023-07-01` | `➕️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete ➕ 2023-07-01` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete` |
 | 7 | recurrence | ❌ | — | `🔁️? *([a-zA-Z0-9, !]+)$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done 🏁 delete` | _(empty)_ |
@@ -238,11 +238,11 @@ Testing regex patterns with and without $ anchor:
 | 9 | tags | ❌ | — | `(^\|\s)#[^ !@#$%^&*(),.?":{}\|<>]+$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done` | _(empty)_ |
 | 10 | id | ❌ | — | `🆔️? *([a-zA-Z0-9-_]+)$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done` | _(empty)_ |
 | 11 | dependsOn | ❌ | — | `⛔️? *([a-zA-Z0-9-_]+( *, *[a-zA-Z0-9-_]+ *)*)$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done` | _(empty)_ |
-| 12 | priority | ❌ | — | `([🔺⏫🔼🔽⏬])️?$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done` | _(empty)_ |
+| 12 | priority | ❌ | — | `(🔺\|⏫\|🔼\|🔽\|⏬)️?$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done` | _(empty)_ |
 | 13 | doneDate | ❌ | — | `✅️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done` | _(empty)_ |
 | 14 | cancelledDate | ❌ | — | `❌️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done` | _(empty)_ |
-| 15 | dueDate | ❌ | — | `[📅📆🗓]️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done` | _(empty)_ |
-| 16 | scheduledDate | ❌ | — | `[⏳⌛]️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done` | _(empty)_ |
+| 15 | dueDate | ❌ | — | `(?:📅\|📆\|🗓)️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done` | _(empty)_ |
+| 16 | scheduledDate | ❌ | — | `(?:⏳\|⌛)️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done` | _(empty)_ |
 | 17 | startDate | ❌ | — | `🛫️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done` | _(empty)_ |
 | 18 | createdDate | ❌ | — | `➕️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done` | _(empty)_ |
 | 19 | recurrence | ✅ | `🔁 every day when done` | `🔁️? *([a-zA-Z0-9, !]+)$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼 🔁 every day when done` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼` |
@@ -250,11 +250,11 @@ Testing regex patterns with and without $ anchor:
 | 21 | tags | ❌ | — | `(^\|\s)#[^ !@#$%^&*(),.?":{}\|<>]+$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼` | _(empty)_ |
 | 22 | id | ❌ | — | `🆔️? *([a-zA-Z0-9-_]+)$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼` | _(empty)_ |
 | 23 | dependsOn | ❌ | — | `⛔️? *([a-zA-Z0-9-_]+( *, *[a-zA-Z0-9-_]+ *)*)$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼` | _(empty)_ |
-| 24 | priority | ✅ | `🔼` | `([🔺⏫🔼🔽⏬])️?$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123` |
+| 24 | priority | ✅ | `🔼` | `(🔺\|⏫\|🔼\|🔽\|⏬)️?$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123 🔼` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123` |
 | 25 | doneDate | ❌ | — | `✅️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123` | _(empty)_ |
 | 26 | cancelledDate | ❌ | — | `❌️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123` | _(empty)_ |
-| 27 | dueDate | ❌ | — | `[📅📆🗓]️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123` | _(empty)_ |
-| 28 | scheduledDate | ❌ | — | `[⏳⌛]️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123` | _(empty)_ |
+| 27 | dueDate | ❌ | — | `(?:📅\|📆\|🗓)️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123` | _(empty)_ |
+| 28 | scheduledDate | ❌ | — | `(?:⏳\|⌛)️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123` | _(empty)_ |
 | 29 | startDate | ❌ | — | `🛫️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123` | _(empty)_ |
 | 30 | createdDate | ❌ | — | `➕️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123` | _(empty)_ |
 | 31 | recurrence | ❌ | — | `🔁️? *([a-zA-Z0-9, !]+)$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123` | _(empty)_ |
@@ -262,11 +262,11 @@ Testing regex patterns with and without $ anchor:
 | 33 | tags | ❌ | — | `(^\|\s)#[^ !@#$%^&*(),.?":{}\|<>]+$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123` | _(empty)_ |
 | 34 | id | ❌ | — | `🆔️? *([a-zA-Z0-9-_]+)$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123` | _(empty)_ |
 | 35 | dependsOn | ✅ | `⛔ 123456,abc123` | `⛔️? *([a-zA-Z0-9-_]+( *, *[a-zA-Z0-9-_]+ *)*)$` | `Do exercises #todo #health 🆔 abcdef ⛔ 123456,abc123` | `Do exercises #todo #health 🆔 abcdef` |
-| 36 | priority | ❌ | — | `([🔺⏫🔼🔽⏬])️?$` | `Do exercises #todo #health 🆔 abcdef` | _(empty)_ |
+| 36 | priority | ❌ | — | `(🔺\|⏫\|🔼\|🔽\|⏬)️?$` | `Do exercises #todo #health 🆔 abcdef` | _(empty)_ |
 | 37 | doneDate | ❌ | — | `✅️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef` | _(empty)_ |
 | 38 | cancelledDate | ❌ | — | `❌️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef` | _(empty)_ |
-| 39 | dueDate | ❌ | — | `[📅📆🗓]️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef` | _(empty)_ |
-| 40 | scheduledDate | ❌ | — | `[⏳⌛]️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef` | _(empty)_ |
+| 39 | dueDate | ❌ | — | `(?:📅\|📆\|🗓)️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef` | _(empty)_ |
+| 40 | scheduledDate | ❌ | — | `(?:⏳\|⌛)️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef` | _(empty)_ |
 | 41 | startDate | ❌ | — | `🛫️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef` | _(empty)_ |
 | 42 | createdDate | ❌ | — | `➕️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health 🆔 abcdef` | _(empty)_ |
 | 43 | recurrence | ❌ | — | `🔁️? *([a-zA-Z0-9, !]+)$` | `Do exercises #todo #health 🆔 abcdef` | _(empty)_ |
@@ -274,11 +274,11 @@ Testing regex patterns with and without $ anchor:
 | 45 | tags | ❌ | — | `(^\|\s)#[^ !@#$%^&*(),.?":{}\|<>]+$` | `Do exercises #todo #health 🆔 abcdef` | _(empty)_ |
 | 46 | id | ✅ | `🆔 abcdef` | `🆔️? *([a-zA-Z0-9-_]+)$` | `Do exercises #todo #health 🆔 abcdef` | `Do exercises #todo #health` |
 | 47 | dependsOn | ❌ | — | `⛔️? *([a-zA-Z0-9-_]+( *, *[a-zA-Z0-9-_]+ *)*)$` | `Do exercises #todo #health` | _(empty)_ |
-| 48 | priority | ❌ | — | `([🔺⏫🔼🔽⏬])️?$` | `Do exercises #todo #health` | _(empty)_ |
+| 48 | priority | ❌ | — | `(🔺\|⏫\|🔼\|🔽\|⏬)️?$` | `Do exercises #todo #health` | _(empty)_ |
 | 49 | doneDate | ❌ | — | `✅️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health` | _(empty)_ |
 | 50 | cancelledDate | ❌ | — | `❌️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health` | _(empty)_ |
-| 51 | dueDate | ❌ | — | `[📅📆🗓]️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health` | _(empty)_ |
-| 52 | scheduledDate | ❌ | — | `[⏳⌛]️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health` | _(empty)_ |
+| 51 | dueDate | ❌ | — | `(?:📅\|📆\|🗓)️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health` | _(empty)_ |
+| 52 | scheduledDate | ❌ | — | `(?:⏳\|⌛)️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health` | _(empty)_ |
 | 53 | startDate | ❌ | — | `🛫️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health` | _(empty)_ |
 | 54 | createdDate | ❌ | — | `➕️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo #health` | _(empty)_ |
 | 55 | recurrence | ❌ | — | `🔁️? *([a-zA-Z0-9, !]+)$` | `Do exercises #todo #health` | _(empty)_ |
@@ -286,11 +286,11 @@ Testing regex patterns with and without $ anchor:
 | 57 | tags | ✅ | ` #health` | `(^\|\s)#[^ !@#$%^&*(),.?":{}\|<>]+$` | `Do exercises #todo #health` | `Do exercises #todo` |
 | 58 | id | ❌ | — | `🆔️? *([a-zA-Z0-9-_]+)$` | `Do exercises #todo` | _(empty)_ |
 | 59 | dependsOn | ❌ | — | `⛔️? *([a-zA-Z0-9-_]+( *, *[a-zA-Z0-9-_]+ *)*)$` | `Do exercises #todo` | _(empty)_ |
-| 60 | priority | ❌ | — | `([🔺⏫🔼🔽⏬])️?$` | `Do exercises #todo` | _(empty)_ |
+| 60 | priority | ❌ | — | `(🔺\|⏫\|🔼\|🔽\|⏬)️?$` | `Do exercises #todo` | _(empty)_ |
 | 61 | doneDate | ❌ | — | `✅️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo` | _(empty)_ |
 | 62 | cancelledDate | ❌ | — | `❌️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo` | _(empty)_ |
-| 63 | dueDate | ❌ | — | `[📅📆🗓]️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo` | _(empty)_ |
-| 64 | scheduledDate | ❌ | — | `[⏳⌛]️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo` | _(empty)_ |
+| 63 | dueDate | ❌ | — | `(?:📅\|📆\|🗓)️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo` | _(empty)_ |
+| 64 | scheduledDate | ❌ | — | `(?:⏳\|⌛)️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo` | _(empty)_ |
 | 65 | startDate | ❌ | — | `🛫️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo` | _(empty)_ |
 | 66 | createdDate | ❌ | — | `➕️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises #todo` | _(empty)_ |
 | 67 | recurrence | ❌ | — | `🔁️? *([a-zA-Z0-9, !]+)$` | `Do exercises #todo` | _(empty)_ |
@@ -298,11 +298,11 @@ Testing regex patterns with and without $ anchor:
 | 69 | tags | ✅ | ` #todo` | `(^\|\s)#[^ !@#$%^&*(),.?":{}\|<>]+$` | `Do exercises #todo` | `Do exercises` |
 | 70 | id | ❌ | — | `🆔️? *([a-zA-Z0-9-_]+)$` | `Do exercises` | _(empty)_ |
 | 71 | dependsOn | ❌ | — | `⛔️? *([a-zA-Z0-9-_]+( *, *[a-zA-Z0-9-_]+ *)*)$` | `Do exercises` | _(empty)_ |
-| 72 | priority | ❌ | — | `([🔺⏫🔼🔽⏬])️?$` | `Do exercises` | _(empty)_ |
+| 72 | priority | ❌ | — | `(🔺\|⏫\|🔼\|🔽\|⏬)️?$` | `Do exercises` | _(empty)_ |
 | 73 | doneDate | ❌ | — | `✅️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises` | _(empty)_ |
 | 74 | cancelledDate | ❌ | — | `❌️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises` | _(empty)_ |
-| 75 | dueDate | ❌ | — | `[📅📆🗓]️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises` | _(empty)_ |
-| 76 | scheduledDate | ❌ | — | `[⏳⌛]️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises` | _(empty)_ |
+| 75 | dueDate | ❌ | — | `(?:📅\|📆\|🗓)️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises` | _(empty)_ |
+| 76 | scheduledDate | ❌ | — | `(?:⏳\|⌛)️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises` | _(empty)_ |
 | 77 | startDate | ❌ | — | `🛫️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises` | _(empty)_ |
 | 78 | createdDate | ❌ | — | `➕️? *(\d{4}-\d{2}-\d{2})$` | `Do exercises` | _(empty)_ |
 | 79 | recurrence | ❌ | — | `🔁️? *([a-zA-Z0-9, !]+)$` | `Do exercises` | _(empty)_ |
