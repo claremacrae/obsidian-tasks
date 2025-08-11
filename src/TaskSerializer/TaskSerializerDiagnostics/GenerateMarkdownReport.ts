@@ -35,10 +35,17 @@ export function generateMarkdownReport(diagnostics: TaskDiagnostic[]): string {
             const withDollar = tests.find((t) => t.withDollar);
 
             if (noDollar && withDollar) {
+                const maxMatchCharacters = 30;
                 const noDollarPattern =
-                    '`' + noDollar.pattern.substring(0, 30) + (noDollar.pattern.length > 30 ? '...' : '') + '`';
+                    '`' +
+                    noDollar.pattern.substring(0, maxMatchCharacters) +
+                    (noDollar.pattern.length > maxMatchCharacters ? '...' : '') +
+                    '`';
                 const withDollarPattern =
-                    '`' + withDollar.pattern.substring(0, 30) + (withDollar.pattern.length > 30 ? '...' : '') + '`';
+                    '`' +
+                    withDollar.pattern.substring(0, maxMatchCharacters) +
+                    (withDollar.pattern.length > maxMatchCharacters ? '...' : '') +
+                    '`';
                 const input = '`' + noDollar.input + '`';
 
                 report += `| ${testName} | ${input} | ${noDollarPattern} | ${
