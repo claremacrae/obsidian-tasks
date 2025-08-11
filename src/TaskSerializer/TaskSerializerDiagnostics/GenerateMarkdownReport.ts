@@ -35,7 +35,7 @@ export function generateMarkdownReport(diagnostics: TaskDiagnostic[]): string {
             const withDollar = tests.find((t) => t.withDollar);
 
             if (noDollar && withDollar) {
-                const maxMatchCharacters = 30;
+                const maxMatchCharacters = 50;
                 const noDollarPattern =
                     '`' +
                     noDollar.pattern.substring(0, maxMatchCharacters) +
