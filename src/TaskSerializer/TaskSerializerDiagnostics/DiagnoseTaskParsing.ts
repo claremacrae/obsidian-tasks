@@ -15,6 +15,11 @@ export interface ParseStep {
     remainingAfterMatch?: string;
 }
 
+/**
+ * Output of {@link diagnoseTaskParsing} checking one task line.
+ *
+ * Can be converted to Markdown by {@link generateMarkdownReport}.
+ */
 export interface TaskDiagnostic {
     platform: {
         userAgent: string;
@@ -37,6 +42,12 @@ export interface TaskDiagnostic {
     minimalRegexTests?: { testName: string; input: string; pattern: string; withDollar: boolean; matched: boolean }[];
 }
 
+/**
+ * Perform some self-checks and diagnostics of how the Tasks plugin parses selected task line
+ *
+ * Output is a {@link TaskDiagnostic}, which can be converted to Markdown by {@link generateMarkdownReport}.
+ * @param line
+ */
 export function diagnoseTaskParsing(line: string): TaskDiagnostic {
     const diagnostic: TaskDiagnostic = {
         platform: {

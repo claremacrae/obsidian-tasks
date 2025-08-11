@@ -1,5 +1,9 @@
 import type { TaskDiagnostic } from './DiagnoseTaskParsing';
 
+/**
+ * Convert the output from {@link diagnoseTaskParsing} - {@link TaskDiagnostic} list - to Markdown text.
+ * @param diagnostics
+ */
 export function generateMarkdownReport(diagnostics: TaskDiagnostic[]): string {
     let report = '## 🔍 Task Parser Diagnostic Report\n\n';
 
