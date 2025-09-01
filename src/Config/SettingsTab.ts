@@ -34,12 +34,14 @@ export class SettingsTab extends PluginSettingTab {
 
     private readonly plugin: TasksPlugin;
     private readonly presetsSettingsUI;
+    private readonly events: TasksEvents;
 
     constructor({ plugin, events }: { plugin: TasksPlugin; events: TasksEvents }) {
         super(plugin.app, plugin);
 
         this.plugin = plugin;
         this.presetsSettingsUI = new PresetsSettingsUI(plugin, events);
+        this.events = events;
     }
 
     private static createFragmentWithHTML = (html: string) =>
@@ -108,12 +110,20 @@ export class SettingsTab extends PluginSettingTab {
                 // wide enough for the whole string to be visible.
                 text.setPlaceholder(i18n.t('settings.globalFilter.filter.placeholder'))
                     .setValue(GlobalFilter.getInstance().get())
-                    .onChange(async (value) => {
-                        updateSettings({ globalFilter: value });
-                        GlobalFilter.getInstance().set(value);
-                        await this.plugin.saveSettings();
-                        setSettingVisibility(globalFilterHidden, value.length > 0);
-                    });
+                    .onChange(
+                        debounce(
+                            async (value) => {
+                                updateSettings({ globalFilter: value });
+                                GlobalFilter.getInstance().set(value);
+                                await this.plugin.saveSettings();
+                                setSettingVisibility(globalFilterHidden, value.length > 0);
+
+                                this.events.triggerReloadVault();
+                            },
+                            500,
+                            true,
+                        ),
+                    );
             });
 
         globalFilterHidden = new Setting(containerEl)
@@ -152,6 +162,8 @@ export class SettingsTab extends PluginSettingTab {
                             updateSettings({ globalQuery: value });
                             GlobalQuery.getInstance().set(value);
                             await this.plugin.saveSettings();
+
+                            this.events.triggerReloadOpenSearchResults();
                         });
                 }),
         );
