@@ -30,6 +30,9 @@ yarn-error.log
 # Machine-generated documentation of source code
 /code-docs/
 
+# Output from building the API
+/temp/
+
 # Code analysis output files
 /circular-deps.png
 #/circular-deps.txt
