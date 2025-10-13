@@ -1,14 +1,7 @@
 import { CachedMetadata } from 'obsidian';
 import { FrontMatterCache } from 'obsidian';
-import type { Reference } from 'obsidian';
 
 export declare class Link {
-    /**
-     * @param {Reference} rawLink - The raw link from Obsidian cache.
-     * @param {string} pathContainingLink - The path of the file where this link is located.
-     */
-    constructor(rawLink: Reference, pathContainingLink: string);
-
     /**
      * Return the original Markdown, exactly as specified in the original markdown.
      * For "[ab](cd.md)", it would return "[ab](cd.md)".

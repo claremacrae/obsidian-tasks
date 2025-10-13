@@ -9,6 +9,8 @@ export class Link {
     /**
      * @param {Reference} rawLink - The raw link from Obsidian cache.
      * @param {string} pathContainingLink - The path of the file where this link is located.
+     *
+     * @internal
      */
     constructor(rawLink: Reference, pathContainingLink: string) {
         this.rawLink = rawLink;
