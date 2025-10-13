@@ -18,6 +18,19 @@ export class ListItem {
 
     public readonly taskLocation: TaskLocation;
 
+    /**
+     * Constructor
+     *
+     * @param originalMarkdown
+     * @param indentation
+     * @param listMarker
+     * @param statusCharacter
+     * @param description
+     * @param parent
+     * @param taskLocation
+     *
+     * @internal
+     */
     constructor({
         originalMarkdown,
         indentation,
@@ -58,6 +71,8 @@ export class ListItem {
      * @param {TaskLocation} taskLocation - The location of the ListItem.
      * @return {ListItem | null}
      * @see Task.fromLine
+     *
+     * @internal
      */
     public static fromListItemLine(
         originalMarkdown: string,
@@ -144,6 +159,8 @@ export class ListItem {
      * @note Use {@link Task.identicalTo} to compare {@link Task} objects.
      *
      * @param other - if this is in fact a {@link Task}, the result of false.
+     *
+     * @internal
      */
     identicalTo(other: ListItem) {
         if (this.constructor.name !== other.constructor.name) {
@@ -176,6 +193,8 @@ export class ListItem {
      *
      * @param list1
      * @param list2
+     *
+     * @internal
      */
     static listsAreIdentical(list1: ListItem[], list2: ListItem[]): boolean {
         if (list1.length !== list2.length) {
@@ -241,6 +260,9 @@ export class ListItem {
         return this.taskLocation.precedingHeader;
     }
 
+    /**
+     * @internal
+     */
     public checkOrUncheck(): ListItem {
         if (this.statusCharacter === null) {
             return this;

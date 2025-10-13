@@ -83,39 +83,6 @@ export declare class ListItem {
     readonly description: string;
     readonly statusCharacter: string | null;
     readonly taskLocation: TaskLocation;
-    constructor({
-        originalMarkdown,
-        indentation,
-        listMarker,
-        statusCharacter,
-        description,
-        parent,
-        taskLocation,
-    }: {
-        originalMarkdown: string;
-        indentation: string;
-        listMarker: string;
-        statusCharacter: string | null;
-        description: string;
-        parent: ListItem | null;
-        taskLocation: TaskLocation;
-    });
-
-    /**
-     * Takes the given line from an Obsidian note and returns a ListItem object.
-     *
-     * @static
-     * @param {string} originalMarkdown - The full line in the note to parse.
-     * @param {ListItem | null} parent - The optional parent Task or ListItem of the new instance.
-     * @param {TaskLocation} taskLocation - The location of the ListItem.
-     * @return {ListItem | null}
-     * @see Task.fromLine
-     */
-    static fromListItemLine(
-        originalMarkdown: string,
-        parent: ListItem | null,
-        taskLocation: TaskLocation,
-    ): ListItem | null;
 
     /**
      * Return the top-level parent of this list item or task,
@@ -142,32 +109,6 @@ export declare class ListItem {
      */
     findClosestParentTask(): Task | null;
     get isTask(): boolean;
-
-    /**
-     * Compare all the fields in another ListItem, to detect any differences from this one.
-     *
-     * If any field is different in any way, it will return false.
-     *
-     * @note Use {@link Task.identicalTo} to compare {@link Task} objects.
-     *
-     * @param other - if this is in fact a {@link Task}, the result of false.
-     */
-    identicalTo(other: ListItem): boolean;
-
-    /**
-     * Compare two lists of ListItem objects, and report whether their
-     * contents, including any children, are identical and in the same order.
-     *
-     * This can be useful for optimising code if it is guaranteed that
-     * there are no possible differences in the tasks in a file
-     * after an edit, for example.
-     *
-     * If any field is different in any task or list item, it will return false.
-     *
-     * @param list1
-     * @param list2
-     */
-    static listsAreIdentical(list1: ListItem[], list2: ListItem[]): boolean;
     get path(): string;
     get file(): TasksFile;
 
@@ -192,7 +133,6 @@ export declare class ListItem {
     get sectionStart(): number;
     get sectionIndex(): number;
     get precedingHeader(): string | null;
-    checkOrUncheck(): ListItem;
     toFileLineString(): string;
 }
 
