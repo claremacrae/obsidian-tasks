@@ -13,5 +13,6 @@ export { ListItem } from './Task/ListItem';
 export { TasksFile } from './Scripting/TasksFile';
 export { TasksDate } from './DateTime/TasksDate';
 export { Link } from './Task/Link';
+export { Query } from './Query/Query';
 export type { Status } from './Statuses/Status';
 export type { Priority } from './Task/Priority';
