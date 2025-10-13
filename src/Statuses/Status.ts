@@ -188,6 +188,8 @@ export class Status {
      * of the default statuses.
      *
      * @param {StatusConfiguration} configuration
+     *
+     * @internal
      */
     constructor(configuration: StatusConfiguration) {
         this.configuration = configuration;
@@ -261,6 +263,8 @@ export class Status {
      * Returns the completion status for a task - whether its type is DONE.
      *
      * @return {*}  {boolean}
+     *
+     * @internal
      */
     public isCompleted(): boolean {
         return this.type === StatusType.DONE;
@@ -268,6 +272,8 @@ export class Status {
 
     /**
      * Whether the task status type is {@link CANCELLED}.
+     *
+     * @internal
      */
     public isCancelled(): boolean {
         return this.type === StatusType.CANCELLED;

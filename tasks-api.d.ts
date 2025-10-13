@@ -62,24 +62,6 @@ export declare class Status {
      * This is provided as a convenience for use in custom grouping.
      */
     get typeGroupText(): string;
-    /**
-     * Creates an instance of Status. The registry will be added later in the case
-     * of the default statuses.
-     *
-     * @param {StatusConfiguration} configuration
-     */
-    constructor(configuration: StatusConfiguration);
-
-    /**
-     * Returns the completion status for a task - whether its type is DONE.
-     *
-     * @return {*}  {boolean}
-     */
-    isCompleted(): boolean;
-    /**
-     * Whether the task status type is {@link CANCELLED}.
-     */
-    isCancelled(): boolean;
 }
 
 /**
