@@ -16,7 +16,7 @@
     "test:dev": "jest --watch",
     "deploy:local": "pwsh -ExecutionPolicy Unrestricted -NoProfile -File ./scripts/Test-TasksInLocalObsidian.ps1",
     "extract-i18n": "npx i18next-parser",
-    "generate-api": "npm run generate-api:dts && npm run generate-api:extract && npm run generate-api:clean && npm run generate-api:copy",
+    "generate-api": "npm run generate-api:dts && npm run generate-api:extract && npm run generate-api:clean && eslint ./tasks-api.d.ts --fix && npm run generate-api:copy",
     "generate-api:dts": "tsc --project tsconfig.api.json",
     "generate-api:extract": "api-extractor run --local --verbose",
     "generate-api:clean": "node scripts/clean-api-dts.js",
