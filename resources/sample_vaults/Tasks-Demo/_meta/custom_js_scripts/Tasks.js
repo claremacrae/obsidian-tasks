@@ -1,5 +1,4 @@
 class Tasks {
-
     /**
      * Match tasks which contain the searchString text anywhere.
      *
@@ -15,21 +14,21 @@ class Tasks {
         // Remove any front-matter properties relating to other files, rather than the current one
         delete frontmatterCopy.up; // Will be already represented in task.path
         delete frontmatterCopy.next; // Is not related to the task file's contents
-    return [
-        // add more things to search?
-        task.description,
-        task.file.path,
-        task.heading,
-        task.id,
-        task.dependsOn.join('\n'),
-        task.status.name,
-        task.priorityName,
-        JSON.stringify(frontmatterCopy, null, 4),
-        task.blockLink.replace(' ^', ''),
-    ]
-        .join('\n')
-        .toLowerCase()
-        .includes(searchString.toLowerCase());
+        return [
+            // add more things to search?
+            task.description,
+            task.file.path,
+            task.heading,
+            task.id,
+            task.dependsOn.join('\n'),
+            task.status.name,
+            task.priorityName,
+            JSON.stringify(frontmatterCopy, null, 4),
+            task.blockLink.replace(' ^', ''),
+        ]
+            .join('\n')
+            .toLowerCase()
+            .includes(searchString.toLowerCase());
     }
 
     /**
@@ -90,7 +89,7 @@ class Tasks {
      * @param allTasks
      */
     idMissing(id, allTasks) {
-        return ! allTasks.some((task) => task.id === id);
+        return !allTasks.some((task) => task.id === id);
     }
 
     /**
@@ -112,24 +111,32 @@ class Tasks {
      * Credit: @qelo in https://github.com/obsidian-tasks-group/obsidian-tasks/discussions/330#discussioncomment-8902878
      */
     randomSortKey(task) {
-        const TSH = s => {
-            for (var i = 0, h = 9; i < s.length;) h = Math.imul(h ^ s.charCodeAt(i++), 9 ** 9);
-            return h ^ h >>> 9
+        const TSH = (s) => {
+            for (var i = 0, h = 9; i < s.length; ) h = Math.imul(h ^ s.charCodeAt(i++), 9 ** 9);
+            return h ^ (h >>> 9);
         };
-        return TSH(moment().format('Y-MM-DD') + ' ' + task.description)
+        return TSH(moment().format('Y-MM-DD') + ' ' + task.description);
     }
 
     byAmPm(task) {
-        const tags = task.tags.join(' '); const morning = tags.includes('#when/morning'); const evening = tags.includes('#when/evening'); if (morning) return '%%1%% 🔆 Morning'; if (evening) return '%%3%% 🌅 Evening'; return '%%2%% 🕛 Anytime';
+        const tags = task.tags.join(' ');
+        const morning = tags.includes('#when/morning');
+        const evening = tags.includes('#when/evening');
+        if (morning) return '%%1%% 🔆 Morning';
+        if (evening) return '%%3%% 🌅 Evening';
+        return '%%2%% 🕛 Anytime';
     }
 
     byContext(task) {
-        return task.tags.filter( (tag) => tag.includes("#context/") ).map( (tag) => tag.replace("pc_", "🖥 pc_")).map( (tag) => tag.split("/")[1] ? tag.split("/").slice(1, 2) : "");
+        return task.tags
+            .filter((tag) => tag.includes('#context/'))
+            .map((tag) => tag.replace('pc_', '🖥 pc_'))
+            .map((tag) => (tag.split('/')[1] ? tag.split('/').slice(1, 2) : ''));
     }
 
     byDueScheduled(task) {
         // The Original was reversed
-        return task.due.moment ? '%%2%% 📅 Due' : task.scheduled.moment ?  '%%1%% ⏳ Scheduled' : '%%3%% Undated'
+        return task.due.moment ? '%%2%% 📅 Due' : task.scheduled.moment ? '%%1%% ⏳ Scheduled' : '%%3%% Undated';
     }
 
     byFilename(task) {
@@ -185,7 +192,7 @@ class Tasks {
      */
     byParentItemDescription(task) {
         const parent = task.parent;
-        if (! parent) return 'Other Tasks';
+        if (!parent) return 'Other Tasks';
         return `%%${parent.originalMarkdown}%% ${parent.description}`;
     }
 
