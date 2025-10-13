@@ -1,8 +1,13 @@
 /// <reference path="../tasks-api.d.ts" />
 
+import moment from 'moment';
+
 class Tasks {
     /**
      * Match tasks which contain the searchString text anywhere.
+     *
+     * @param {Task} task - the task being searched
+     * @param {string} searchString - the string to search for, ignoring capitalisation
      *
      * Search is case-insensitive, but spaces matter.
      *
@@ -36,6 +41,8 @@ class Tasks {
     /**
      * group by recurring, but only if there is a happens date.
      *
+     * @param {Task} task - the task being searched
+     *
      * @example
      * group by function \
      *     const {Tasks} = customJS; \
@@ -49,6 +56,8 @@ class Tasks {
 
     /**
      * group by all IDs in a task - its id, and anything it depends on
+     *
+     * @param {Task} task - the task being searched
      *
      * @example
      * group by function \
@@ -66,6 +75,9 @@ class Tasks {
      *  - Blocked (and cannot be done).
      *  - Blocking (and can be done).
      *  - Or are neither, and can be done in any order.
+     *
+     *  @param {Task} task - the task being searched
+     *  @param {Query} query - the task being searched
      *
      * @example
      * group by function \
@@ -96,7 +108,7 @@ class Tasks {
 
     /**
      * Return true if the task depends on any IDs which do not match any tasks in the vault.
-     * @param task
+     * @param {Task} task - the task being searched
      * @param query
      * @returns {boolean}
      */
@@ -105,6 +117,8 @@ class Tasks {
     }
 
     /**
+     * @param {Task} task - the task being searched
+     *
      * @example
      * sort by function \
      *   const {Tasks} = customJS; \
@@ -120,6 +134,9 @@ class Tasks {
         return TSH(moment().format('Y-MM-DD') + ' ' + task.description);
     }
 
+    /**
+     * @param {Task} task - the task being searched
+     */
     byAmPm(task) {
         const tags = task.tags.join(' ');
         const morning = tags.includes('#when/morning');
@@ -129,6 +146,9 @@ class Tasks {
         return '%%2%% 🕛 Anytime';
     }
 
+    /**
+     * @param {Task} task - the task being searched
+     */
     byContext(task) {
         return task.tags
             .filter((tag) => tag.includes('#context/'))
@@ -136,21 +156,32 @@ class Tasks {
             .map((tag) => (tag.split('/')[1] ? tag.split('/').slice(1, 2) : ''));
     }
 
+    /**
+     * @param {Task} task - the task being searched
+     */
     byDueScheduled(task) {
         // The Original was reversed
         return task.due.moment ? '%%2%% 📅 Due' : task.scheduled.moment ? '%%1%% ⏳ Scheduled' : '%%3%% Undated';
     }
 
+    /**
+     * @param {Task} task - the task being searched
+     */
     byFilename(task) {
         return '📄 ' + task.file.filename.slice(0, -3);
     }
 
+    /**
+     * @param {Task} task - the task being searched
+     */
     byFolder(task) {
         return '📂 ' + task.file.folder;
     }
 
     /**
      * This is for use in grouping
+     *
+     * @param {Task} task - the task being searched
      *
      * @example
      * group by function \
@@ -164,6 +195,8 @@ class Tasks {
     /**
      * group by parent folder
      *
+     * @param {Task} task - the task being searched
+     *
      * @example
      * group by function \
      *     const {Tasks} = customJS; \
@@ -173,10 +206,17 @@ class Tasks {
         return '📂 ' + task.file.folder.slice(0, -1).split('/').pop() + '/';
     }
 
+    /**
+     * @param {Task} task - the task being searched
+     */
     byRoot(task) {
         return '📁 ' + task.file.root;
     }
 
+    /**
+     * @param {Task} task - the task being searched
+     * @returns {string|string}
+     */
     byStartTime(task) {
         const re = /^(\d\d):(\d\d) /;
         const result = re.exec(task.description);
