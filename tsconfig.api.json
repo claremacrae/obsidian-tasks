@@ -3,7 +3,8 @@
   "compilerOptions": {
     "declaration": true,
     "emitDeclarationOnly": true,
-    "declarationDir": "temp"
+    "declarationDir": "temp",
+    "stripInternal": true
   },
   "include": [
     "src/api-entry.ts"

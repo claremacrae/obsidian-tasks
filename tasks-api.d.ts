@@ -120,7 +120,6 @@ export declare class Status {
      * @type {string}
      */
     get name(): string;
-
     /**
      * Returns the next status for a task when toggled.
      *
@@ -128,7 +127,6 @@ export declare class Status {
      * @see nextStatusSymbol
      */
     get nextSymbol(): string;
-
     /**
      * Returns the status type. See {@link StatusType} for details.
      */
