@@ -3,8 +3,6 @@ import { FrontMatterCache } from 'obsidian';
 import type { Reference } from 'obsidian';
 
 export declare class Link {
-    private readonly rawLink;
-    private readonly pathContainingLink;
     /**
      * @param {Reference} rawLink - The raw link from Obsidian cache.
      * @param {string} pathContainingLink - The path of the file where this link is located.
@@ -156,12 +154,6 @@ declare enum StatusType {
  * A simple class to provide access to file information via 'task.file' in scripting code.
  */
 declare class TasksFile {
-    private readonly _path;
-    private readonly _cachedMetadata;
-    private readonly _frontmatter;
-    private readonly _tags;
-    private readonly _outlinksInProperties;
-    private readonly _outlinksInBody;
     constructor(path: string, cachedMetadata?: CachedMetadata);
     private createLinks;
     /**

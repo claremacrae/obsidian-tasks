@@ -7,14 +7,15 @@ export type OptionalTasksFile = TasksFile | undefined;
  * A simple class to provide access to file information via 'task.file' in scripting code.
  */
 export class TasksFile {
-    private readonly _path: string;
-    private readonly _cachedMetadata: CachedMetadata;
-    // Always make TasksFile.frontmatter.tags exist and be empty, even if no frontmatter present:
-    private readonly _frontmatter = { tags: [] } as any;
-    private readonly _tags: string[] = [];
+    /** @internal */ private readonly _path: string;
+    /** @internal */ private readonly _cachedMetadata: CachedMetadata;
 
-    private readonly _outlinksInProperties: Readonly<Link[]> = [];
-    private readonly _outlinksInBody: Readonly<Link[]> = [];
+    // Always make TasksFile.frontmatter.tags exist and be empty, even if no frontmatter present:
+    /** @internal */ private readonly _frontmatter = { tags: [] } as any;
+    /** @internal */ private readonly _tags: string[] = [];
+
+    /** @internal */ private readonly _outlinksInProperties: Readonly<Link[]> = [];
+    /** @internal */ private readonly _outlinksInBody: Readonly<Link[]> = [];
 
     constructor(path: string, cachedMetadata: CachedMetadata = {}) {
         this._path = path;
