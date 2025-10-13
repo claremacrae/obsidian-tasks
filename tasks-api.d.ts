@@ -1,6 +1,3 @@
-import { CachedMetadata } from 'obsidian';
-import { FrontMatterCache } from 'obsidian';
-
 export declare class Link {
     /**
      * Return the original Markdown, exactly as specified in the original markdown.
@@ -157,8 +154,6 @@ declare enum StatusType {
  * A simple class to provide access to file information via 'task.file' in scripting code.
  */
 declare class TasksFile {
-    constructor(path: string, cachedMetadata?: CachedMetadata);
-
     /**
      * Return the path to the file.
      */
@@ -171,8 +166,6 @@ declare class TasksFile {
      * - It removes any duplicate tag values.
      * - For now, it includes any global filter that is a tag, if there are any tasks in the file
      *   that have the global filter. This decision will be reviewed later.
-     *
-     * @todo Review presence of global filter tag in the results.
      */
     get tags(): string[];
 
@@ -190,49 +183,6 @@ declare class TasksFile {
      * Return an array of {@link Link} in the body of the file.
      */
     get outlinksInBody(): Readonly<Link[]>;
-
-    /**
-     * Return Obsidian's [CachedMetadata](https://docs.obsidian.md/Reference/TypeScript+API/CachedMetadata)
-     * for this file, if available.
-     *
-     * Any raw frontmatter may be accessed via `cachedMetadata.frontmatter`.
-     * See [FrontMatterCache](https://docs.obsidian.md/Reference/TypeScript+API/FrontMatterCache).
-     * But prefer using {@link frontmatter} where possible.
-     *
-     * @note This is currently only populated for Task objects when read in the Obsidian plugin,
-     *       and queries in the plugin.
-     *       It's not populated in most unit tests.
-     *       If not available, it returns an empty object, {}.
-     *
-     * @see frontmatter, which provides a cleaned-up version of the raw frontmatter.
-     */
-    get cachedMetadata(): CachedMetadata;
-
-    /**
-     * Returns a cleaned-up version of the frontmatter.
-     *
-     * If accessing tags, please note:
-     * - If there are any tags in the frontmatter, `frontmatter.tags` will have the values with '#' prefix added.
-     * - It recognises both `frontmatter.tags` and `frontmatter.tag` (and various capitalisation combinations too).
-     * - It removes any null tags.
-     *
-     * @note This is currently only populated for Task objects when read in the Obsidian plugin.
-     *       It's not populated for queries in the plugin, nor in most unit tests.
-     *       And it is an empty object, {}, if the {@link cachedMetadata} has not been populated
-     *       or if the markdown file has no frontmatter or empty frontmatter.
-     */
-    get frontmatter(): FrontMatterCache;
-
-    /**
-     * Does the data content of another TasksFile's raw frontmatter
-     * match this one.
-     *
-     * This can be used to detect whether Task objects need to be updated,
-     * or (later) whether queries need to be updated, due to user edits.
-     *
-     * @param other
-     */
-    rawFrontmatterIdenticalTo(other: TasksFile): boolean;
 
     /**
      * Return the path to the file, with the filename extension removed.
@@ -264,15 +214,6 @@ declare class TasksFile {
      * @param key
      */
     property(key: string): any;
-
-    /**
-     * Compare all the fields in another TasksFile, to detect any differences from this one.
-     *
-     * If any field is different in any way, it will return false.
-     *
-     * @param other
-     */
-    identicalTo(other: TasksFile): boolean;
 }
 
 export {};

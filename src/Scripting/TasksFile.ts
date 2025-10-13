@@ -16,6 +16,14 @@ export class TasksFile {
     private readonly _outlinksInProperties: Readonly<Link[]> = [];
     private readonly _outlinksInBody: Readonly<Link[]> = [];
 
+    /**
+     * Constructor
+     *
+     * @param path
+     * @param cachedMetadata
+     *
+     * @internal
+     */
     constructor(path: string, cachedMetadata: CachedMetadata = {}) {
         this._path = path;
         this._cachedMetadata = cachedMetadata;
@@ -52,8 +60,6 @@ export class TasksFile {
      * - It removes any duplicate tag values.
      * - For now, it includes any global filter that is a tag, if there are any tasks in the file
      *   that have the global filter. This decision will be reviewed later.
-     *
-     * @todo Review presence of global filter tag in the results.
      */
     get tags(): string[] {
         return this._tags;
@@ -94,6 +100,8 @@ export class TasksFile {
      *       If not available, it returns an empty object, {}.
      *
      * @see frontmatter, which provides a cleaned-up version of the raw frontmatter.
+     *
+     * @internal
      */
     public get cachedMetadata(): CachedMetadata {
         return this._cachedMetadata;
@@ -111,6 +119,8 @@ export class TasksFile {
      *       It's not populated for queries in the plugin, nor in most unit tests.
      *       And it is an empty object, {}, if the {@link cachedMetadata} has not been populated
      *       or if the markdown file has no frontmatter or empty frontmatter.
+     *
+     * @internal
      */
     public get frontmatter(): FrontMatterCache {
         return this._frontmatter;
@@ -124,6 +134,8 @@ export class TasksFile {
      * or (later) whether queries need to be updated, due to user edits.
      *
      * @param other
+     *
+     * @internal
      */
     public rawFrontmatterIdenticalTo(other: TasksFile): boolean {
         const thisFrontmatter: FrontMatterCache | undefined = this.cachedMetadata.frontmatter;
@@ -259,6 +271,8 @@ export class TasksFile {
      * If any field is different in any way, it will return false.
      *
      * @param other
+     *
+     * @internal
      */
     public identicalTo(other: TasksFile) {
         if (this.path !== other.path) {
