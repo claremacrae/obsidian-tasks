@@ -208,6 +208,8 @@ declare enum OnCompletion {
     Delete = 'delete',
 }
 
+declare type PresetsMap = Record<string, string>;
+
 /**
  * When sorting, make sure low always comes after none. This way any tasks with low will be below any exiting
  * tasks that have no priority which would be the default.
@@ -252,6 +254,32 @@ declare class PropertyCategory {
      * renders the group heading.
      */
     get groupText(): string;
+}
+
+/**
+ * This interface is part of the implementation of placeholders and scripting.
+ *
+ * - Use {@link makeQueryContext} or {@link makeQueryContextWithTasks} to make a {@link QueryContext}.
+ * - Or more commonly, if you have a {@link SearchInfo}, use {@link SearchInfo.queryContext}
+ *
+ * QueryContext is a 'view' to pass in to {@link expandPlaceholders} and
+ * to various methods of {@link TaskExpression}.
+ *
+ * It provides the following:
+ * - `queryContext.query.file` - where `query.file` is a {@link TasksFile} object.
+ *                               So it supplies `query.file.path`, `query.file.folder`, etc.
+ * - `queryContext.query.allTasks` - all the {@link Task}s in the vault that match
+ *                                   any global filter.
+ *
+ * @see SearchInfo
+ */
+export declare interface QueryContext {
+    query: {
+        file: TasksFile;
+        allTasks: Readonly<Task[]>;
+        searchCache: Record<string, any>;
+    };
+    preset: PresetsMap;
 }
 
 declare class Recurrence {
