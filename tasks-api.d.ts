@@ -225,7 +225,7 @@ export declare class TasksDate {
 /**
  * A simple class to provide access to file information via 'task.file' in scripting code.
  */
-declare class TasksFile {
+export declare class TasksFile {
     /**
      * Return the path to the file.
      */
