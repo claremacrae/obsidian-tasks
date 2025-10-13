@@ -22,5 +22,8 @@
   "open-plugin-settings",
   "calendar",
   "nldates-obsidian",
-  "various-complements"
+  "various-complements",
+  "customjs",
+  "code-files",
+  "fix-require-modules"
 ]
