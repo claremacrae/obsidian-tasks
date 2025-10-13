@@ -17,11 +17,6 @@ export class TasksFile {
     private readonly _outlinksInBody: Readonly<Link[]> = [];
 
     /**
-     * Constructor
-     *
-     * @param path
-     * @param cachedMetadata
-     *
      * @internal
      */
     constructor(path: string, cachedMetadata: CachedMetadata = {}) {

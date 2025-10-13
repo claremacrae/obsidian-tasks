@@ -19,16 +19,6 @@ export class ListItem {
     public readonly taskLocation: TaskLocation;
 
     /**
-     * Constructor
-     *
-     * @param originalMarkdown
-     * @param indentation
-     * @param listMarker
-     * @param statusCharacter
-     * @param description
-     * @param parent
-     * @param taskLocation
-     *
      * @internal
      */
     constructor({
