@@ -1,3 +1,6 @@
+import type { Moment } from 'moment';
+import type { unitOfTime } from 'moment';
+
 export declare class Link {
     /**
      * Return the original Markdown, exactly as specified in the original markdown.
@@ -90,6 +93,41 @@ export declare enum Priority {
 }
 
 /**
+ * A helper class to construct group names for data types that do not naturally sort in alphabetical order.
+ *
+ * A convention has been adopted in the Tasks grouping code to use commented-out numbers to control
+ * the sort order in group headings for things like {@link Priority}, which we want to
+ * sort from {@link Priority.Highest} to {@link Priority.Lowest}, instead of alphabetically.
+ *
+ * This class provides a way to store a {@link name} and a {@link sortOrder}, from which {@link groupText}
+ * can be constructed.
+ *
+ * For an example of use, see {@link TasksDate.category}.
+ */
+declare class PropertyCategory {
+    readonly name: string;
+    readonly sortOrder: number;
+
+    /**
+     * Constructor
+     *
+     * @param name The name of the category. This is typically the text that will be displayed in a group heading.
+     * @param sortOrder A numeric sort order for this heading. Lower numbers are displayed before higher ones.
+     */
+    constructor(name: string, sortOrder: number);
+
+    /**
+     * Return the group heading for this category.
+     *
+     * It prefixes the name with a comment that will ensure the groups sort in the desired order.
+     *
+     * This works because the commented-out sortOrder will be hidden when Obsidian
+     * renders the group heading.
+     */
+    get groupText(): string;
+}
+
+/**
  * Tracks the possible states that a task can be in.
  *
  * Related classes:
@@ -148,6 +186,50 @@ declare enum StatusType {
     CANCELLED = 'CANCELLED',
     NON_TASK = 'NON_TASK',
     EMPTY = 'EMPTY',
+}
+
+/**
+ * TasksDate encapsulates a date, for simplifying the JavaScript expressions users need to
+ * write in 'group by function' lines.
+ */
+export declare class TasksDate {
+    constructor(date: Moment | null);
+
+    /**
+     * Return the raw underlying moment (or null, if there is no date)
+     */
+    get moment(): Moment | null;
+
+    /**
+     * Return the date formatted as YYYY-MM-DD, or {@link fallBackText} if there is no date.
+     @param fallBackText - the string to use if the date is null. Defaults to empty string.
+     */
+    formatAsDate(fallBackText?: string): string;
+
+    /**
+     * Return the date formatted as YYYY-MM-DD HH:mm, or {@link fallBackText} if there is no date.
+     @param fallBackText - the string to use if the date is null. Defaults to empty string.
+     */
+    formatAsDateAndTime(fallBackText?: string): string;
+
+    /**
+     * Return the date formatted with the given format string, or {@link fallBackText} if there is no date.
+     * See https://momentjs.com/docs/#/displaying/ for all the available formatting options.
+     * @param format
+     * @param fallBackText - the string to use if the date is null. Defaults to empty string.
+     */
+    format(format: string, fallBackText?: string): string;
+
+    /**
+     * Return the date as an ISO string, for example '2023-10-13T00:00:00.000Z'.
+     * @param keepOffset
+     * @returns - The date as an ISO string, for example: '2023-10-13T00:00:00.000Z',
+     *            OR an empty string if no date, OR null for an invalid date.
+     */
+    toISOString(keepOffset?: boolean): string | null;
+    get category(): PropertyCategory;
+    get fromNow(): PropertyCategory;
+    postpone(unitOfTime?: unitOfTime.DurationConstructor, amount?: number): Moment;
 }
 
 /**
