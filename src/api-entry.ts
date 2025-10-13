@@ -8,7 +8,7 @@
  * included in the generated tasks-api.d.ts file.
  */
 
-// export { Task } from './Task/Task';
+export { Task } from './Task/Task';
 export { ListItem } from './Task/ListItem';
 export { TasksFile } from './Scripting/TasksFile';
 export { TasksDate } from './DateTime/TasksDate';

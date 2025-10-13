@@ -390,7 +390,7 @@ declare enum StatusType {
  *
  * @class Task
  */
-declare class Task extends ListItem {
+export declare class Task extends ListItem {
     readonly status: Status;
     readonly tags: string[];
     readonly priority: Priority;
