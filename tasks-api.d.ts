@@ -1,5 +1,4 @@
 import type { Moment } from 'moment';
-import type { unitOfTime } from 'moment';
 
 export declare class Link {
     /**
@@ -107,14 +106,6 @@ export declare enum Priority {
 declare class PropertyCategory {
     readonly name: string;
     readonly sortOrder: number;
-
-    /**
-     * Constructor
-     *
-     * @param name The name of the category. This is typically the text that will be displayed in a group heading.
-     * @param sortOrder A numeric sort order for this heading. Lower numbers are displayed before higher ones.
-     */
-    constructor(name: string, sortOrder: number);
 
     /**
      * Return the group heading for this category.
@@ -229,7 +220,6 @@ export declare class TasksDate {
     toISOString(keepOffset?: boolean): string | null;
     get category(): PropertyCategory;
     get fromNow(): PropertyCategory;
-    postpone(unitOfTime?: unitOfTime.DurationConstructor, amount?: number): Moment;
 }
 
 /**

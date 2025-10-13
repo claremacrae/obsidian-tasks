@@ -121,6 +121,13 @@ export class TasksDate {
         return earlier ? now.subtract(multiplier, unit) : now.add(multiplier, unit);
     }
 
+    /**
+     *
+     * @param unitOfTime
+     * @param amount
+     *
+     * @internal
+     */
     public postpone(unitOfTime: unitOfTime.DurationConstructor = 'days', amount: number = 1) {
         if (!this._date) throw new Notice('Cannot postpone a null date');
 

@@ -19,6 +19,8 @@ export class PropertyCategory {
      *
      * @param name The name of the category. This is typically the text that will be displayed in a group heading.
      * @param sortOrder A numeric sort order for this heading. Lower numbers are displayed before higher ones.
+     *
+     * @internal
      */
     // Pass in an empty name if you want groupText to be ''
     constructor(name: string, sortOrder: number) {
