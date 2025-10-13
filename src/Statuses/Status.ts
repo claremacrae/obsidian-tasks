@@ -112,7 +112,9 @@ export class Status {
      * Returns the next status for a task when toggled.
      *
      * @type {string}
-     * @see nextSymbol
+     * @see nextSymbol, which an alias of this, provided for brevity in user scripts.
+     *
+     * @internal
      */
     public get nextStatusSymbol(): string {
         return this.configuration.nextStatusSymbol;
@@ -120,7 +122,6 @@ export class Status {
 
     /**
      * Returns the next status for a task when toggled.
-     * This is an alias for {@link nextStatusSymbol} which is provided for brevity in user scripts.
      *
      * @type {string}
      * @see nextStatusSymbol
@@ -197,6 +198,8 @@ export class Status {
      * The core symbols are recognised.
      * Other symbols are treated as StatusType.TODO
      * @param symbol
+     *
+     * @internal
      */
     static getTypeForUnknownSymbol(symbol: string): StatusType {
         switch (symbol) {
@@ -219,6 +222,8 @@ export class Status {
      * Convert text that was saved from a StatusType value back to a StatusType.
      * Returns StatusType.TODO if the string is not valid.
      * @param statusTypeAsString
+     *
+     * @internal
      */
     static getTypeFromStatusTypeString(statusTypeAsString: string): StatusType {
         return StatusType[statusTypeAsString as keyof typeof StatusType] || StatusType.TODO;
@@ -232,6 +237,8 @@ export class Status {
      *
      * The type is set to TODO.
      * @param unknownSymbol
+     *
+     * @internal
      */
     static createUnknownStatus(unknownSymbol: string) {
         return new Status(new StatusConfiguration(unknownSymbol, 'Unknown', 'x', false, StatusType.TODO));
@@ -241,6 +248,8 @@ export class Status {
      * Helper function for bulk-importing settings from arrays of strings.
      *
      * @param imported An array of symbol, name, next symbol, status type
+     *
+     * @internal
      */
     static createFromImportedValue(imported: StatusCollectionEntry) {
         const symbol = imported[0];
@@ -249,8 +258,7 @@ export class Status {
     }
 
     /**
-     * Returns the completion status for a task, this is only supported
-     * when the task is done/x.
+     * Returns the completion status for a task - whether its type is DONE.
      *
      * @return {*}  {boolean}
      */
@@ -271,6 +279,8 @@ export class Status {
      * If any field is different in any way, it will return false.
      *
      * @param other
+     *
+     * @internal
      */
     public identicalTo(other: Status): boolean {
         const args: Array<keyof StatusConfiguration> = [
@@ -288,6 +298,8 @@ export class Status {
 
     /**
      * Return a one-line summary of the status, for presentation to users.
+     *
+     * @internal
      */
     public previewText() {
         let commandNotice = '';
@@ -309,6 +321,8 @@ export class Status {
      * This is not yet possible, and so some UI features are temporarily hidden.
      * See https://github.com/obsidian-tasks-group/obsidian-tasks/issues/1486
      * Once that issue is addressed, this method can be removed.
+     *
+     * @internal
      */
     public static tasksPluginCanCreateCommandsForStatuses(): boolean {
         return false;

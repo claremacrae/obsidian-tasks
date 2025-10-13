@@ -42,16 +42,9 @@ export declare class Status {
      * @type {string}
      */
     get name(): string;
+
     /**
      * Returns the next status for a task when toggled.
-     *
-     * @type {string}
-     * @see nextSymbol
-     */
-    get nextStatusSymbol(): string;
-    /**
-     * Returns the next status for a task when toggled.
-     * This is an alias for {@link nextStatusSymbol} which is provided for brevity in user scripts.
      *
      * @type {string}
      * @see nextStatusSymbol
@@ -76,38 +69,9 @@ export declare class Status {
      * @param {StatusConfiguration} configuration
      */
     constructor(configuration: StatusConfiguration);
+
     /**
-     * Return the StatusType to use for a symbol, if it is not in the StatusRegistry.
-     * The core symbols are recognised.
-     * Other symbols are treated as StatusType.TODO
-     * @param symbol
-     */
-    static getTypeForUnknownSymbol(symbol: string): StatusType;
-    /**
-     * Convert text that was saved from a StatusType value back to a StatusType.
-     * Returns StatusType.TODO if the string is not valid.
-     * @param statusTypeAsString
-     */
-    static getTypeFromStatusTypeString(statusTypeAsString: string): StatusType;
-    /**
-     * Create a Status representing the given, unknown symbol.
-     *
-     * This can be useful when StatusRegistry does not recognise a symbol,
-     * and we do not want to expose the user's data to the Status.EMPTY status.
-     *
-     * The type is set to TODO.
-     * @param unknownSymbol
-     */
-    static createUnknownStatus(unknownSymbol: string): Status;
-    /**
-     * Helper function for bulk-importing settings from arrays of strings.
-     *
-     * @param imported An array of symbol, name, next symbol, status type
-     */
-    static createFromImportedValue(imported: StatusCollectionEntry): Status;
-    /**
-     * Returns the completion status for a task, this is only supported
-     * when the task is done/x.
+     * Returns the completion status for a task - whether its type is DONE.
      *
      * @return {*}  {boolean}
      */
@@ -116,26 +80,6 @@ export declare class Status {
      * Whether the task status type is {@link CANCELLED}.
      */
     isCancelled(): boolean;
-    /**
-     * Compare all the fields in another Status, to detect any differences from this one.
-     *
-     * If any field is different in any way, it will return false.
-     *
-     * @param other
-     */
-    identicalTo(other: Status): boolean;
-    /**
-     * Return a one-line summary of the status, for presentation to users.
-     */
-    previewText(): string;
-    /**
-     * Whether Tasks can yet create 'Toggle Status' commands for statuses
-     *
-     * This is not yet possible, and so some UI features are temporarily hidden.
-     * See https://github.com/obsidian-tasks-group/obsidian-tasks/issues/1486
-     * Once that issue is addressed, this method can be removed.
-     */
-    static tasksPluginCanCreateCommandsForStatuses(): boolean;
 }
 
 /**
