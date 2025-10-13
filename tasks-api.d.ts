@@ -2,6 +2,18 @@ import type { Moment } from 'moment';
 import type { Moment as Moment_2 } from 'moment/moment';
 import { RRule } from 'rrule';
 
+/**
+ * The current task being evaluated in a Tasks query filter/group/sort expression.
+ * This variable is automatically provided by the Tasks plugin.
+ *
+ * @example
+ * ```
+ * filter by function task.description.length > 20
+ * group by function task.due.category.name
+ * ```
+ */
+declare const task: Task;
+
 export declare class Link {
     /**
      * Return the original Markdown, exactly as specified in the original markdown.
