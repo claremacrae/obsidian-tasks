@@ -19,6 +19,8 @@ export class Status {
      *
      * @static
      * @type {Status}
+     *
+     * @internal
      */
     public static readonly DONE: Status = new Status(new StatusConfiguration('x', 'Done', ' ', true, StatusType.DONE));
 
@@ -27,6 +29,8 @@ export class Status {
      *
      * @static
      * @type {Status}
+     *
+     * @internal
      */
     public static readonly EMPTY: Status = new Status(new StatusConfiguration('', 'EMPTY', '', true, StatusType.EMPTY));
 
@@ -36,6 +40,8 @@ export class Status {
      *
      * @static
      * @type {Status}
+     *
+     * @internal
      */
     public static readonly TODO: Status = new Status(new StatusConfiguration(' ', 'Todo', 'x', true, StatusType.TODO));
 
@@ -44,6 +50,8 @@ export class Status {
      *
      * @static
      * @type {Status}
+     *
+     * @internal
      */
     public static readonly CANCELLED: Status = new Status(
         new StatusConfiguration('-', 'Cancelled', ' ', true, StatusType.CANCELLED),
@@ -54,6 +62,8 @@ export class Status {
      *
      * @static
      * @type {Status}
+     *
+     * @internal
      */
     public static readonly IN_PROGRESS: Status = new Status(
         new StatusConfiguration('/', 'In Progress', 'x', true, StatusType.IN_PROGRESS),
@@ -64,6 +74,8 @@ export class Status {
      *
      * @static
      * @type {Status}
+     *
+     * @internal
      */
     public static readonly NON_TASK: Status = new Status(
         new StatusConfiguration('Q', 'Non-Task', 'A', true, StatusType.NON_TASK),
@@ -73,6 +85,8 @@ export class Status {
      * The configuration stored in the data.json file.
      *
      * @type {StatusConfiguration}
+     *
+     * @internal
      */
     public readonly configuration: StatusConfiguration;
 
@@ -119,6 +133,8 @@ export class Status {
      * If true then it is registered as a command that the user can map to.
      *
      * @type {boolean}
+     *
+     * @internal
      */
     public get availableAsCommand(): boolean {
         return this.configuration.availableAsCommand;

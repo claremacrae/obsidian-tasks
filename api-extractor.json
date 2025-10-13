@@ -9,7 +9,8 @@
     "enabled": true,
     "untrimmedFilePath": "",
     "betaTrimmedFilePath": "",
-    "publicTrimmedFilePath": "<projectFolder>/tasks-api.d.ts"
+    "publicTrimmedFilePath": "<projectFolder>/tasks-api.d.ts",
+    "omitTrimmingComments": true
   },
   "apiReport": {
     "enabled": false
@@ -31,7 +32,14 @@
         "logLevel": "warning"
       },
       "ae-missing-release-tag": {
+        "logLevel": "warning",
+        "addToApiReportFile": true
+      },
+      "ae-internal-missing-underscore": {
         "logLevel": "none"
+      },
+      "ae-forgotten-export": {
+        "logLevel": "warning"
       }
     },
     "tsdocMessageReporting": {

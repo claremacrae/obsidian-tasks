@@ -404,55 +404,6 @@ declare class Recurrence {
  */
 export declare class Status {
     /**
-     * The default Done status. Goes to Todo when toggled.
-     *
-     * @static
-     * @type {Status}
-     */
-    static readonly DONE: Status;
-    /**
-     * A default status of empty, used when things go wrong.
-     *
-     * @static
-     * @type {Status}
-     */
-    static readonly EMPTY: Status;
-    /**
-     * The default Todo status. Goes to Done when toggled.
-     * User may later be able to override this to go to In Progress instead.
-     *
-     * @static
-     * @type {Status}
-     */
-    static readonly TODO: Status;
-    /**
-     * The default Cancelled status. Goes to Todo when toggled.
-     *
-     * @static
-     * @type {Status}
-     */
-    static readonly CANCELLED: Status;
-    /**
-     * The default In Progress status. Goes to Done when toggled.
-     *
-     * @static
-     * @type {Status}
-     */
-    static readonly IN_PROGRESS: Status;
-    /**
-     * A sample Non-Task status. Goes to NON_TASK when toggled.
-     *
-     * @static
-     * @type {Status}
-     */
-    static readonly NON_TASK: Status;
-    /**
-     * The configuration stored in the data.json file.
-     *
-     * @type {StatusConfiguration}
-     */
-    readonly configuration: StatusConfiguration;
-    /**
      * The symbol used between the two square brackets in the markdown task.
      *
      * @type {string}
@@ -479,12 +430,7 @@ export declare class Status {
      * @see nextStatusSymbol
      */
     get nextSymbol(): string;
-    /**
-     * If true then it is registered as a command that the user can map to.
-     *
-     * @type {boolean}
-     */
-    get availableAsCommand(): boolean;
+
     /**
      * Returns the status type. See {@link StatusType} for details.
      */
