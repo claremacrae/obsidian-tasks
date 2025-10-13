@@ -18,6 +18,9 @@
 ## Searches which always work if this file is loaded in Reading mode during startup
 
 ```tasks
+# Make sure we have a parent task:
+filter by function task.findClosestParentTask() !== null
+
 group by function \
     const {parentDescription} = require('/TasksFunctionsJS.js'); \
     return parentDescription(task);
@@ -25,6 +28,9 @@ limit 1
 ```
 
 ```tasks
+# Make sure we have a parent task:
+filter by function task.findClosestParentTask() !== null
+
 group by function require('/TasksFunctionsJS.js').parentDescription(task)
 limit 1
 ```
@@ -32,11 +38,17 @@ limit 1
 ## Searches usually work if this file is loaded in Reading mode during startup, and Tasks has been patched
 
 ```tasks
+# Make sure we have a parent task:
+filter by function task.findClosestParentTask() !== null
+
 group by function TasksFunctionsJS.parentDescription(task)
 limit 1
 ```
 
 ```tasks
+# Make sure we have a parent task:
+filter by function task.findClosestParentTask() !== null
+
 group by function TasksFunctionsTS.parentDescription(task)
 limit 1
 ```
