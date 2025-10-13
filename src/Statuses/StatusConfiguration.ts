@@ -15,6 +15,8 @@ export enum StatusType {
  * objects for the session
  *
  * @class StatusConfiguration
+ *
+ * @internal
  */
 export class StatusConfiguration {
     /**

@@ -65,60 +65,6 @@ export declare class Status {
 }
 
 /**
- * The type used for a single entry in bulk imports of pre-created sets of statuses, such as for Themes or CSS Snippets.
- * The values are: symbol, name, next symbol, status type (must be one of the values in {@link StatusType}
- */
-declare type StatusCollectionEntry = [string, string, string, string];
-
-/**
- * This is the object stored by the Obsidian configuration and used to create the status
- * objects for the session
- *
- * @class StatusConfiguration
- */
-declare class StatusConfiguration {
-    /**
-     * The character used between the two square brackets in the markdown task.
-     *
-     * @type {string}
-     */
-    readonly symbol: string;
-    /**
-     * Returns the name of the status for display purposes.
-     *
-     * @type {string}
-     */
-    readonly name: string;
-    /**
-     * Returns the next status for a task when toggled.
-     *
-     * @type {string}
-     */
-    readonly nextStatusSymbol: string;
-    /**
-     * If true then it is registered as a command that the user can map to.
-     *
-     * @type {boolean}
-     */
-    readonly availableAsCommand: boolean;
-    /**
-     * Returns the status type. See {@link StatusType} for details.
-     */
-    readonly type: StatusType;
-    /**
-     * Creates an instance of Status. The registry will be added later in the case
-     * of the default statuses.
-     *
-     * @param {string} symbol
-     * @param {string} name
-     * @param {Status} nextStatusSymbol
-     * @param {boolean} availableAsCommand
-     * @param {StatusType} type
-     */
-    constructor(symbol: string, name: string, nextStatusSymbol: string, availableAsCommand: boolean, type?: StatusType);
-}
-
-/**
  * Collection of status types supported by the plugin.
  */
 declare enum StatusType {
