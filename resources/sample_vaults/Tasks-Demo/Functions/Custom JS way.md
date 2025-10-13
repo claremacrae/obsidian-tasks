@@ -14,6 +14,9 @@
 These depend on the `customJS` variable being initialised, which is not always true if this file is loaded in Reading mode during startup.
 
 ```tasks
+# Make sure we have a parent task:
+filter by function task.findClosestParentTask() !== null
+
 group by function \
     const {Tasks} = customJS; \
     return Tasks.byParentItemDescription(task);
@@ -21,6 +24,9 @@ limit 1
 ```
 
 ```tasks
+# Make sure we have a parent task:
+filter by function task.findClosestParentTask() !== null
+
 group by function customJS.Tasks.byParentItemDescription(task);
 limit 1
 ```
