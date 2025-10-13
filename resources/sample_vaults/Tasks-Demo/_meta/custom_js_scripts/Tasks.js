@@ -1,3 +1,5 @@
+/// <reference path="../tasks-api.d.ts" />
+
 class Tasks {
     /**
      * Match tasks which contain the searchString text anywhere.
@@ -184,6 +186,8 @@ class Tasks {
     /**
      * group by the description of the parent task or list item - otherwise 'Other Tasks'.
      * To allow for numbered list items, the the original makrdown is placed first, inside comments.
+     *
+     * @param {Task} task
      *
      * @example
      * group by function \
