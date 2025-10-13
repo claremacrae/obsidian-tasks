@@ -20,6 +20,10 @@ function cleanApiFile() {
     // Remove lines with private declarations
     content = content.replace(/^\s*private\s+.*?;?\s*$/gm, '');
 
+    // Add blank line before JSDoc comments (but not if it's at the start of a block or already has one)
+    // This matches: non-blank line, newline, JSDoc comment
+    content = content.replace(/([^\n])\n([ \t]*\/\*\*)/g, '$1\n\n$2');
+
     fs.writeFileSync(API_FILE, content);
 
     const removedBytes = originalLength - content.length;

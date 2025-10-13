@@ -8,6 +8,7 @@ export declare class Link {
      * @param {string} pathContainingLink - The path of the file where this link is located.
      */
     constructor(rawLink: Reference, pathContainingLink: string);
+
     /**
      * Return the original Markdown, exactly as specified in the original markdown.
      * For "[ab](cd.md)", it would return "[ab](cd.md)".
@@ -18,6 +19,7 @@ export declare class Link {
      * See also {@link markdown}
      */
     get originalMarkdown(): string;
+
     /**
      * This is like {@link originalMarkdown}, but will also work for heading-only links
      * when viewed in files other than the one containing the original link.
@@ -30,6 +32,7 @@ export declare class Link {
      * See also {@link originalMarkdown}
      */
     get markdown(): string;
+
     /**
      * Return the destination, exactly as specified in the original markdown.
      * For "[ab](cd.md)", it would return "cd.md".
@@ -46,6 +49,7 @@ export declare class Link {
      * to the closest file where the original task Markdown line is.
      */
     get destination(): string;
+
     /**
      * The actual full path that Obsidian would navigate to if the user clicked on the link,
      * or `null` if the link is to a non-existent file.
@@ -56,6 +60,7 @@ export declare class Link {
      * See {@link LinkResolver} docs for more info.
      */
     get destinationPath(): string | null;
+
     /**
      * For "[[Styling of Queries]]", it would return "Styling of Queries"
      * For "[[link_in_task_wikilink|alias]]", it would return "alias"
@@ -63,6 +68,7 @@ export declare class Link {
      * For "[[Project Search#Search 1]]", it would return "Project Search > Search 1"
      */
     get displayText(): string | undefined;
+
     /**
      * Returns true if this link points to the given value
      * - Pass in `query.file` or `task.file` for the most precise results.
@@ -112,12 +118,14 @@ export declare class Status {
      * @type {string}
      */
     get symbol(): string;
+
     /**
      * Returns the name of the status for display purposes.
      *
      * @type {string}
      */
     get name(): string;
+
     /**
      * Returns the next status for a task when toggled.
      *
@@ -125,10 +133,12 @@ export declare class Status {
      * @see nextStatusSymbol
      */
     get nextSymbol(): string;
+
     /**
      * Returns the status type. See {@link StatusType} for details.
      */
     get type(): StatusType;
+
     /**
      * Returns the text to be used to represent the {@link StatusType} in group headings.
      *
@@ -155,10 +165,12 @@ declare enum StatusType {
  */
 declare class TasksFile {
     constructor(path: string, cachedMetadata?: CachedMetadata);
+
     /**
      * Return the path to the file.
      */
     get path(): string;
+
     /**
      * Return all the tags in the file, both from frontmatter and the body of the file.
      *
@@ -170,18 +182,22 @@ declare class TasksFile {
      * @todo Review presence of global filter tag in the results.
      */
     get tags(): string[];
+
     /**
      * Return an array of {@link Link} all the links in the file - both in frontmatter and in the file body.
      */
     get outlinks(): Readonly<Link[]>;
+
     /**
      * Return an array of {@link Link} in the file's properties/frontmatter.
      */
     get outlinksInProperties(): Readonly<Link[]>;
+
     /**
      * Return an array of {@link Link} in the body of the file.
      */
     get outlinksInBody(): Readonly<Link[]>;
+
     /**
      * Return Obsidian's [CachedMetadata](https://docs.obsidian.md/Reference/TypeScript+API/CachedMetadata)
      * for this file, if available.
@@ -198,6 +214,7 @@ declare class TasksFile {
      * @see frontmatter, which provides a cleaned-up version of the raw frontmatter.
      */
     get cachedMetadata(): CachedMetadata;
+
     /**
      * Returns a cleaned-up version of the frontmatter.
      *
@@ -212,6 +229,7 @@ declare class TasksFile {
      *       or if the markdown file has no frontmatter or empty frontmatter.
      */
     get frontmatter(): FrontMatterCache;
+
     /**
      * Does the data content of another TasksFile's raw frontmatter
      * match this one.
@@ -222,32 +240,38 @@ declare class TasksFile {
      * @param other
      */
     rawFrontmatterIdenticalTo(other: TasksFile): boolean;
+
     /**
      * Return the path to the file, with the filename extension removed.
      */
     get pathWithoutExtension(): string;
+
     /**
      * Return the root to the file.
      */
     get root(): string;
     get folder(): string;
+
     /**
      * Return the filename including the extension.
      */
     get filename(): string;
     get filenameWithoutExtension(): string;
+
     /**
      * This is documented for users and so must not be changed.
      * https://publish.obsidian.md/tasks/Getting+Started/Obsidian+Properties#How+does+Tasks+treat+Obsidian+Properties%3F
      * @param key
      */
     hasProperty(key: string): boolean;
+
     /**
      * This is documented for users and so must not be changed.
      * https://publish.obsidian.md/tasks/Getting+Started/Obsidian+Properties#How+does+Tasks+treat+Obsidian+Properties%3F
      * @param key
      */
     property(key: string): any;
+
     /**
      * Compare all the fields in another TasksFile, to detect any differences from this one.
      *
