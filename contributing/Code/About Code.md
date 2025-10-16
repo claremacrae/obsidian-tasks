@@ -10,6 +10,10 @@ This section stores information about the design and implementation of the plugi
 
 - [[Generating documentation of the code]] - browse the source code interactively, and see class hierarchies.
 
+## Experimental interface definitions file
+
+[[Generating the experimental .d.ts file]]
+
 ## Common processes
 
 - [[How do I add a new field to the Task class]]
