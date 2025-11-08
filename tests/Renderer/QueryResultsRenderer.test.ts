@@ -5,7 +5,7 @@ import moment from 'moment';
 import type { Task } from 'Task/Task';
 import { GlobalFilter } from '../../src/Config/GlobalFilter';
 import { State } from '../../src/Obsidian/Cache';
-import { QueryResultsRenderer } from '../../src/Renderer/QueryResultsRenderer';
+import { type QueryRendererParameters, QueryResultsRenderer } from '../../src/Renderer/QueryResultsRenderer';
 import { TasksFile } from '../../src/Scripting/TasksFile';
 import { verifyWithFileExtension } from '../TestingTools/ApprovalTestHelpers';
 import { prettifyHTML } from '../TestingTools/HTMLHelpers';
@@ -29,7 +29,18 @@ afterEach(() => {
     resetSettings();
 });
 
-function makeQueryResultsRenderer(source: string, tasksFile: TasksFile) {
+function makeQueryRendererParameters(allTasks: Task[]): QueryRendererParameters {
+    return {
+        allTasks: () => allTasks,
+        allMarkdownFiles: () => [],
+        backlinksClickHandler: () => Promise.resolve(),
+        backlinksMousedownHandler: () => Promise.resolve(),
+        editTaskPencilClickHandler: () => {},
+    };
+}
+
+function makeQueryResultsRenderer(source: string, tasksFile: TasksFile, allTasks: Task[]) {
+    const queryRendererParameters = makeQueryRendererParameters(allTasks);
     return new QueryResultsRenderer(
         'block-language-tasks',
         source,
@@ -38,30 +49,47 @@ function makeQueryResultsRenderer(source: string, tasksFile: TasksFile) {
         null,
         mockApp,
         mockHTMLRenderer,
+        queryRendererParameters,
     );
 }
 
-describe('QueryResultsRenderer tests', () => {
-    async function verifyRenderedTasksHTML(allTasks: Task[], source: string = '') {
-        const renderer = makeQueryResultsRenderer(source, new TasksFile('query.md'));
-        const queryRendererParameters = {
-            allTasks,
-            allMarkdownFiles: [],
-            backlinksClickHandler: () => Promise.resolve(),
-            backlinksMousedownHandler: () => Promise.resolve(),
-            editTaskPencilClickHandler: () => Promise.resolve(),
-        };
-        const container = document.createElement('div');
+async function renderTasks(state: State, renderer: QueryResultsRenderer, allTasks: Task[]): Promise<HTMLDivElement> {
+    const container = document.createElement('div');
 
-        await renderer.render(State.Warm, allTasks, container, queryRendererParameters);
+    await renderer.render(state, allTasks, container);
+    return container;
+}
 
-        const taskAsMarkdown = `<!--
+function verifyRenderedTasks(container: HTMLDivElement, allTasks: Task[]): void {
+    const taskAsMarkdown = `<!--
 ${toMarkdown(allTasks)}
 -->\n\n`;
 
-        const prettyHTML = prettifyHTML(container.outerHTML);
-        verifyWithFileExtension(taskAsMarkdown + prettyHTML, 'html');
+    const prettyHTML = prettifyHTML(container.outerHTML);
+    verifyWithFileExtension(taskAsMarkdown + prettyHTML, 'html');
+}
+
+describe('QueryResultsRenderer tests', () => {
+    async function verifyRenderedTasksHTML(allTasks: Task[], source: string, state: State = State.Warm) {
+        const renderer = makeQueryResultsRenderer(source, new TasksFile('query.md'), allTasks);
+        const container = await renderTasks(state, renderer, allTasks);
+        verifyRenderedTasks(container, allTasks);
     }
+
+    it('loading message', async () => {
+        const allTasks = [TaskBuilder.createFullyPopulatedTask()];
+        await verifyRenderedTasksHTML(allTasks, 'show urgency', State.Initializing);
+    });
+
+    it('error message', async () => {
+        const allTasks = [TaskBuilder.createFullyPopulatedTask()];
+        await verifyRenderedTasksHTML(allTasks, 'apple sauce');
+    });
+
+    it('explain', async () => {
+        const allTasks = [TaskBuilder.createFullyPopulatedTask()];
+        await verifyRenderedTasksHTML(allTasks, 'scheduled 1970-01-01\nexplain');
+    });
 
     it('fully populated task', async () => {
         const allTasks = [TaskBuilder.createFullyPopulatedTask()];
@@ -71,6 +99,11 @@ ${toMarkdown(allTasks)}
     it('fully populated task - short mode', async () => {
         const allTasks = [TaskBuilder.createFullyPopulatedTask()];
         await verifyRenderedTasksHTML(allTasks, 'show urgency\nshort mode');
+    });
+
+    it('fully populated task - hidden fields', async () => {
+        const allTasks = [TaskBuilder.createFullyPopulatedTask()];
+        await verifyRenderedTasksHTML(allTasks, 'hide scheduled date\nhide priority');
     });
 
     const showTree = 'show tree\n';
@@ -102,13 +135,62 @@ ${toMarkdown(allTasks)}
         const allTasks = readTasksFromSimulatedFile('inheritance_non_task_child');
         await verifyRenderedTasksHTML(allTasks, showTree);
     });
+
+    it('should render four group headings', async () => {
+        const allTasks = readTasksFromSimulatedFile('inheritance_task_2listitem_3task');
+        await verifyRenderedTasksHTML(
+            allTasks,
+            `
+group by function task.description.length
+group by function 'level2'
+group by function 'level3'
+group by function 'level4'
+`,
+        );
+    });
+
+    it('should allow a task to be in multiple groups', async () => {
+        const allTasks = [TaskBuilder.createFullyPopulatedTask()];
+        await verifyRenderedTasksHTML(allTasks, "group by function ['heading a', 'heading b']");
+    });
+
+    it('should indent nested tasks', async () => {
+        const allTasks = readTasksFromSimulatedFile(
+            'inheritance_1parent2children2grandchildren1sibling_start_with_heading',
+        );
+        await verifyRenderedTasksHTML(allTasks, 'show tree');
+    });
+
+    it('should render grandchildren once under the parent', async () => {
+        const allTasks = readTasksFromSimulatedFile('inheritance_1parent2children2grandchildren1sibling');
+        await verifyRenderedTasksHTML(
+            allTasks,
+            `
+show tree
+sort by function task.lineNumber
+(description includes grandchild) OR (description includes parent)
+        `,
+        );
+    });
+
+    it('should render grandchildren once and on the same level as parent', async () => {
+        const allTasks = readTasksFromSimulatedFile('inheritance_1parent2children2grandchildren1sibling');
+        await verifyRenderedTasksHTML(
+            allTasks,
+            `
+show tree
+sort by function reverse task.lineNumber
+(description includes grandchild) OR (description includes parent)
+        `,
+        );
+    });
 });
 
 describe('QueryResultsRenderer - responding to file edits', () => {
     it('should update the query when its file path is changed', () => {
         // Arrange
         const source = 'path includes {{query.file.path}}';
-        const renderer = makeQueryResultsRenderer(source, new TasksFile('oldPath.md'));
+        const renderer = makeQueryResultsRenderer(source, new TasksFile('oldPath.md'), []);
         expect(renderer.query.explainQuery()).toContain('path includes oldPath.md');
 
         // Act
@@ -122,7 +204,7 @@ describe('QueryResultsRenderer - responding to file edits', () => {
         // Arrange
         updateSettings({ presets: { CurrentGrouping: 'group by PATH' } });
         const source = 'preset CurrentGrouping';
-        const renderer = makeQueryResultsRenderer(source, new TasksFile('any file.md'));
+        const renderer = makeQueryResultsRenderer(source, new TasksFile('any file.md'), []);
         expect(renderer.query.explainQuery()).toContain('group by PATH');
 
         // Act
@@ -131,6 +213,32 @@ describe('QueryResultsRenderer - responding to file edits', () => {
 
         // Assert
         expect(renderer.query.explainQuery()).toContain('group by DUE');
+    });
+});
+
+describe('Reusing QueryResultsRenderer', () => {
+    it('should render the same thing twice - tree', async () => {
+        const allTasks = readTasksFromSimulatedFile(
+            'inheritance_1parent2children2grandchildren1sibling_start_with_heading',
+        );
+        const renderer = makeQueryResultsRenderer('show tree', new TasksFile('anywhere.md'), allTasks);
+        const container = await renderTasks(State.Warm, renderer, allTasks);
+        verifyRenderedTasks(container, allTasks);
+
+        const rerenderedContainer = await renderTasks(State.Warm, renderer, allTasks);
+        verifyRenderedTasks(rerenderedContainer, allTasks);
+    });
+
+    it('should render the same thing twice - flat', async () => {
+        const allTasks = readTasksFromSimulatedFile(
+            'inheritance_1parent2children2grandchildren1sibling_start_with_heading',
+        );
+        const renderer = makeQueryResultsRenderer('hide tree', new TasksFile('anywhere.md'), allTasks);
+        const container = await renderTasks(State.Warm, renderer, allTasks);
+        verifyRenderedTasks(container, allTasks);
+
+        const rerenderedContainer = await renderTasks(State.Warm, renderer, allTasks);
+        verifyRenderedTasks(rerenderedContainer, allTasks);
     });
 });
 
@@ -165,17 +273,11 @@ For more info: https://publish.obsidian.md/tasks-contributing/Testing/Using+Obsi
     });
 
     async function renderTask(task: Task, queryFilePath: string = 'query.md') {
-        const renderer = makeQueryResultsRenderer('', new TasksFile(queryFilePath));
-        const queryRendererParameters = {
-            allTasks: [task],
-            allMarkdownFiles: [],
-            backlinksClickHandler: () => Promise.resolve(),
-            backlinksMousedownHandler: () => Promise.resolve(),
-            editTaskPencilClickHandler: () => Promise.resolve(),
-        };
+        const allTasks = [task];
+        const renderer = makeQueryResultsRenderer('', new TasksFile(queryFilePath), allTasks);
         const container = document.createElement('div');
 
-        await renderer.render(State.Warm, [task], container, queryRendererParameters);
+        await renderer.render(State.Warm, allTasks, container);
 
         return container.querySelector('.task-description')?.innerHTML ?? '';
     }
