@@ -1,13 +1,16 @@
-import type { App, Component, TFile } from 'obsidian';
+import { type App, type Component, Notice, type TFile, setIcon, setTooltip } from 'obsidian';
 import { GlobalQuery } from '../Config/GlobalQuery';
 import type { IQuery } from '../IQuery';
 import { PerformanceTracker } from '../lib/PerformanceTracker';
-import type { State } from '../Obsidian/Cache';
+import { State } from '../Obsidian/Cache';
+import { DescriptionField } from '../Query/Filter/DescriptionField';
 import { getQueryForQueryRenderer } from '../Query/QueryRendererHelper';
+import type { QueryResult } from '../Query/QueryResult';
 import type { TasksFile } from '../Scripting/TasksFile';
 import type { Task } from '../Task/Task';
 import { HtmlQueryResultsRenderer } from './HtmlQueryResultsRenderer';
-import type { TextRenderer } from './TaskLineRenderer';
+import { MarkdownQueryResultsRenderer } from './MarkdownQueryResultsRenderer';
+import { type TextRenderer, createAndAppendElement } from './TaskLineRenderer';
 
 export type BacklinksEventHandler = (ev: MouseEvent, task: Task) => Promise<void>;
 export type EditButtonClickHandler = (event: MouseEvent, task: Task, allTasks: Task[]) => void;
@@ -47,6 +50,7 @@ export class QueryResultsRenderer {
     public readonly source: string;
 
     private readonly htmlRenderer: HtmlQueryResultsRenderer;
+    private readonly markdownRenderer: MarkdownQueryResultsRenderer;
 
     // The path of the file that contains the instruction block, and cached data from that file.
     // This can be updated when the query file's frontmatter is modified.
@@ -90,18 +94,22 @@ export class QueryResultsRenderer {
                 break;
         }
 
+        const getters = {
+            source: () => this.source,
+            tasksFile: () => this._tasksFile,
+            query: () => this.query,
+        };
+
         this.htmlRenderer = new HtmlQueryResultsRenderer(
             renderMarkdown,
             obsidianComponent,
             obsidianApp,
             textRenderer,
             queryRendererParameters,
-            {
-                source: () => this.source,
-                tasksFile: () => this._tasksFile,
-                query: () => this.query,
-            },
+            getters,
         );
+
+        this.markdownRenderer = new MarkdownQueryResultsRenderer(getters);
     }
 
     private makeQueryFromSourceAndTasksFile() {
@@ -140,15 +148,80 @@ export class QueryResultsRenderer {
     }
 
     public async render(state: State, tasks: Task[], content: HTMLDivElement) {
+        const queryResult = this.performSearch(tasks);
+
+        this.addToolbar(queryResult, content);
+        await this.renderQueryResult(state, queryResult, content);
+    }
+
+    private performSearch(tasks: Task[]) {
         const measureSearch = new PerformanceTracker(`Search: ${this.query.queryId} - ${this.filePath}`);
         measureSearch.start();
         const queryResult = this.query.applyQueryToTasks(tasks);
         measureSearch.finish();
+        return queryResult;
+    }
 
+    private async renderQueryResult(state: State, queryResult: QueryResult, content: HTMLDivElement) {
         const measureRender = new PerformanceTracker(`Render: ${this.query.queryId} - ${this.filePath}`);
         measureRender.start();
         this.htmlRenderer.content = content;
         await this.htmlRenderer.renderQuery(state, queryResult);
         measureRender.finish();
+    }
+
+    private addToolbar(queryResult: QueryResult, content: HTMLDivElement) {
+        if (this.query.queryLayoutOptions.hideToolbar) {
+            return;
+        }
+
+        const toolbar = createAndAppendElement('div', content);
+        toolbar.classList.add('plugin-tasks-toolbar');
+        this.addSearchBox(toolbar, queryResult, content);
+        this.addCopyButton(toolbar, queryResult);
+    }
+
+    private addSearchBox(toolbar: HTMLDivElement, queryResult: QueryResult, content: HTMLDivElement) {
+        const label = createAndAppendElement('label', toolbar);
+        setIcon(label, 'lucide-filter');
+        const searchBox = createAndAppendElement('input', label);
+        searchBox.placeholder = 'Filter by description...';
+        setTooltip(searchBox, 'Filter results');
+        searchBox.addEventListener('input', async () => {
+            const { filter, error } = new DescriptionField().createFilterOrErrorMessage(
+                'description includes ' + searchBox.value,
+            );
+            if (error) {
+                new Notice('error searching for ' + searchBox.value + ': ' + error);
+                return;
+            }
+
+            // We want to retain the Toolbar, to not lose the search string.
+            // But we need to delete any pre-existing headings, tasks and task count.
+            // The following while loop relies on the Toolbar being the first element.
+            while (content.firstElementChild !== content.lastElementChild) {
+                const lastChild = content.lastChild;
+                if (lastChild === null) {
+                    break;
+                }
+
+                lastChild.remove();
+            }
+
+            const filteredQueryResult = queryResult.applyFilter(filter!);
+            await this.renderQueryResult(State.Warm, filteredQueryResult, content);
+        });
+    }
+
+    private addCopyButton(toolbar: HTMLDivElement, queryResult: QueryResult) {
+        const copyButton = createAndAppendElement('button', toolbar);
+        setIcon(copyButton, 'lucide-copy');
+        setTooltip(copyButton, 'Copy results');
+        copyButton.addEventListener('click', async () => {
+            // TODO reimplement this using QueryResult.asMarkdown() when it supports trees and list items.
+            await this.markdownRenderer.renderQuery(State.Warm, queryResult);
+            await navigator.clipboard.writeText(this.markdownRenderer.markdown);
+            new Notice('Results copied to clipboard');
+        });
     }
 }
