@@ -127,6 +127,8 @@ class QueryRenderChild extends MarkdownRenderChild {
         super(container);
 
         this.app = app;
+        this.plugin = plugin;
+        this.events = events;
 
         this.queryResultsRenderer = new QueryResultsRenderer(
             this.containerEl.className,
@@ -141,14 +143,14 @@ class QueryRenderChild extends MarkdownRenderChild {
                 allMarkdownFiles: () => this.app.vault.getMarkdownFiles(),
                 backlinksClickHandler: createBacklinksClickHandler(this.app),
                 backlinksMousedownHandler: createBacklinksMousedownHandler(this.app),
-                editTaskPencilClickHandler: createEditTaskPencilClickHandler(this.app),
+                editTaskPencilClickHandler: createEditTaskPencilClickHandler(
+                    this.app,
+                    async () => await this.plugin.saveSettings(),
+                ),
             },
         );
 
         this.queryResultsRenderer.query.debug('[render] QueryRenderChild.constructor() entered');
-
-        this.plugin = plugin;
-        this.events = events;
 
         this.debouncedRenderFn = debounce((params: RenderParams) => this.render(params), 300, true);
     }
@@ -351,7 +353,7 @@ class QueryRenderChild extends MarkdownRenderChild {
     }
 }
 
-function createEditTaskPencilClickHandler(app: App): EditButtonClickHandler {
+function createEditTaskPencilClickHandler(app: App, onSaveSettings: () => Promise<void>): EditButtonClickHandler {
     return function editTaskPencilClickHandler(event: MouseEvent, task: Task, allTasks: Task[]) {
         event.preventDefault();
 
@@ -366,6 +368,7 @@ function createEditTaskPencilClickHandler(app: App): EditButtonClickHandler {
         const taskModal = new TaskModal({
             app,
             task,
+            onSaveSettings,
             onSubmit,
             allTasks,
         });
